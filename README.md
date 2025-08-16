@@ -2,15 +2,16 @@
 
 # Tecnologías utilizadas
 
-Java 17
-React 18
-Postgresql 17.5-alpine3.22
+* Java 17
+* React 18
+* Postgresql 17.5-alpine3.22
 
 
 # BD Postgres (con Docker)
 
+``` bash
 docker run --name bee-wise -e POSTGRES_USER=dockerdb -e POSTGRES_PASSWORD=beewise2025 -e POSTGRES_DB=bee-wise -p 5432:5432 -d postgres:17.5-alpine3.22 
-
+```
 # Frontend (React JS + TypeScript)
 
 Para ejecutar el frontend:
