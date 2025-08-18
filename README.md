@@ -31,4 +31,4 @@ Para ejecutar el frontend:
    npm run dev
    ```
 
-La aplicación se ejecutará en http://localhost:3000
+La aplicación se ejecutará en http://localhost:5173
