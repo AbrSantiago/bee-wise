@@ -1,0 +1,160 @@
+/* Sidebar Styles */
+.sidebar {
+  width: 240px;
+  height: 100vh;
+  background-color: #1f2937;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+
+.sidebar-header {
+  padding: 20px;
+  border-bottom: 1px solid #374151;
+}
+
+.sidebar-logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: #10b981;
+  margin: 0;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 20px 0;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border: none;
+  background: none;
+  color: #9ca3af;
+}
+
+.nav-item:hover {
+  background-color: #374151;
+  color: white;
+}
+
+.nav-item.active {
+  background-color: #10b981;
+  color: white;
+}
+
+.nav-icon {
+  font-size: 20px;
+  margin-right: 12px;
+  width: 24px;
+  text-align: center;
+}
+
+.nav-label {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Header Styles */
+.main-header {
+  background-color: #059669;
+  color: white;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 240px;
+  z-index: 100;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.header-title-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.section-info {
+  font-size: 12px;
+  color: #bbf7d0;
+  margin-bottom: 4px;
+}
+
+.header-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.guidebook-btn {
+  background-color: #047857;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.guidebook-btn:hover {
+  background-color: #065f46;
+}
+
+.user-stats {
+  display: flex;
+  gap: 16px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 8px 12px;
+  border-radius: 20px;
+}
+
+.stat-icon {
+  font-size: 18px;
+}
+
+.stat-value {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+/* MainLayout Styles */
+.main-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f9fafb;
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 240px; /* Espacio para el sidebar */
+  display: flex;
+  flex-direction: column;
+}
+
+.content-area {
+  flex: 1;
+  margin-top: 80px; /* Espacio para el header fijo */
+  padding: 24px;
+  overflow-y: auto;
+}

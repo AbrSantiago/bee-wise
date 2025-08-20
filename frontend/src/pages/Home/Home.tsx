@@ -1,35 +1,39 @@
 // src/pages/Home/Home.tsx
 import { useState } from 'react'
-import reactLogo from '../../assets/react.svg'
-import viteLogo from '/vite.svg'
-import './Home.css'  // Crearemos este archivo
+import MainLayout from '../../components/layout/MainLayout'
+import './Home.css'
 
 function Home() {
   const [count, setCount] = useState(0)
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+    <MainLayout title="Learn Matrices" sectionInfo="SECTION 1, UNIT 1">
+      <div className="home-content">
+        <h1>Bienvenido a Bee-Wise</h1>
+        <p>Aprende matemáticas y matrices paso a paso</p>
+
+        <div className="lesson-path">
+          <div className="lesson-node active">
+            <span className="lesson-icon">⭐</span>
+            <span className="lesson-title">Matrices Básicas</span>
+          </div>
+          
+          <div className="lesson-node">
+            <span className="lesson-icon">🔒</span>
+            <span className="lesson-title">Operaciones con Matrices</span>
+          </div>
+          
+          <div className="lesson-node">
+            <span className="lesson-icon">🔒</span>
+            <span className="lesson-title">Multiplicación de Matrices</span>
+          </div>
+        </div>
+        
+        <button className="start-lesson-btn" onClick={() => setCount((count) => count + 1)}>
+          INICIAR LECCIÓN {count > 0 && `(${count})`}
         </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </MainLayout>
   )
 }
 
