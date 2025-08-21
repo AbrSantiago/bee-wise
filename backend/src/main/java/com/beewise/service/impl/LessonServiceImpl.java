@@ -1,5 +1,7 @@
 package com.beewise.service.impl;
 
+import com.beewise.controller.dto.SimpleLessonDTO;
+import com.beewise.controller.dto.LessonDTO;
 import com.beewise.exception.InvalidIdException;
 import com.beewise.exception.LessonNotFoundException;
 import com.beewise.model.Lesson;
@@ -26,5 +28,27 @@ public class LessonServiceImpl implements LessonService {
         }
         return lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new LessonNotFoundException("Lesson with id " + lessonId + " not found"));
+    }
+
+    @Override
+    public Lesson createLesson(SimpleLessonDTO lessonDTO) {
+        Lesson lesson = new Lesson(lessonDTO.getTitle(), lessonDTO.getDescription());
+        return lessonRepository.save(lesson);
+    }
+
+    @Override
+    public Lesson updateLesson(Long id, SimpleLessonDTO lessonDTO) {
+        Lesson lesson = lessonRepository.findById(id)
+                .orElseThrow(() -> new LessonNotFoundException("Lesson with id " + id + " not found"));
+
+        lesson.setTitle(lessonDTO.getTitle());
+        lesson.setDescription(lessonDTO.getDescription());
+
+        return lessonRepository.save(lesson);
+    }
+
+    @Override
+    public void deleteLesson(Long id) {
+        lessonRepository.deleteById(id);
     }
 }

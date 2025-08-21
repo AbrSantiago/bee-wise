@@ -1,5 +1,6 @@
 package com.beewise.controller;
 
+import com.beewise.controller.dto.SimpleLessonDTO;
 import com.beewise.controller.dto.LessonDTO;
 import com.beewise.model.Lesson;
 import com.beewise.service.LessonService;
@@ -20,5 +21,28 @@ public class LessonController {
         Lesson lesson = lessonService.getLessonById(id);
         LessonDTO lessonDTO = LessonDTO.fromLesson(lesson);
         return ResponseEntity.ok(lessonDTO);
+    }
+
+    @PostMapping
+    public ResponseEntity<LessonDTO> createLesson(@RequestBody SimpleLessonDTO simpleLessonDTO){
+        Lesson lesson = lessonService.createLesson(simpleLessonDTO);
+        LessonDTO lessonDTO = LessonDTO.fromLesson(lesson);
+        return ResponseEntity.ok(lessonDTO);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<LessonDTO> updateLesson(
+            @PathVariable Long id,
+            @RequestBody SimpleLessonDTO simpleLessonDTO
+    ){
+        Lesson lesson = lessonService.updateLesson(id, simpleLessonDTO);
+        LessonDTO lessonDTO = LessonDTO.fromLesson(lesson);
+        return ResponseEntity.ok(lessonDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteLesson(@PathVariable Long id){
+        lessonService.deleteLesson(id);
+        return ResponseEntity.noContent().build();
     }
 }
