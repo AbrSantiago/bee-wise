@@ -1,5 +1,6 @@
 import React from 'react';
 import './layout.css';
+import { Link } from 'react-router-dom';
 
 const Sidebar = () => {
   return (
@@ -11,18 +12,22 @@ const Sidebar = () => {
 
       {/* Navigation Menu */}
       <nav className="sidebar-nav">
-        <div className="nav-item">
+        <Link to="/" className="nav-item">
             <span className="nav-icon">🏠</span>
             <span className="nav-label">HOME</span>
-        </div>
-        <div className="nav-item">
+        </Link>
+        <Link to="/lessons" className="nav-item">
             <span className="nav-icon">🎯</span>
+            <span className="nav-label">LESSONS</span>
+        </Link>
+        <Link to="/practice" className="nav-item">
+            <span className="nav-icon">👨‍🏫</span>
             <span className="nav-label">PRACTICE</span>
-        </div>
-        <div className="nav-item">
+        </Link>
+        <Link to="/profile" className="nav-item">
             <span className="nav-icon">👤</span>
             <span className="nav-label">PROFILE</span>
-        </div>
+        </Link>
       </nav>
     </div>
   );
