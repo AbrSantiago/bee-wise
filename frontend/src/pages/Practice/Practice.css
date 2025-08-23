@@ -1,0 +1,6 @@
+/* Centrar la matriz y separarla del botón */
+.matrix-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
