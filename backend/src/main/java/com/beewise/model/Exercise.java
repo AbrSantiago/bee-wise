@@ -24,6 +24,8 @@ public class Exercise {
     @JoinColumn(name = "lesson_id")  // clave foránea
     private Lesson lesson;
 
+    public Exercise() {}
+
     public Exercise(String question, String answer){
         this.question = question;
         this.answer = answer;

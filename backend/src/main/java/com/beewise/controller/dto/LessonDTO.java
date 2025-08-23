@@ -15,13 +15,16 @@ public class LessonDTO {
     private Long id;
     private String title;
     private String description;
-    private List<Exercise> exercises;
+    private List<ExerciseDTO> exercises;
 
     public LessonDTO(Lesson lesson){
         this.id = lesson.getId();
         this.title = lesson.getTitle();
         this.description = lesson.getDescription();
-        this.exercises = lesson.getExercises();
+        this.exercises = lesson.getExercises()
+                .stream()
+                .map(ExerciseDTO::fromExercise)
+                .toList();
     }
 
     public static LessonDTO fromLesson(Lesson lesson) {
