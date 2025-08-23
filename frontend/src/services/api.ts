@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -13,7 +13,6 @@ const api = axios.create({
 // Interceptor para requests (debugging y logs)
 api.interceptors.request.use(
   (config) => {
-    console.log(`🚀 ${config.method?.toUpperCase()} ${config.url}`);
     return config;
   },
   (error) => {
@@ -25,7 +24,6 @@ api.interceptors.request.use(
 // Interceptor para responses (manejo de errores)
 api.interceptors.response.use(
   (response) => {
-    console.log(`✅ ${response.status} ${response.config.url}`);
     return response;
   },
   (error) => {
