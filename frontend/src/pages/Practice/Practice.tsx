@@ -1,11 +1,30 @@
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import MainLayout from "../../components/layout/MainLayout";
 import 'katex/dist/katex.min.css';
 // @ts-ignore
 import { BlockMath } from 'react-katex';
+import axios from "axios";
 
 
 export function PracticePage() {
+
+  const [practice, setPractice] = useState('');
+
+  const fetchPractice = async () => {
+    return axios.get('http://localhost:8080/exercise/1')
+    .then(response => {
+      setPractice(response.data.question);
+      console.log(response.data);
+    })
+    .catch(error => {
+      console.error('There was an error fetching the practice data!', error);
+    });
+  };
+
+  useEffect(() => {
+    fetchPractice();
+  }, []);
+
 const A = [
     [1, 2, 3],
     [4, 5, 6],
