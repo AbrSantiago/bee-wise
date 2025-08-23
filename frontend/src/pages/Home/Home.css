@@ -1,12 +1,15 @@
 .home-content {
-  text-align: center;
-  max-width: 800px;
-  margin: 0 auto;
+  /* text-align: center; */
+  /* max-width: 800px; */
+  /* margin: 0 auto; */
+  display: flex;
+  /* justify-content: center; */
+  flex-direction: column;
 }
 
 .home-content h1 {
   font-size: 2.5rem;
-  color: #1f2937;
+  color: #ffffff;
   margin-bottom: 1rem;
 }
 
@@ -29,7 +32,7 @@
   align-items: center;
   gap: 1rem;
   padding: 1.5rem 2rem;
-  background: white;
+  background: rgb(134, 134, 132);
   border-radius: 16px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   min-width: 300px;
@@ -41,7 +44,7 @@
 }
 
 .lesson-node.active {
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, #fed053, #c29f3e);
   color: white;
 }
 
@@ -57,7 +60,7 @@
 }
 
 .lesson-node:not(.active) .lesson-icon {
-  background: #f3f4f6;
+  background: #90918e;
 }
 
 .lesson-title {
@@ -66,7 +69,7 @@
 }
 
 .start-lesson-btn {
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, #fed053, #c29f3e);
   color: white;
   border: none;
   padding: 1rem 2rem;
@@ -87,4 +90,9 @@
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  /* background-color: #1e2328; */
+}
+
+body {
+  background-color: #1e2328;
 }

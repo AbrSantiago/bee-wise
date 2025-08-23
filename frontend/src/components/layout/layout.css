@@ -64,17 +64,18 @@
 
 /* Header Styles */
 .main-header {
-  background-color: #059669;
+  background-color: #f5b301;
   color: white;
   padding: 16px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: fixed;
+  /* position: fixed; */
   top: 0;
   right: 0;
   left: 240px;
   z-index: 100;
+  border-radius: 1cap;
 }
 
 .header-content {
@@ -140,21 +141,21 @@
 
 /* MainLayout Styles */
 .main-layout {
-  display: flex;
-  min-height: 100vh;
-  background-color: #f9fafb;
+  /* display: flex; */
+  min-height: 95vh;
+  /* background-color: #f9fafb; */
 }
 
 .main-content {
-  flex: 1;
-  margin-left: 240px; /* Espacio para el sidebar */
-  display: flex;
-  flex-direction: column;
+  /* flex: 1; */
+  /* margin-left: 240px; Espacio para el sidebar */
+  /* display: flex; */
+  /* flex-direction: column; */
 }
 
 .content-area {
   flex: 1;
-  margin-top: 80px; /* Espacio para el header fijo */
-  padding: 24px;
+  /* margin-top: 80px; Espacio para el header fijo */
+  /* padding: 24px; */
   overflow-y: auto;
 }
