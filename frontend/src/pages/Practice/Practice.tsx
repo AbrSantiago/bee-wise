@@ -1,10 +1,10 @@
-import React, { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import MainLayout from "../../components/layout/MainLayout";
 import 'katex/dist/katex.min.css';
 // @ts-ignore
 import { BlockMath } from 'react-katex';
-import axios from "axios";
 import './Practice.css';
+import apiClient from "../../services/api";
 
 
 export function PracticePage() {
@@ -16,7 +16,7 @@ export function PracticePage() {
 });
 
   const fetchPractice = async () => {
-    return axios.get('http://localhost:8080/exercise/1')
+    return apiClient.get('/exercise/1')
     .then(response => {
 
       const extractedMatrices = extractMatricesFromLatex(response.data.question);
@@ -40,7 +40,7 @@ export function PracticePage() {
     fetchPractice();
   }, []);
 
-  const extractMatricesFromLatex = (latexString) => {
+  const extractMatricesFromLatex = (latexString : string) => {
   console.log('🔍 String original:', latexString);
   
   const matrices = [];
