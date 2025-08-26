@@ -2,7 +2,7 @@ import axios from "axios";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-const api = axios.create({
+const apiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
   headers: {
@@ -11,7 +11,7 @@ const api = axios.create({
 });
 
 // Interceptor para requests (debugging y logs)
-api.interceptors.request.use(
+apiClient.interceptors.request.use(
   (config) => {
     return config;
   },
@@ -22,7 +22,7 @@ api.interceptors.request.use(
 );
 
 // Interceptor para responses (manejo de errores)
-api.interceptors.response.use(
+apiClient.interceptors.response.use(
   (response) => {
     return response;
   },
@@ -32,4 +32,4 @@ api.interceptors.response.use(
   }
 );
 
-export default api;
+export default apiClient;

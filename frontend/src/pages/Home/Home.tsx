@@ -42,9 +42,9 @@ function Home() {
           </div>
         </div>
         
-        <button className="start-lesson-btn" onClick={() => setCount((count) => count + 1)}>
+        {/* <button className="start-lesson-btn" onClick={() => setCount((count) => count + 1)}>
           INICIAR LECCIÓN {count > 0 && `(${count})`}
-        </button>
+        </button> */}
       </div>
     </MainLayout>
   )
