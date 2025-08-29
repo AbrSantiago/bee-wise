@@ -1,17 +1,16 @@
 package com.beewise.controller.dto;
 
-import com.beewise.model.Exercise;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
-public abstract class SimpleExerciseDTO {
+public class SimpleMultipleChoiceExerciseDTO {
     private String question;
     private String answer;
-    private String type;
-
-    public abstract Exercise toEntity();
+    private List<String> options;
 }

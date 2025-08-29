@@ -2,6 +2,8 @@ package com.beewise.controller;
 
 import com.beewise.controller.dto.ExerciseDTO;
 import com.beewise.controller.dto.SimpleExerciseDTO;
+import com.beewise.controller.dto.SimpleMultipleChoiceExerciseDTO;
+import com.beewise.controller.dto.SimpleOpenExerciseDTO;
 import com.beewise.model.Exercise;
 import com.beewise.service.ExerciseService;
 import org.springframework.http.ResponseEntity;
@@ -23,19 +25,36 @@ public class ExerciseController {
         return ResponseEntity.ok(exerciseDTO);
     }
 
-    @PostMapping
-    public ResponseEntity<ExerciseDTO> createExercise(@RequestBody SimpleExerciseDTO simpleExerciseDTO) {
-        Exercise exercise = exerciseService.createExercise(simpleExerciseDTO);
+    @PostMapping("/open")
+    public ResponseEntity<ExerciseDTO> createOpenExercise(@RequestBody SimpleOpenExerciseDTO dto) {
+        Exercise exercise = exerciseService.createOpenExercise(dto);
         ExerciseDTO exerciseDTO = ExerciseDTO.fromExercise(exercise);
         return ResponseEntity.ok(exerciseDTO);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ExerciseDTO> updateExercise(
+    @PostMapping("/multiple choice")
+    public ResponseEntity<ExerciseDTO> createMultipleChoiceExercise(@RequestBody SimpleMultipleChoiceExerciseDTO dto) {
+        Exercise exercise = exerciseService.createMultipleChoiceExercise(dto);
+        ExerciseDTO exerciseDTO = ExerciseDTO.fromExercise(exercise);
+        return ResponseEntity.ok(exerciseDTO);
+    }
+
+    @PutMapping("/open/{id}")
+    public ResponseEntity<ExerciseDTO> updateOpenExercise(
             @PathVariable Long id,
-            @RequestBody SimpleExerciseDTO simpleExerciseDTO
+            @RequestBody SimpleOpenExerciseDTO dto
     ) {
-        Exercise exercise = exerciseService.updateExercise(id, simpleExerciseDTO);
+        Exercise exercise = exerciseService.updateOpenExercise(id, dto);
+        ExerciseDTO exerciseDTO = ExerciseDTO.fromExercise(exercise);
+        return ResponseEntity.ok(exerciseDTO);
+    }
+
+    @PutMapping("/multiple choice/{id}")
+    public ResponseEntity<ExerciseDTO> updateMultipleChoiceExercise(
+            @PathVariable Long id,
+            @RequestBody SimpleMultipleChoiceExerciseDTO dto
+    ) {
+        Exercise exercise = exerciseService.updateMultipleChoiceExercise(id, dto);
         ExerciseDTO exerciseDTO = ExerciseDTO.fromExercise(exercise);
         return ResponseEntity.ok(exerciseDTO);
     }

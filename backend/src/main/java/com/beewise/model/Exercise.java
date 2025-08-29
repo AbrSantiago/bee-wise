@@ -1,18 +1,16 @@
 package com.beewise.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
 @Entity
-public class Exercise {
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class Exercise {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,13 +19,8 @@ public class Exercise {
     private String answer;
 
     @ManyToOne
-    @JoinColumn(name = "lesson_id")  // clave foránea
+    @JoinColumn(name = "lesson_id")
     private Lesson lesson;
 
-    public Exercise() {}
-
-    public Exercise(String question, String answer){
-        this.question = question;
-        this.answer = answer;
-    }
+    public abstract void setOptions(List<String> options);
 }

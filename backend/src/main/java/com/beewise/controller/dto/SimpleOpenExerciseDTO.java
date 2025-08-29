@@ -1,6 +1,5 @@
 package com.beewise.controller.dto;
 
-import com.beewise.model.Exercise;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,10 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public abstract class SimpleExerciseDTO {
+public class SimpleOpenExerciseDTO {
     private String question;
     private String answer;
-    private String type;
-
-    public abstract Exercise toEntity();
 }
