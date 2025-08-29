@@ -40,6 +40,26 @@ public class LessonController {
         return ResponseEntity.ok(lessonDTO);
     }
 
+    @PutMapping("/{lessonId}/add exercise/{exerciseId}")
+    public ResponseEntity<LessonDTO> addExercise(
+            @PathVariable Long lessonId,
+            @PathVariable Long exerciseId
+    ){
+        Lesson lesson = lessonService.addExercise(lessonId, exerciseId);
+        LessonDTO lessonDTO = LessonDTO.fromLesson(lesson);
+        return ResponseEntity.ok(lessonDTO);
+    }
+
+    @PutMapping("/{lessonId}/remove exercise/{exerciseId}")
+    public ResponseEntity<LessonDTO> removeExercise(
+            @PathVariable Long lessonId,
+            @PathVariable Long exerciseId
+    ){
+        Lesson lesson = lessonService.removeExercise(lessonId, exerciseId);
+        LessonDTO lessonDTO = LessonDTO.fromLesson(lesson);
+        return ResponseEntity.ok(lessonDTO);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLesson(@PathVariable Long id){
         lessonService.deleteLesson(id);

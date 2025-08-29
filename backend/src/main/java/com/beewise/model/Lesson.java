@@ -19,7 +19,7 @@ public class Lesson {
 
     private String description;
 
-    @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL)
     private List<Exercise> exercises;
 
     protected Lesson() {}
