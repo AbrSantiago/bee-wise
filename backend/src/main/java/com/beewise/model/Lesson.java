@@ -1,6 +1,8 @@
 package com.beewise.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,8 +17,11 @@ public class Lesson {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Title cannot be empty")
+    @Size(max = 255, message = "Title too long")
     private String title;
 
+    @Size(max = 1000, message = "Description too long")
     private String description;
 
     @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL)

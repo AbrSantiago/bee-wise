@@ -1,6 +1,7 @@
 package com.beewise.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,7 +16,10 @@ public abstract class Exercise {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Question cannot be empty")
     private String question;
+
+    @NotBlank(message = "Answer cannot be empty")
     private String answer;
 
     @ManyToOne

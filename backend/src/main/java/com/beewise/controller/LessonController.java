@@ -4,6 +4,7 @@ import com.beewise.controller.dto.SimpleLessonDTO;
 import com.beewise.controller.dto.LessonDTO;
 import com.beewise.model.Lesson;
 import com.beewise.service.LessonService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,14 +25,14 @@ public class LessonController {
     }
 
     @PostMapping
-    public ResponseEntity<LessonDTO> createLesson(@RequestBody SimpleLessonDTO simpleLessonDTO){
+    public ResponseEntity<LessonDTO> createLesson(@Valid @RequestBody SimpleLessonDTO simpleLessonDTO){
         Lesson lesson = lessonService.createLesson(simpleLessonDTO);
         LessonDTO lessonDTO = LessonDTO.fromLesson(lesson);
         return ResponseEntity.ok(lessonDTO);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<LessonDTO> updateLesson(
+    public ResponseEntity<LessonDTO> updateLesson(@Valid
             @PathVariable Long id,
             @RequestBody SimpleLessonDTO simpleLessonDTO
     ){
