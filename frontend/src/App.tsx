@@ -6,6 +6,7 @@ import { PracticePage } from './pages/Practice/Practice.tsx'
 import { ProfilePage } from './pages/Profile/Profile.tsx'
 import { NotFoundPage } from './pages/NotFound/NotFoundPage.tsx'
 import Test from './pages/Test'
+import Example from './components/DragAndDrop/dragAndDrop.tsx'
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/practice" element={<PracticePage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/test" element={<Test />} />
+        <Route path="/drag-and-drop" element={<Example />} />
         <Route path="*" element={<NotFoundPage />} />
         {/* Puedes agregar más rutas según sea necesario */}
         {/* Add more routes as needed */}
