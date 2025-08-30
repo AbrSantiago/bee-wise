@@ -5,7 +5,6 @@ import './Home.css'
 import { Link } from 'react-router-dom';
 
 function Home() {
-  const [count, setCount] = useState(0)
 
   return (
     <MainLayout title="Learn Matrices" sectionInfo="SECTION 1, UNIT 1">
@@ -14,37 +13,34 @@ function Home() {
         {/* <p>Aprende matemáticas y matrices paso a paso</p> */}
 
         <div className="lesson-path">
-          <Link to="/practice">
+          <Link to="/lessons">
             <div className="lesson-node active">
               <span className="lesson-icon">⭐</span>
-              <span className="lesson-title">Matrices Básicas</span>
+              <span className="lessons-title">Matrices Básicas</span>
             </div>
           </Link>
           
           <div className="lesson-node">
             <span className="lesson-icon">🔒</span>
-            <span className="lesson-title">Operaciones con Matrices</span>
+            <span className="lessons-title">Operaciones con Matrices</span>
           </div>
           
           <div className="lesson-node">
             <span className="lesson-icon">🔒</span>
-            <span className="lesson-title">Operaciones con Matrices</span>
+            <span className="lessons-title">Operaciones con Matrices</span>
           </div>
 
           <div className="lesson-node">
             <span className="lesson-icon">🔒</span>
-            <span className="lesson-title">Operaciones con Matrices</span>
+            <span className="lessons-title">Operaciones con Matrices</span>
           </div>
 
           <div className="lesson-node">
             <span className="lesson-icon">🔒</span>
-            <span className="lesson-title">Multiplicación de Matrices</span>
+            <span className="lessons-title">Multiplicación de Matrices</span>
           </div>
         </div>
         
-        {/* <button className="start-lesson-btn" onClick={() => setCount((count) => count + 1)}>
-          INICIAR LECCIÓN {count > 0 && `(${count})`}
-        </button> */}
       </div>
     </MainLayout>
   )

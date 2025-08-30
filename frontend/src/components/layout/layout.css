@@ -2,6 +2,7 @@
 .sidebar {
   width: 240px;
   height: 100vh;
+  font-family: 'Caprasimo', 'Arial', sans-serif;
   background-color: #1f2937;
   color: white;
   display: flex;
@@ -72,7 +73,7 @@
   align-items: center;
   /* position: fixed; */
   top: 0;
-  right: 0;
+  right: 40px;
   left: 240px;
   z-index: 100;
   border-radius: 1cap;
@@ -159,3 +160,6 @@
   /* padding: 24px; */
   overflow-y: auto;
 }
+
+/* boton sidebar */
+

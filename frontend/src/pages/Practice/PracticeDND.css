@@ -1,0 +1,46 @@
+.practice-dnd-bg {
+  min-height: 100vh;
+  background: #181e27; /* Fondo oscuro elegante */
+  padding-top: 40px;
+}
+
+.matrix {
+  border: 2px solid #222;
+  border-radius: 12px;
+  background: #232b3e;
+  color: #fff;
+  margin: 0 auto;
+  font-size: 2rem;
+  width: 80px;
+  height: 80px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+.matrix td {
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.matrix-empty {
+  background: #232b3e;
+  color: #bbb;
+  border-style: dashed;
+}
+
+.dnd-options {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 32px;
+}
+
+.dnd-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  margin-bottom: 40px;
+}

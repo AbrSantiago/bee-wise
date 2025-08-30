@@ -7,7 +7,7 @@ const Sidebar = () => {
     <div className="sidebar">
       {/* Logo/Título */}
       <div className="sidebar-header">
-        <h1 className="sidebar-logo">bee-wise</h1>
+        <h1 className="sidebar-logo">Bee-wise</h1>
       </div>
 
       {/* Navigation Menu */}

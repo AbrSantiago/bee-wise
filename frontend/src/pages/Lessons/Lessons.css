@@ -1,0 +1,72 @@
+/* @font-face {
+  font-family: 'Recoleta';
+  src: url('/fonts/Recoleta-Bold.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+} */
+
+.lesson-btn-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 32px;
+  margin-top: 40px;
+  margin-left: 8vw; /* Centra el grupo de botones en la pantalla */
+
+}
+
+.lesson-btn-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.lesson-btn-label {
+  font-family: 'Caprasimo', 'Arial', sans-serif;
+  color: #fff;
+  font-weight: 500;
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+
+.lesson-btn {
+  width: 90px;
+  height: 90px;
+  background: #ff4c4c;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  border: 8px solid #23292e;
+  margin-bottom: 8px;
+  transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+}
+
+.star {
+  font-size: 2.5rem;
+  color: white;
+}
+
+.lesson-btn:hover {
+  transform: scale(1.08) rotate(-5deg);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+  background: #ff6565;
+}
+
+.lesson-title {
+  color: #ffb300; /* Amarillo dorado */
+  font-size: 4rem;
+  font-family: 'Caprasimo', 'Arial', sans-serif;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 2rem;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* Espiralado: alterna la posición de cada botón */
+.lesson-btn-container:nth-child(1) { margin-left: 0; }
+.lesson-btn-container:nth-child(2) { margin-left: 60px; }
+.lesson-btn-container:nth-child(3) { margin-left: 0px; }
+.lesson-btn-container:nth-child(4) { margin-left: 80px; }
