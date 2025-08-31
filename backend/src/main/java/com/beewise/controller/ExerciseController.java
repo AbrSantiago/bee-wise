@@ -32,7 +32,7 @@ public class ExerciseController {
         return ResponseEntity.ok(exerciseDTO);
     }
 
-    @PostMapping("/multiple choice")
+    @PostMapping("/multipleChoice")
     public ResponseEntity<ExerciseDTO> createMultipleChoiceExercise(@Valid @RequestBody SimpleMultipleChoiceExerciseDTO dto) {
         Exercise exercise = exerciseService.createMultipleChoiceExercise(dto);
         ExerciseDTO exerciseDTO = ExerciseDTO.fromExercise(exercise);
@@ -49,7 +49,7 @@ public class ExerciseController {
         return ResponseEntity.ok(exerciseDTO);
     }
 
-    @PutMapping("/multiple choice/{id}")
+    @PutMapping("/multipleChoice/{id}")
     public ResponseEntity<ExerciseDTO> updateMultipleChoiceExercise(@Valid
             @PathVariable Long id,
             @RequestBody SimpleMultipleChoiceExerciseDTO dto
