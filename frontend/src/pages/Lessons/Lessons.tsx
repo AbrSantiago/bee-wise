@@ -9,7 +9,7 @@ export function LessonsPage() {
       <h1 className="lesson-title">Lessons Page</h1>
       <div className="lesson-btn-list">
         <div className="lesson-btn-container">
-          <span className="lesson-btn-label">Ejercicio 1</span>
+          <span className="lesson-btn-label">Lección 1 - Matrices básicas</span>
           <Link to="/practice">
             <button className="lesson-btn">
               <span className="star">★</span>

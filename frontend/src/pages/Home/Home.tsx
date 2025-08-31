@@ -7,43 +7,45 @@ import { Link } from 'react-router-dom';
 function Home() {
 
   return (
-    <MainLayout title="Learn Matrices" sectionInfo="SECTION 1, UNIT 1">
-      <div className="home-content">
-        {/* <h1>Bienvenido a Bee-Wise</h1> */}
-        {/* <p>Aprende matemáticas y matrices paso a paso</p> */}
-
-        <div className="lesson-path">
-          <Link to="/lessons">
-            <div className="lesson-node active">
-              <span className="lesson-icon">⭐</span>
-              <span className="lessons-title">Matrices Básicas</span>
-            </div>
+    <MainLayout title="Lessons Page">
+      {/* <h1 className="lesson-title">Lessons Page</h1> */}
+      <div className="lesson-btn-list">
+        <div className="lesson-btn-container">
+          <span className="lesson-btn-label">Lección 1 - Matrices básicas</span>
+          <Link to="/practice">
+            <button className="lesson-btn">
+              <span className="star">★</span>
+            </button>
           </Link>
-          
-          <div className="lesson-node">
-            <span className="lesson-icon">🔒</span>
-            <span className="lessons-title">Operaciones con Matrices</span>
-          </div>
-          
-          <div className="lesson-node">
-            <span className="lesson-icon">🔒</span>
-            <span className="lessons-title">Operaciones con Matrices</span>
-          </div>
-
-          <div className="lesson-node">
-            <span className="lesson-icon">🔒</span>
-            <span className="lessons-title">Operaciones con Matrices</span>
-          </div>
-
-          <div className="lesson-node">
-            <span className="lesson-icon">🔒</span>
-            <span className="lessons-title">Multiplicación de Matrices</span>
-          </div>
         </div>
-        
+
+        <div className="lesson-btn-container">
+          <span className="lesson-btn-label">Ejercicio 2</span>
+          <Link to="/drag-and-drop">
+            <button className="lesson-btn">
+              <span className="star">★</span>
+            </button>
+          </Link>
+        </div>
+        <div className="lesson-btn-container">
+          <span className="lesson-btn-label">Ejercicio 3</span>
+          <Link to="/drag-and-drop">
+            <button className="lesson-btn">
+              <span className="star">★</span>
+            </button>
+          </Link>
+        </div>
+        <div className="lesson-btn-container">
+          <span className="lesson-btn-label">Ejercicio 4</span>
+          <Link to="/drag-and-drop">
+            <button className="lesson-btn">
+              <span className="star">★</span>
+            </button>
+          </Link>
+        </div>
       </div>
     </MainLayout>
-  )
+  );
 }
 
 export default Home;

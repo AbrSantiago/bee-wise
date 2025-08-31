@@ -32,7 +32,7 @@
 .lesson-btn {
   width: 90px;
   height: 90px;
-  background: #ff4c4c;
+  background: #065f46;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -51,7 +51,7 @@
 .lesson-btn:hover {
   transform: scale(1.08) rotate(-5deg);
   box-shadow: 0 12px 32px rgba(0,0,0,0.5);
-  background: #ff6565;
+  background: #065f46;
 }
 
 .lesson-title {
