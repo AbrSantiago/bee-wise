@@ -1,9 +1,11 @@
 package com.beewise.service.impl;
 
-import com.beewise.controller.dto.SimpleExerciseDTO;
+import com.beewise.controller.dto.*;
 import com.beewise.exception.ExerciseNotFoundException;
 import com.beewise.exception.InvalidIdException;
 import com.beewise.model.Exercise;
+import com.beewise.model.MultipleChoiceExercise;
+import com.beewise.model.OpenExercise;
 import com.beewise.repository.ExerciseRepository;
 import com.beewise.service.ExerciseService;
 import jakarta.transaction.Transactional;
@@ -21,25 +23,47 @@ public class ExerciseServiceImpl implements ExerciseService {
     @Override
     public Exercise getExercise(Long id) {
         if (id == null || id <= 0) {
-            throw new InvalidIdException("Lesson id must be a positive number");
+            throw new InvalidIdException("Exercise id must be a positive number");
         }
         return repository.findById(id)
-                .orElseThrow(() -> new ExerciseNotFoundException("Exercise with id" + id + "not found"));
+                .orElseThrow(() -> new ExerciseNotFoundException("Exercise with id " + id + " not found"));
     }
 
     @Override
-    public Exercise createExercise(SimpleExerciseDTO simpleExerciseDTO) {
-        Exercise exercise = new Exercise(simpleExerciseDTO.getQuestion(), simpleExerciseDTO.getAnswer());
+    public Exercise createOpenExercise(SimpleOpenExerciseDTO dto) {
+        Exercise exercise = new OpenExercise(dto.getQuestion(), dto.getAnswer());
         return repository.save(exercise);
     }
 
     @Override
-    public Exercise updateExercise(Long id, SimpleExerciseDTO simpleExerciseDTO) {
-        Exercise exercise = repository.findById(id)
-                .orElseThrow(() -> new ExerciseNotFoundException("Exercise with id" + id + "not found"));
+    public Exercise createMultipleChoiceExercise(SimpleMultipleChoiceExerciseDTO dto) {
+        Exercise exercise = new MultipleChoiceExercise(dto.getQuestion(), dto.getOptions(), dto.getAnswer());
+        return repository.save(exercise);
+    }
 
-        exercise.setQuestion(simpleExerciseDTO.getQuestion());
-        exercise.setAnswer(simpleExerciseDTO.getAnswer());
+    @Override
+    public Exercise updateOpenExercise(Long id, SimpleOpenExerciseDTO dto) {
+        Exercise exercise = repository.findById(id)
+                .orElseThrow(() -> new ExerciseNotFoundException("Exercise with id " + id + " not found"));
+        if (!(exercise instanceof OpenExercise)) {
+            throw new InvalidIdException("Exercise with id " + id + " is not Open");
+        }
+        exercise.setQuestion(dto.getQuestion());
+        exercise.setAnswer(dto.getAnswer());
+
+        return repository.save(exercise);
+    }
+
+    @Override
+    public Exercise updateMultipleChoiceExercise(Long id, SimpleMultipleChoiceExerciseDTO dto) {
+        Exercise exercise = repository.findById(id)
+                .orElseThrow(() -> new ExerciseNotFoundException("Exercise with id " + id + " not found"));
+        if (!(exercise instanceof MultipleChoiceExercise)) {
+            throw new InvalidIdException("Exercise with id " + id + " is not Multiple-Choice");
+        }
+        exercise.setQuestion(dto.getQuestion());
+        exercise.setOptions(dto.getOptions());
+        exercise.setAnswer(dto.getAnswer());
 
         return repository.save(exercise);
     }

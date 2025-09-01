@@ -1,11 +1,14 @@
 package com.beewise.service;
 
-import com.beewise.controller.dto.SimpleExerciseDTO;
+import com.beewise.controller.dto.SimpleMultipleChoiceExerciseDTO;
+import com.beewise.controller.dto.SimpleOpenExerciseDTO;
 import com.beewise.model.Exercise;
 
 public interface ExerciseService {
     Exercise getExercise(Long id);
-    Exercise createExercise(SimpleExerciseDTO simpleExerciseDTO);
-    Exercise updateExercise(Long id, SimpleExerciseDTO simpleExerciseDTO);
+    Exercise createOpenExercise(SimpleOpenExerciseDTO dto);
+    Exercise updateOpenExercise(Long id, SimpleOpenExerciseDTO dto);
+    Exercise createMultipleChoiceExercise(SimpleMultipleChoiceExerciseDTO dto);
+    Exercise updateMultipleChoiceExercise(Long id, SimpleMultipleChoiceExerciseDTO dto);
     void deleteExercise(Long id);
 }
