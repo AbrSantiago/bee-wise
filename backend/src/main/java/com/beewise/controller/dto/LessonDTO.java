@@ -1,6 +1,5 @@
 package com.beewise.controller.dto;
 
-import com.beewise.model.Exercise;
 import com.beewise.model.Lesson;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
