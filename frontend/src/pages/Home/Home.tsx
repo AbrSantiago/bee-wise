@@ -1,9 +1,9 @@
-// src/pages/Home/Home.tsx
-import { useEffect, useState } from 'react'
-import MainLayout from '../../components/layout/MainLayout'
-import './Home.css'
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import MainLayout from "../../components/layout/MainLayout";
 import apiClient from "../../services/api";
+import { LessonItem } from "../../components/layout/LessonItem";
+import './Home.css'
+
 
 type Lesson = {
   id: number;
@@ -13,42 +13,30 @@ type Lesson = {
 
 function Home() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
-  const [lessonNumber, setLessonNumber] = useState(0);
 
   const getLessons = async () => {
-    return apiClient
-      .get("/lesson")
-      .then((response) => {
-        setLessons(response.data);
-      })
-      .catch((error) => {
-        console.error("There was an error fetching the practice data!", error);
-      });
-  };
-
-  function increment() {
-    setLessonNumber(lessonNumber + 1)
+    try {
+      const response = await apiClient.get("/lesson");
+      setLessons(response.data);
+    } catch (error) {
+      console.error("There was an error fetching the practice data!", error);
+    }
   };
 
   useEffect(() => {
     getLessons();
-    increment();
   }, []);
 
   return (
-    <MainLayout title="Lessons Page">
+    <MainLayout title="Matrices">
       <div className="lesson-btn-list">
         {lessons.map((lesson, index) => (
-          <div key={lesson.id ?? index} className="lesson-btn-container">
-            <span className="lesson-btn-label">
-              {`Lección ${index + 1}: ${lesson.title}`}
-            </span>
-            <Link to={`/practice/${lesson.id}`}>
-              <button className="lesson-btn">
-                <span className="star">★</span>
-              </button>
-            </Link>
-          </div>
+          <LessonItem
+            key={lesson.id}
+            id={lesson.id}
+            title={lesson.title}
+            number={index + 1}
+          />
         ))}
       </div>
     </MainLayout>

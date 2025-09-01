@@ -1,9 +1,5 @@
 .home-content {
-  /* text-align: center; */
-  /* max-width: 800px; */
-  /* margin: 0 auto; */
   display: flex;
-  /* justify-content: center; */
   flex-direction: column;
 }
 
@@ -22,21 +18,20 @@
 .lesson-path {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 3rem; /* más espacio entre nodos para que no se encimen */
   margin: 3rem 0;
-  align-items: center;
 }
 
 .lesson-node {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1.5rem 2rem;
-  background: rgb(134, 134, 132);
-  border-radius: 16px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  min-width: 300px;
-  transition: transform 0.2s;
+  margin: 0 auto; /* por defecto centrado */
+}
+
+.lesson-node:nth-child(4n + 2) {
+  align-self: flex-end; /* 2, 6, 10 → derecha */
+}
+
+.lesson-node:nth-child(4n) {
+  align-self: flex-start; /* 4, 8, 12 → izquierda */
 }
 
 .lesson-node:hover {
@@ -90,7 +85,6 @@
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
-  /* background-color: #1e2328; */
 }
 
 body {

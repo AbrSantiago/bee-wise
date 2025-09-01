@@ -54,7 +54,6 @@ export function PracticePage() {
 
   return (
     <MainLayout title={`Lección ${id}`}>
-      {/* <div className="practice-page-title">Practice Page</div> */}
       {current ? (
         <>
           <div className="matrix-container">
