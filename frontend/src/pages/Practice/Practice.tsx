@@ -5,6 +5,7 @@ import "katex/dist/katex.min.css";
 import { BlockMath } from "react-katex";
 import "./Practice.css";
 import apiClient from "../../services/api";
+import { useParams } from "react-router-dom";
 
 type Exercise = {
   id: number;
@@ -14,97 +15,45 @@ type Exercise = {
 };
 
 export function PracticePage() {
-  const [lessonExercises, setLessonExercises] = useState<Exercise[]>([]);
+  const { id } = useParams<{ id: string }>();
+  const [exercises, setexercises] = useState<Exercise[]>([]);
   const [currentExercise, setCurrentExercise] = useState(0);
   const [userAnswer, setUserAnswer] = useState("");
   const [feedback, setFeedback] = useState<null | boolean>(null);
-  const current = lessonExercises[currentExercise];
 
-  const fetchPractice = async () => {
-    return apiClient
-      .get("/exercise/1")
-      .then((response) => {
-        const extractedMatrices = extractMatricesFromLatex(
-          response.data.question
-        );
-        console.log("Matrices extraídas:", extractedMatrices);
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.error("There was an error fetching the practice data!", error);
-      });
-  };
+  const current = exercises[currentExercise];
 
   const getLesson = async () => {
-    return apiClient
-      .get("/lesson/1")
-      .then((response) => {
-        const exercises = response.data.exercises;
-        setLessonExercises(exercises);
-      })
-      .catch((error) => {
-        console.error("There was an error fetching the practice data!", error);
-      });
+    try {
+      const response = await apiClient.get(`/lesson/${id}`);
+      setexercises(response.data.exercises);
+    } catch (error) {
+      console.error("There was an error fetching the practice data!", error);
+    }
   };
 
   const handleCheck = () => {
     const correct =
-      userAnswer.trim() === lessonExercises[currentExercise].answer.trim();
+      userAnswer.trim() === exercises[currentExercise].answer.trim();
     setFeedback(correct);
-    if (correct && currentExercise < lessonExercises.length - 1) {
+    if (correct && currentExercise < exercises.length - 1) {
       setTimeout(() => {
-        setCurrentExercise(currentExercise + 1);
+        setCurrentExercise((prev) => prev + 1);
         setUserAnswer("");
         setFeedback(null);
-      }, 1000); // Avanza al siguiente después de 1 segundo
+      }, 1000);
     }
   };
 
   useEffect(() => {
-    fetchPractice();
-    getLesson();
-  }, []);
-
-  const extractMatricesFromLatex = (latexString: string) => {
-    console.log("🔍 String original:", latexString);
-
-    const matrices = [];
-    const matrixRegex = /\\begin\{bmatrix\}(.*?)\\end\{bmatrix\}/g;
-
-    let match;
-    while ((match = matrixRegex.exec(latexString)) !== null) {
-      const matrixContent = match[1].trim();
-      console.log("📦 Contenido de matriz encontrado:", `"${matrixContent}"`);
-
-      // El separador correcto es \\ (dos backslashes)
-      const rows = matrixContent.split(" \\\\ ");
-      console.log("📋 Filas después del split:", rows);
-
-      // Procesar cada fila
-      const matrix = rows.map((row, index) => {
-        console.log(`🔢 Procesando fila ${index}:`, `"${row}"`);
-        const cells = row.trim().split(" & ");
-        console.log(`📊 Celdas en fila ${index}:`, cells);
-        return cells.map((cell) => parseInt(cell.trim()));
-      });
-
-      console.log("✅ Matriz procesada:", matrix);
-      matrices.push(matrix);
+    if (id) {
+      getLesson();
     }
-
-    return matrices;
-  };
-
-  // const handleChange = (i: number, j: number, value: string) => {
-  //   const newMatrix = userMatrix.map((row, ri) =>
-  //     row.map((col, cj) => (ri === i && cj === j ? value : col))
-  //   );
-  //   setFeedback(null);
-  // };
+  }, [id]);
 
   return (
-    <MainLayout title="Practice Page">
-      <div className="practice-page-title">Practice Page</div>
+    <MainLayout title={`Lección ${id}`}>
+      {/* <div className="practice-page-title">Practice Page</div> */}
       {current ? (
         <>
           <div className="matrix-container">
@@ -131,7 +80,7 @@ export function PracticePage() {
             ) : (
               <p className="text-red-600 font-bold mt-2">❌ Intenta de nuevo</p>
             ))}
-          {currentExercise === lessonExercises.length - 1 &&
+          {currentExercise === exercises.length - 1 &&
             feedback === true && (
               <p className="text-yellow-500 font-bold mt-4">
                 ¡Has terminado todos los ejercicios!
@@ -142,62 +91,5 @@ export function PracticePage() {
         <p className="text-gray-500">Cargando ejercicio...</p>
       )}
     </MainLayout>
-
-    // <MainLayout title="Practice Page">
-    //   <h1>Practice Page</h1>
-    //   <div className="flex flex-col items-center space-y-6">
-    //     {A.length > 0 && B.length > 0 ? (
-    //       <>
-    //         {/* Operación A + B */}
-    //         <BlockMath math={ curre} />
-
-    //         {/* Instrucción para el usuario */}
-    //         <p className="text-lg font-medium text-gray-700 mb-4">
-    //           Put the result here:
-    //         </p>
-
-    //         {/* Matriz editable */}
-    //         <div className="matrix-container">
-    //           <table className="m-2">
-    //             <tbody>
-    //               {userMatrix.map((row, i) => (
-    //                 <tr key={i}>
-    //                   {row.map((val, j) => (
-    //                     <td key={j} className="px-2">
-    //                       <input
-    //                         type="text"
-    //                         value={val}
-    //                         onChange={(e) => handleChange(i, j, e.target.value)}
-    //                         className="w-12 text-center border rounded"
-    //                       />
-    //                     </td>
-    //                   ))}
-    //                 </tr>
-    //               ))}
-    //             </tbody>
-    //           </table>
-    //         </div>
-
-    //         {/* Botón */}
-    //         <button
-    //           onClick={checkAnswer}
-    //           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-    //         >
-    //           Check
-    //         </button>
-
-    //         {/* Feedback */}
-    //         {feedback !== null &&
-    //           (feedback ? (
-    //             <p className="text-green-600 font-bold">✅ Excellent!</p>
-    //           ) : (
-    //             <p className="text-red-600 font-bold">❌ Try again</p>
-    //           ))}
-    //       </>
-    //     ) : (
-    //       <p className="text-gray-500">Cargando ejercicio...</p>
-    //     )}
-    //   </div>
-    // </MainLayout>
   );
 }
