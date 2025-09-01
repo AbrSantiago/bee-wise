@@ -1,53 +1,58 @@
 // src/pages/Home/Home.tsx
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import MainLayout from '../../components/layout/MainLayout'
 import './Home.css'
 import { Link } from 'react-router-dom';
+import apiClient from "../../services/api";
+
+type Lesson = {
+  id: number;
+  title: string;
+  description: string;
+};
 
 function Home() {
-  const [count, setCount] = useState(0)
+  const [lessons, setLessons] = useState<Lesson[]>([]);
+  const [lessonNumber, setLessonNumber] = useState(0);
+
+  const getLessons = async () => {
+    return apiClient
+      .get("/lesson")
+      .then((response) => {
+        setLessons(response.data);
+      })
+      .catch((error) => {
+        console.error("There was an error fetching the practice data!", error);
+      });
+  };
+
+  function increment() {
+    setLessonNumber(lessonNumber + 1)
+  };
+
+  useEffect(() => {
+    getLessons();
+    increment();
+  }, []);
 
   return (
-    <MainLayout title="Learn Matrices" sectionInfo="SECTION 1, UNIT 1">
-      <div className="home-content">
-        {/* <h1>Bienvenido a Bee-Wise</h1> */}
-        {/* <p>Aprende matemáticas y matrices paso a paso</p> */}
-
-        <div className="lesson-path">
-          <Link to="/practice">
-            <div className="lesson-node active">
-              <span className="lesson-icon">⭐</span>
-              <span className="lesson-title">Matrices Básicas</span>
-            </div>
-          </Link>
-          
-          <div className="lesson-node">
-            <span className="lesson-icon">🔒</span>
-            <span className="lesson-title">Operaciones con Matrices</span>
+    <MainLayout title="Lessons Page">
+      <div className="lesson-btn-list">
+        {lessons.map((lesson, index) => (
+          <div key={lesson.id ?? index} className="lesson-btn-container">
+            <span className="lesson-btn-label">
+              {`Lección ${index + 1}: ${lesson.title}`}
+            </span>
+            <Link to={`/practice/${lesson.id}`}>
+              <button className="lesson-btn">
+                <span className="star">★</span>
+              </button>
+            </Link>
           </div>
-          
-          <div className="lesson-node">
-            <span className="lesson-icon">🔒</span>
-            <span className="lesson-title">Operaciones con Matrices</span>
-          </div>
-
-          <div className="lesson-node">
-            <span className="lesson-icon">🔒</span>
-            <span className="lesson-title">Operaciones con Matrices</span>
-          </div>
-
-          <div className="lesson-node">
-            <span className="lesson-icon">🔒</span>
-            <span className="lesson-title">Multiplicación de Matrices</span>
-          </div>
-        </div>
-        
-        {/* <button className="start-lesson-btn" onClick={() => setCount((count) => count + 1)}>
-          INICIAR LECCIÓN {count > 0 && `(${count})`}
-        </button> */}
+        ))}
       </div>
     </MainLayout>
-  )
+  );
 }
 
 export default Home;

@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -35,6 +37,11 @@ public class LessonServiceImpl implements LessonService {
         }
         return lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new LessonNotFoundException("Lesson with id " + lessonId + " not found"));
+    }
+
+    @Override
+    public List<Lesson> getAllLessons() {
+        return lessonRepository.findAll();
     }
 
     @Override

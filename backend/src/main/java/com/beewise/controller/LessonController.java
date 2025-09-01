@@ -8,6 +8,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/lesson")
 public class LessonController {
@@ -21,6 +23,13 @@ public class LessonController {
     public ResponseEntity<LessonDTO> getLesson(@PathVariable Long id){
         Lesson lesson = lessonService.getLessonById(id);
         LessonDTO lessonDTO = LessonDTO.fromLesson(lesson);
+        return ResponseEntity.ok(lessonDTO);
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<SimpleLessonDTO>> getAllLessons(){
+        List<Lesson> lessons = lessonService.getAllLessons();
+        List<SimpleLessonDTO> lessonDTO = SimpleLessonDTO.fromLessonList(lessons);
         return ResponseEntity.ok(lessonDTO);
     }
 
