@@ -12,6 +12,7 @@ type Exercise = {
   question: string;
   answer: string;
   options: null | string[];
+  type: string;
 };
 
 export function PracticePage() {
