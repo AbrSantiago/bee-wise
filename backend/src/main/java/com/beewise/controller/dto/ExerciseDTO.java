@@ -29,7 +29,7 @@ public abstract class ExerciseDTO {
             dto.setQuestion(mc.getQuestion());
             dto.setType("MULTIPLE_CHOICE");
             dto.setOptions(mc.getOptions());
-            dto.setCorrectOption(mc.getAnswer());
+            dto.setAnswer(mc.getAnswer());
             return dto;
         }
         throw new IllegalArgumentException("Unknown exercise type");

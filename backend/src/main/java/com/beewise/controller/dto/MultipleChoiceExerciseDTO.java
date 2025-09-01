@@ -11,5 +11,5 @@ import java.util.List;
 @NoArgsConstructor
 public class MultipleChoiceExerciseDTO extends ExerciseDTO {
     private List<String> options;
-    private String correctOption;
+    private String answer;
 }
