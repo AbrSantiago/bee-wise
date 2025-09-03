@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import MainLayout from "../../components/layout/MainLayout";
 import apiClient from "../../services/api";
-import { LessonItem } from "../../components/layout/LessonItem";
-import './Home.css'
-
+import { LessonPath } from "../../components/layout/LessonPath";
+import "./Home.css";
 
 type Lesson = {
   id: number;
@@ -29,16 +28,7 @@ function Home() {
 
   return (
     <MainLayout title="Matrices">
-      <div className="lesson-btn-list">
-        {lessons.map((lesson, index) => (
-          <LessonItem
-            key={lesson.id}
-            id={lesson.id}
-            title={lesson.title}
-            number={index + 1}
-          />
-        ))}
-      </div>
+      <LessonPath lessons={lessons} />
     </MainLayout>
   );
 }

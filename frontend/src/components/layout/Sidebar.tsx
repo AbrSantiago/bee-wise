@@ -1,4 +1,3 @@
-import React from 'react';
 import './layout.css';
 import { Link } from 'react-router-dom';
 
@@ -16,14 +15,14 @@ const Sidebar = () => {
             <span className="nav-icon">🏠</span>
             <span className="nav-label">HOME</span>
         </Link>
-        <Link to="/lessons" className="nav-item">
+        {/* <Link to="/lessons" className="nav-item">
             <span className="nav-icon">🎯</span>
             <span className="nav-label">LESSONS</span>
-        </Link>
-        <Link to="/practice" className="nav-item">
+        </Link> */}
+        {/* <Link to="/practice" className="nav-item">
             <span className="nav-icon">👨‍🏫</span>
             <span className="nav-label">PRACTICE</span>
-        </Link>
+        </Link> */}
         <Link to="/profile" className="nav-item">
             <span className="nav-icon">👤</span>
             <span className="nav-label">PROFILE</span>

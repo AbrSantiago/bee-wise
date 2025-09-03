@@ -15,69 +15,9 @@
   margin-bottom: 3rem;
 }
 
-.lesson-path {
-  display: flex;
-  flex-direction: column;
-  gap: 3rem; /* más espacio entre nodos para que no se encimen */
-  margin: 3rem 0;
-}
-
-.lesson-node {
-  margin: 0 auto; /* por defecto centrado */
-}
-
-.lesson-node:nth-child(4n + 2) {
-  align-self: flex-end; /* 2, 6, 10 → derecha */
-}
-
-.lesson-node:nth-child(4n) {
-  align-self: flex-start; /* 4, 8, 12 → izquierda */
-}
-
-.lesson-node:hover {
-  transform: translateY(-2px);
-}
-
 .lesson-node.active {
   background: linear-gradient(135deg, #fed053, #c29f3e);
   color: white;
-}
-
-.lesson-icon {
-  font-size: 2rem;
-  width: 3rem;
-  height: 3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-}
-
-.lesson-node:not(.active) .lesson-icon {
-  background: #90918e;
-}
-
-.lessons-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.start-lesson-btn {
-  background: linear-gradient(135deg, #fed053, #c29f3e);
-  color: white;
-  border: none;
-  padding: 1rem 2rem;
-  border-radius: 12px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.2s;
-  margin-top: 2rem;
-}
-
-.start-lesson-btn:hover {
-  transform: translateY(-2px);
 }
 
 #root {

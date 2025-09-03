@@ -1,5 +1,6 @@
 // LessonItem.tsx
 import { Link } from "react-router-dom";
+import "./LessonItem.css";
 
 type LessonItemProps = {
   id: number;
