@@ -50,7 +50,7 @@ public class LessonController {
         return ResponseEntity.ok(lessonDTO);
     }
 
-    @PutMapping("/{lessonId}/add exercise/{exerciseId}")
+    @PutMapping("/{lessonId}/addExercise/{exerciseId}")
     public ResponseEntity<LessonDTO> addExercise(
             @PathVariable Long lessonId,
             @PathVariable Long exerciseId
@@ -60,7 +60,7 @@ public class LessonController {
         return ResponseEntity.ok(lessonDTO);
     }
 
-    @PutMapping("/{lessonId}/remove exercise/{exerciseId}")
+    @PutMapping("/{lessonId}/removeExercise/{exerciseId}")
     public ResponseEntity<LessonDTO> removeExercise(
             @PathVariable Long lessonId,
             @PathVariable Long exerciseId
