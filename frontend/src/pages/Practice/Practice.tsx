@@ -14,7 +14,6 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { Link } from "react-router-dom";
-
 import type { DragEndEvent } from "@dnd-kit/core";
 
 type Exercise = {
@@ -31,6 +30,9 @@ export function PracticePage() {
   const [currentExercise, setCurrentExercise] = useState(0);
   const [userAnswer, setUserAnswer] = useState("");
   const [feedback, setFeedback] = useState<null | boolean>(null);
+  const [canContinue, setCanContinue] = useState(false);
+  const [pendingExercises, setPendingExercises] = useState<Exercise[]>([]);
+  const [showSummary, setShowSummary] = useState(false);
 
   const current = exercises[currentExercise];
 
@@ -40,18 +42,6 @@ export function PracticePage() {
       setExercises(response.data.exercises);
     } catch (error) {
       console.error("Error fetching practice data!", error);
-    }
-  };
-
-  const handleCheck = () => {
-    const correct = userAnswer.trim() === current.answer.trim();
-    setFeedback(correct);
-    if (correct && currentExercise < exercises.length - 1) {
-      setTimeout(() => {
-        setCurrentExercise((prev) => prev + 1);
-        setUserAnswer("");
-        setFeedback(null);
-      }, 1000);
     }
   };
 
@@ -65,7 +55,6 @@ export function PracticePage() {
   const handleDragEnd = (event: DragEndEvent) => {
     const { active } = event;
     if (active?.id) {
-      // Coloca la opción arrastrada en el input
       setUserAnswer(active.id.toString());
     }
   };
@@ -76,16 +65,51 @@ export function PracticePage() {
 
   const handleTrueFalseClick = (answer: string) => {
     setUserAnswer(answer);
-    const correct = answer.trim() === current.answer.trim();
+  };
+
+  const handleCheck = () => {
+    const correct = userAnswer.trim() === current.answer.trim();
     setFeedback(correct);
-    if (correct && currentExercise < exercises.length - 1) {
-      setTimeout(() => {
-        setCurrentExercise((prev) => prev + 1);
-        setUserAnswer("");
-        setFeedback(null);
-      }, 1000);
+    setCanContinue(true);
+  };
+
+  const handleContinue = () => {
+    // Si fue incorrecto, lo agregamos a pendientes
+    if (feedback === false) {
+      setPendingExercises((prev) => [...prev, current]);
+    }
+    setUserAnswer("");
+    setFeedback(null);
+    setCanContinue(false);
+
+    // Si quedan ejercicios, avanzamos
+    if (currentExercise < exercises.length - 1) {
+      setCurrentExercise((prev) => prev + 1);
+    } else if (pendingExercises.length > 0) {
+      // Si no quedan, pero hay pendientes, los mostramos
+      setExercises(pendingExercises);
+      setCurrentExercise(0);
+      setPendingExercises([]);
+    } else {
+      // Si no quedan pendientes, mostramos resumen
+      setShowSummary(true);
     }
   };
+
+  if (showSummary) {
+    return (
+      <MainLayout title={`Lección ${id}`}>
+        <p className="text-yellow-500 font-bold mt-4">
+          ¡Has terminado todos los ejercicios!
+          <Link to={`/`}>
+            <button className="btn-back-home ml-4">
+              <span>Volver al inicio</span>
+            </button>
+          </Link>
+        </p>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout title={`Lección ${id}`}>
@@ -103,7 +127,14 @@ export function PracticePage() {
                       ? "incorrect"
                       : ""
                   }`}
-                  onClick={() => handleTrueFalseClick("Verdadero")}
+                  onClick={() => {
+                    handleTrueFalseClick("Verdadero");
+                    const correct =
+                      "Verdadero".trim() === current.answer.trim();
+                    setFeedback(correct);
+                    setCanContinue(true);
+                  }}
+                  disabled={canContinue}
                 >
                   Verdadero
                 </button>
@@ -113,18 +144,17 @@ export function PracticePage() {
                       ? "incorrect"
                       : ""
                   }`}
-                  onClick={() => handleTrueFalseClick("Falso")}
+                  onClick={() => {
+                    handleTrueFalseClick("Falso");
+                    const correct = "Falso".trim() === current.answer.trim();
+                    setFeedback(correct);
+                    setCanContinue(true);
+                  }}
+                  disabled={canContinue}
                 >
                   Falso
                 </button>
               </div>
-              {/* <input
-                type="text"
-                value={userAnswer}
-                onChange={(e) => setUserAnswer(e.target.value)}
-                className="w-24 text-center border rounded"
-                placeholder="Respuesta"
-              /> */}
             </div>
           ) : (
             <DndContext
@@ -146,8 +176,14 @@ export function PracticePage() {
                     key={opt}
                     id={opt}
                     draggable
-                    className="option-box cursor-pointer"
-                    onClick={() => handleOptionClick(opt)}
+                    className={`option-box cursor-pointer ${
+                      canContinue ? "disabled" : ""
+                    }`}
+                    onClick={() => !canContinue && handleOptionClick(opt)}
+                    style={{
+                      pointerEvents: canContinue ? "none" : "auto",
+                      opacity: canContinue ? 0.6 : 1,
+                    }}
                   >
                     <BlockMath math={opt} />
                   </div>
@@ -156,28 +192,35 @@ export function PracticePage() {
               <button
                 onClick={handleCheck}
                 className="check-btn"
+                disabled={canContinue || !userAnswer}
               >
                 Check
               </button>
             </DndContext>
           )}
 
-          {feedback !== null &&
-            (feedback ? (
-              <p className="text-green-600 font-bold mt-2">✅ Correcto!</p>
-            ) : (
-              <p className="text-red-600 font-bold mt-2">❌ Intenta de nuevo</p>
-            ))}
-
-          {currentExercise === exercises.length - 1 && feedback === true && (
-            <p className="text-yellow-500 font-bold mt-4">
-              ¡Has terminado todos los ejercicios!
-              <Link to={`/`}>
-                <button className="btn-back-home ml-4">
-                  <span className="">Continuar</span>
-                </button>
-              </Link>
-            </p>
+          {feedback !== null && (
+            <>
+              {feedback ? (
+                <div className="feedback-message success">
+                  <span>🎉</span>
+                  <span>¡Excelente! Respuesta correcta, seguí así 🚀</span>
+                </div>
+              ) : (
+                <div className="feedback-message error">
+                  <span>😅</span>
+                  <span>Ups, esa no era. ¡Probá de nuevo y no te rindas!</span>
+                </div>
+              )}
+              <button
+                className={`btn-continue mt-4 ${
+                  feedback ? "success" : "error"
+                }`}
+                onClick={handleContinue}
+              >
+                Continuar
+              </button>
+            </>
           )}
         </>
       ) : (

@@ -143,3 +143,68 @@ input[readonly] {
 .check-btn:active {
   transform: scale(0.97);
 }
+
+/* boton de continuar */
+
+.btn-continue {
+  padding: 18px 80px;
+  font-size: 1.15rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  transition: background 0.2s, transform 0.2s;
+  outline: none;
+  margin-top: 24px;
+}
+
+.btn-continue.success {
+  background: linear-gradient(90deg, #43ea7b 0%, #2bc47a 100%);
+}
+
+.btn-continue.success:hover {
+  background: linear-gradient(90deg, #2bc47a 0%, #43ea7b 100%);
+  transform: scale(1.05);
+}
+
+.btn-continue.error {
+  background: linear-gradient(90deg, #ff6b6b 0%, #ffb86b 100%);
+}
+
+.btn-continue.error:hover {
+  background: linear-gradient(90deg, #ffb86b 0%, #ff6b6b 100%);
+  transform: scale(1.05);
+}
+
+/*  */
+
+.feedback-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 1.35rem;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 14px 28px;
+  margin-top: 18px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  animation: fadeIn 0.5s;
+}
+
+.feedback-message.success {
+  background: linear-gradient(90deg, #43ea7b 0%, #2bc47a 100%);
+  color: #fff;
+}
+
+.feedback-message.error {
+  background: linear-gradient(90deg, #ff6b6b 0%, #ffb86b 100%);
+  color: #fff;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px);}
+  to { opacity: 1; transform: translateY(0);}
+}
