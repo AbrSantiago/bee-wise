@@ -10,15 +10,18 @@ type LessonItemProps = {
 
 export function LessonItem({ id, title, number }: LessonItemProps) {
   return (
-    <div className="lesson-node">
-      <span className="lesson-btn-label">
-        {`Lección ${number}: ${title}`}
-      </span>
-      <Link to={`/practice/${id}`}>
-        <button className="lesson-btn">
-          <span className="star">★</span>
-        </button>
-      </Link>
+    <div className="lesson-node-container">
+      <div className="lesson-node">
+        <Link to={`/practice/${id}`}>
+          <button className="lesson-btn">
+            <span className="star">★</span>
+          </button>
+        </Link>
+        <div className="lesson-text-container">
+          <span className="lesson-btn-label">{`Lección ${number}:`}</span>
+          <span className="lesson-btn-label">{`${title}`}</span>
+        </div>
+      </div>
     </div>
   );
 }
