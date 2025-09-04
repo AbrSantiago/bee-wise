@@ -65,32 +65,29 @@
 
 /* Header Styles */
 .main-header {
-  background-color: #f5b301;
-  color: white;
+  background: linear-gradient(90deg, #ffe066 0%, #ffd700 100%);
+  color: #7c5c0a;
   height: 80px;
-  /* fijo */
-  padding: 0 24px;
-  /* ❌ solo horizontal */
+  padding: 0 32px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  /* ✅ centra verticalmente */
   position: fixed;
   top: 30px;
   left: 240px;
   right: 0;
   z-index: 100;
-  max-width: 600px;
-  /* 🔥 ancho máximo */
+  max-width: 640px;
   margin: 0 auto;
-  /* 🔥 centrado horizontal */
-  border-radius: 12px;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(255, 215, 0, 0.18);
+  border: 1.5px solid #ffe066;
 }
 
 .header-content {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 20px;
 }
 
 .header-title-section {
@@ -99,53 +96,56 @@
 }
 
 .section-info {
-  font-size: 12px;
-  color: #bbf7d0;
+  font-size: 13px;
+  color: #b59f3b;
+  background: #fffbe6;
+  font-weight: 600;
+  padding: 3px 12px;
+  border-radius: 7px;
   margin-bottom: 4px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
 }
 
 .header-title {
-  font-size: 24px;
-  font-weight: bold;
+  font-size: 1.7rem;
+  font-weight: 700;
   margin: 0;
-}
-
-.guidebook-btn {
-  background-color: #047857;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.guidebook-btn:hover {
-  background-color: #065f46;
+  letter-spacing: 0.5px;
+  color: #7c5c0a;
 }
 
 .user-stats {
   display: flex;
-  gap: 16px;
+  gap: 18px;
+  align-items: center;
 }
 
 .stat-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  background-color: rgba(255, 255, 255, 0.1);
-  padding: 8px 12px;
-  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 9px;
+  padding: 7px 16px;
+  box-shadow: 0 1px 6px rgba(255, 215, 0, 0.10);
+  font-size: 1rem;
+  font-weight: 600;
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+
+.stat-item:hover {
+  transform: scale(1.07);
+  box-shadow: 0 3px 12px rgba(255, 215, 0, 0.18);
 }
 
 .stat-icon {
-  font-size: 18px;
+  font-size: 1.2rem;
+  margin-right: 7px;
 }
 
 .stat-value {
+  color: #b59f3b;
   font-weight: bold;
-  font-size: 16px;
+  font-size: 17px;
 }
 
 /* MainLayout Styles */

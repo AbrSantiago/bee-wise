@@ -74,6 +74,19 @@ export function PracticePage() {
     setUserAnswer(option);
   };
 
+  const handleTrueFalseClick = (answer: string) => {
+    setUserAnswer(answer);
+    const correct = answer.trim() === current.answer.trim();
+    setFeedback(correct);
+    if (correct && currentExercise < exercises.length - 1) {
+      setTimeout(() => {
+        setCurrentExercise((prev) => prev + 1);
+        setUserAnswer("");
+        setFeedback(null);
+      }, 1000);
+    }
+  };
+
   return (
     <MainLayout title={`Lección ${id}`}>
       {current ? (
@@ -83,13 +96,35 @@ export function PracticePage() {
               <div className="matrix-container">
                 <BlockMath math={current.question} />
               </div>
-              <input
+              <div className="button-true-false">
+                <button
+                  className={`true-false-btn verdadero-btn ${
+                    feedback === false && userAnswer === "Verdadero"
+                      ? "incorrect"
+                      : ""
+                  }`}
+                  onClick={() => handleTrueFalseClick("Verdadero")}
+                >
+                  Verdadero
+                </button>
+                <button
+                  className={`true-false-btn falso-btn ${
+                    feedback === false && userAnswer === "Falso"
+                      ? "incorrect"
+                      : ""
+                  }`}
+                  onClick={() => handleTrueFalseClick("Falso")}
+                >
+                  Falso
+                </button>
+              </div>
+              {/* <input
                 type="text"
                 value={userAnswer}
                 onChange={(e) => setUserAnswer(e.target.value)}
                 className="w-24 text-center border rounded"
                 placeholder="Respuesta"
-              />
+              /> */}
             </div>
           ) : (
             <DndContext
@@ -118,15 +153,14 @@ export function PracticePage() {
                   </div>
                 ))}
               </div>
+              <button
+                onClick={handleCheck}
+                className="check-btn"
+              >
+                Check
+              </button>
             </DndContext>
           )}
-
-          <button
-            onClick={handleCheck}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 mt-4"
-          >
-            Check
-          </button>
 
           {feedback !== null &&
             (feedback ? (
