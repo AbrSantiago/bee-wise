@@ -13,8 +13,9 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import type { DragEndEvent } from "@dnd-kit/core";
+import { Link } from "react-router-dom";
 
+import type { DragEndEvent } from "@dnd-kit/core";
 
 type Exercise = {
   id: number;
@@ -101,11 +102,7 @@ export function PracticePage() {
                   <BlockMath math={current.question} />
                 </div>
                 <div className="answer-slot-container mt-4">
-                  {userAnswer ? (
-                    <BlockMath math={userAnswer} />
-                  ) : (
-                    <></>
-                  )}
+                  {userAnswer ? <BlockMath math={userAnswer} /> : <></>}
                 </div>
               </div>
               <div className="options-container mt-4 flex gap-2 flex-wrap">
@@ -122,7 +119,6 @@ export function PracticePage() {
                 ))}
               </div>
             </DndContext>
-
           )}
 
           <button
@@ -142,6 +138,11 @@ export function PracticePage() {
           {currentExercise === exercises.length - 1 && feedback === true && (
             <p className="text-yellow-500 font-bold mt-4">
               ¡Has terminado todos los ejercicios!
+              <Link to={`/`}>
+                <button className="btn-back-home ml-4">
+                  <span className="">Continuar</span>
+                </button>
+              </Link>
             </p>
           )}
         </>
