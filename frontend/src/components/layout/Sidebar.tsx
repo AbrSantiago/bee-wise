@@ -6,7 +6,7 @@ const Sidebar = () => {
     <div className="sidebar">
       {/* Logo/Título */}
       <div className="sidebar-header">
-        <h1 className="sidebar-logo">Bee-wise</h1>
+        <h1 className="sidebar-logo">Bee Wise</h1>
       </div>
 
       {/* Navigation Menu */}
@@ -15,17 +15,17 @@ const Sidebar = () => {
             <span className="nav-icon">🏠</span>
             <span className="nav-label">HOME</span>
         </Link>
-        {/* <Link to="/lessons" className="nav-item">
+        <Link to="/challenges" className="nav-item">
             <span className="nav-icon">🎯</span>
-            <span className="nav-label">LESSONS</span>
-        </Link> */}
-        {/* <Link to="/practice" className="nav-item">
-            <span className="nav-icon">👨‍🏫</span>
-            <span className="nav-label">PRACTICE</span>
-        </Link> */}
+            <span className="nav-label">DESAFÍOS</span>
+        </Link>
+        <Link to="/ranking" className="nav-item">
+            <span className="nav-icon">🏆</span>
+            <span className="nav-label">RANKING</span>
+        </Link>
         <Link to="/profile" className="nav-item">
             <span className="nav-icon">👤</span>
-            <span className="nav-label">PROFILE</span>
+            <span className="nav-label">PERFIL</span>
         </Link>
       </nav>
     </div>
