@@ -99,14 +99,16 @@ export function PracticePage() {
   if (showSummary) {
     return (
       <MainLayout title={`Lección ${id}`}>
-        <p className="text-yellow-500 font-bold mt-4">
-          ¡Has terminado todos los ejercicios!
+        <div className="summary-container">
+          <p className="text-yellow-500 font-bold mt-4">
+            ¡Has terminado todos los ejercicios!
+          </p>
           <Link to={`/`}>
-            <button className="btn-back-home ml-4">
+            <button className="btn-back-home" /* sin ml-4 */>
               <span>Volver al inicio</span>
             </button>
           </Link>
-        </p>
+        </div>
       </MainLayout>
     );
   }
@@ -118,7 +120,7 @@ export function PracticePage() {
           {current.type === "OPEN" ? (
             <div className="mt-4">
               <div className="matrix-container">
-                <BlockMath math={current.question} />
+                <p className="question-text">{current.question}</p>
               </div>
               <div className="button-true-false">
                 <button
@@ -164,7 +166,7 @@ export function PracticePage() {
             >
               <div className="question-and-answer-container">
                 <div className="matrix-container">
-                  <BlockMath math={current.question} />
+                  <BlockMath math={current.question.replace(/\?$/,"")} />
                 </div>
                 <div className="answer-slot-container mt-4">
                   {userAnswer ? <BlockMath math={userAnswer} /> : <></>}
