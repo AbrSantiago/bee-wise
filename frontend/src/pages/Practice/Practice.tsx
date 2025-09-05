@@ -96,6 +96,11 @@ export function PracticePage() {
     }
   };
 
+  function escapeSpacesForLatex(str: string) {
+    // Reemplaza cada espacio simple por \space (más seguro que ~ en la mayoría de casos)
+    return str.replace(/ /g, '\\space ');
+  }
+
   if (showSummary) {
     return (
       <MainLayout title={`Lección ${id}`}>
@@ -118,15 +123,14 @@ export function PracticePage() {
           {current.type === "OPEN" ? (
             <div className="mt-4">
               <div className="matrix-container">
-                <BlockMath math={current.question} />
+                <BlockMath math={escapeSpacesForLatex(current.question)} />
               </div>
               <div className="button-true-false">
                 <button
-                  className={`true-false-btn verdadero-btn ${
-                    feedback === false && userAnswer === "Verdadero"
+                  className={`true-false-btn verdadero-btn ${feedback === false && userAnswer === "Verdadero"
                       ? "incorrect"
                       : ""
-                  }`}
+                    }`}
                   onClick={() => {
                     handleTrueFalseClick("Verdadero");
                     const correct =
@@ -139,11 +143,10 @@ export function PracticePage() {
                   Verdadero
                 </button>
                 <button
-                  className={`true-false-btn falso-btn ${
-                    feedback === false && userAnswer === "Falso"
+                  className={`true-false-btn falso-btn ${feedback === false && userAnswer === "Falso"
                       ? "incorrect"
                       : ""
-                  }`}
+                    }`}
                   onClick={() => {
                     handleTrueFalseClick("Falso");
                     const correct = "Falso".trim() === current.answer.trim();
@@ -176,9 +179,8 @@ export function PracticePage() {
                     key={opt}
                     id={opt}
                     draggable
-                    className={`option-box cursor-pointer ${
-                      canContinue ? "disabled" : ""
-                    }`}
+                    className={`option-box cursor-pointer ${canContinue ? "disabled" : ""
+                      }`}
                     onClick={() => !canContinue && handleOptionClick(opt)}
                     style={{
                       pointerEvents: canContinue ? "none" : "auto",
@@ -213,9 +215,8 @@ export function PracticePage() {
                 </div>
               )}
               <button
-                className={`btn-continue mt-4 ${
-                  feedback ? "success" : "error"
-                }`}
+                className={`btn-continue mt-4 ${feedback ? "success" : "error"
+                  }`}
                 onClick={handleContinue}
               >
                 Continuar
