@@ -103,7 +103,7 @@
   padding: 3px 12px;
   border-radius: 7px;
   margin-bottom: 4px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
 }
 
 .header-title {
@@ -162,7 +162,7 @@
   flex-direction: column;
   gap: 40px;
   align-items: center;
-  
+  max-width: 640px;
   margin-top: 80px;
   padding: 24px;
   overflow-y: auto;
