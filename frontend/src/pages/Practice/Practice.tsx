@@ -34,6 +34,9 @@ export function PracticePage() {
   const [pendingExercises, setPendingExercises] = useState<Exercise[]>([]);
   const [showSummary, setShowSummary] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [showCorrectionIntro, setShowCorrectionIntro] = useState(false);
+  const [hasShownCorrectionIntro, setHasShownCorrectionIntro] = useState(false);
+
 
   const current = exercises[currentExercise];
 
@@ -160,24 +163,31 @@ export function PracticePage() {
   };
 
   const handleContinue = () => {
-    // Si fue incorrecto, lo agregamos a pendientes
+    let newPending = [...pendingExercises];
     if (feedback === false) {
-      setPendingExercises((prev) => [...prev, current]);
+      newPending.push(current);
     }
+
+    // Reiniciamos estados del ejercicio actual
     setUserAnswer("");
+    setSelectedOption(null);
     setFeedback(null);
     setCanContinue(false);
 
-    // Si quedan ejercicios, avanzamos
     if (currentExercise < exercises.length - 1) {
       setCurrentExercise((prev) => prev + 1);
-    } else if (pendingExercises.length > 0) {
-      // Si no quedan, pero hay pendientes, los mostramos
-      setExercises(pendingExercises);
-      setCurrentExercise(0);
-      setPendingExercises([]);
+      setPendingExercises(newPending);
+    } else if (newPending.length > 0) {
+      if (!hasShownCorrectionIntro) {
+        setShowCorrectionIntro(true);
+        setHasShownCorrectionIntro(true);
+        setPendingExercises(newPending);
+      } else {
+        setExercises(newPending);
+        setCurrentExercise(0);
+        setPendingExercises([]);
+      }
     } else {
-      // Si no quedan pendientes, mostramos resumen
       setShowSummary(true);
     }
   };
@@ -194,6 +204,27 @@ export function PracticePage() {
               <span>Volver al inicio</span>
             </button>
           </Link>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (showCorrectionIntro) {
+    return (
+      <MainLayout title={`Lección ${id}`}>
+        <div className="summary-container">
+          <p className="summary-text">Ahora vamos a corregir los errores</p>
+          <button
+            className="btn-continue error"
+            onClick={() => {
+              setExercises(pendingExercises);
+              setCurrentExercise(0);
+              setPendingExercises([]);
+              setShowCorrectionIntro(false);
+            }}
+          >
+            Continuar
+          </button>
         </div>
       </MainLayout>
     );
