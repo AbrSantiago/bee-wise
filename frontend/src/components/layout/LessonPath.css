@@ -3,7 +3,7 @@
   flex-direction: column;
   gap: 32px; /* Espaciado entre los elementos */
   margin-top: 40px;
-  margin-left: 8vw; /* Centra el grupo de botones en la pantalla */
+  margin-left: 4vw; /* Centra el grupo de botones en la pantalla */
 }
 
 .lesson-path > *:nth-child(odd) {
