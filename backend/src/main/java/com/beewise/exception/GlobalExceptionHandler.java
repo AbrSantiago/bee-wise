@@ -6,8 +6,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.validation.FieldError;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
 import java.util.Map;
 import java.util.HashMap;
 
