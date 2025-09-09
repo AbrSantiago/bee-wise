@@ -2,14 +2,17 @@ package com.beewise.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(TestController.class)
+@AutoConfigureWebMvc
 class TestControllerTest {
 
     @Autowired
@@ -20,6 +23,7 @@ class TestControllerTest {
     }
 
     @Test
+    @WithMockUser
     void helloEndpoint_ShouldReturnGreeting() throws Exception {
         mockMvc.perform(get("/test/hello"))
                 .andExpect(status().isOk())
@@ -27,6 +31,7 @@ class TestControllerTest {
     }
 
     @Test
+    @WithMockUser
     void statusEndpoint_ShouldReturnValidJsonResponse() throws Exception {
         mockMvc.perform(get("/test/status")
                         .accept(MediaType.APPLICATION_JSON))
@@ -39,6 +44,7 @@ class TestControllerTest {
     }
 
     @Test
+    @WithMockUser
     void corsEndpoint_ShouldReturnCorsMessage() throws Exception {
         mockMvc.perform(get("/test/cors"))
                 .andExpect(status().isOk())
@@ -46,6 +52,7 @@ class TestControllerTest {
     }
 
     @Test
+    @WithMockUser
     void pingEndpoint_ShouldReturnPong() throws Exception {
         mockMvc.perform(get("/test/ping"))
                 .andExpect(status().isOk())

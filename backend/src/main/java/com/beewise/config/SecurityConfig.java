@@ -24,6 +24,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) // Deshabilitar CSRF para APIs REST
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/users/register").permitAll() // Permitir registro sin autenticación
+                        .requestMatchers("/test/**").permitAll() // Permitir todos los endpoints de test
                         .requestMatchers("/auth/**").permitAll() // Permitir todos los endpoints de auth
                         .anyRequest().authenticated() // Todos los demás requieren autenticación
                 );
