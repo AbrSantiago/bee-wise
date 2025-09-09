@@ -1,0 +1,62 @@
+package com.beewise.service.impl;
+
+import com.beewise.controller.dto.RegisterUserDTO;
+import com.beewise.model.User;
+import com.beewise.repository.UserRepository;
+import com.beewise.service.UserService;
+import jakarta.transaction.Transactional;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+@Transactional
+public class UserServiceImpl implements UserService {
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
+
+    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+
+    @Override
+    public User registerUser(RegisterUserDTO registerUserDTO) {
+
+        // Verifica si ya existe el email
+        if (userRepository.existsByEmail(registerUserDTO.getEmail())) {
+            throw new IllegalArgumentException("Email already exists");
+        }
+
+        // Verificar si el username ya existe
+        if (userRepository.existsByUsername(registerUserDTO.getUsername())) {
+            throw new IllegalArgumentException("Username already exists");
+        }
+
+        User newUser = new User();
+        newUser.setName(registerUserDTO.getName());
+        newUser.setSurname(registerUserDTO.getSurname());
+        newUser.setEmail(registerUserDTO.getEmail());
+        newUser.setUsername(registerUserDTO.getUsername());
+
+        //Hasheo de la password
+        String hashedPassword = passwordEncoder.encode(registerUserDTO.getPassword());
+        newUser.setPasswordHash(hashedPassword);
+
+        newUser.setPoints(0);
+
+        return userRepository.save(newUser);
+    }
+
+    @Override
+    public User getUserById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+}
