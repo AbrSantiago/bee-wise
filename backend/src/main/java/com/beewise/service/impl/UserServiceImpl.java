@@ -1,10 +1,12 @@
 package com.beewise.service.impl;
 
+import com.beewise.controller.dto.LoginUserDTO;
 import com.beewise.controller.dto.RegisterUserDTO;
 import com.beewise.model.User;
 import com.beewise.repository.UserRepository;
 import com.beewise.service.UserService;
 import jakarta.transaction.Transactional;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -51,8 +53,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User authenticateUser(LoginUserDTO loginUserDTO) {
+        User user = userRepository.findByUsername(loginUserDTO.getUsername())
+                .orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
+
+        if (!passwordEncoder.matches(loginUserDTO.getPassword(), user.getPasswordHash())) {
+            throw new BadCredentialsException("Invalid username or password");
+        }
+
+        return user;
+    }
+
+    @Override
     public User getUserById(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+    }
+
+    @Override
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
     }
 
     @Override
