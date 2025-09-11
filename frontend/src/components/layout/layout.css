@@ -148,22 +148,19 @@
   font-size: 17px;
 }
 
-/* MainLayout Styles */
-.main-layout {
-  min-height: 95vh;
-}
-
 .main-content {
   margin-left: 240px;
 }
 
 .content-area {
   display: flex;
-  flex-direction: column;
   gap: 40px;
   align-items: center;
   max-width: 640px;
-  margin-top: 80px;
-  padding: 24px;
-  overflow-y: auto;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.main-layout {
+  margin-top: 180px;
 }

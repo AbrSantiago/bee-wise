@@ -1,7 +1,15 @@
+import { useAuth } from '../../context/AuthContext';
 import './layout.css';
+import './Sidebar.css'
 import { Link } from 'react-router-dom';
 
 const Sidebar = () => {
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+  };
+  
   return (
     <div className="sidebar">
       {/* Logo/Título */}
@@ -23,10 +31,10 @@ const Sidebar = () => {
             <span className="nav-icon">🏆</span>
             <span className="nav-label">RANKING</span>
         </Link>
-        <Link to="/profile" className="nav-item">
-            <span className="nav-icon">👤</span>
-            <span className="nav-label">PERFIL</span>
-        </Link>
+        <button className="nav-item logout-btn" onClick={handleLogout}>
+          <span className="nav-icon">🚪</span>
+          <span className="nav-label">LOGOUT</span>
+        </button>
       </nav>
     </div>
   );

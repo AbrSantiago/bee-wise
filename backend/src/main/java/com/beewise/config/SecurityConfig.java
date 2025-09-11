@@ -28,10 +28,11 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable) // Deshabilitar CSRF para APIs REST
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/users/register").permitAll() // Permitir registro sin autenticación
-                        .requestMatchers("/users/login").permitAll() //
-                        .requestMatchers("/test/**").permitAll() // Permitir todos los endpoints de test
-                        .anyRequest().authenticated() // Todos los demás requieren autenticación
+//                        .requestMatchers("/users/register").permitAll() // Permitir registro sin autenticación
+//                        .requestMatchers("/users/login").permitAll() //
+//                        .requestMatchers("/test/**").permitAll() // Permitir todos los endpoints de test
+//                        .anyRequest().authenticated() // Todos los demás requieren autenticación
+                        .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

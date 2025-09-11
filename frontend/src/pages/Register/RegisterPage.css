@@ -1,76 +1,117 @@
-/* contenedor principal centrado */
+/* Contenedor principal con fondo tipo naturaleza */
 .register-container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: linear-gradient(135deg, #fef9f0, #d9f0ff);
+  /* background: linear-gradient(160deg, #fffae5, #d4f1c5); */
+  background: transparent;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* caja del formulario */
+/* Caja del formulario con efecto colmena */
 .register-box {
-  background: linear-gradient(135deg, #c1fdc1, #5f8cff);
+  background: linear-gradient(135deg, #fff3b0, #fcd34d);
   padding: 2.5rem;
-  border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  border-radius: 20px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.15);
   width: 360px;
   text-align: center;
+  border: 2px solid #fbbf24;
+  position: relative;
+  overflow: hidden;
 }
 
-/* título */
+/* Hexágonos sutiles de fondo */
+.register-box::before {
+  content: "";
+  position: absolute;
+  top: -50px;
+  left: -50px;
+  width: 200%;
+  height: 200%;
+  background-image: radial-gradient(circle at 10% 20%, rgba(255,255,255,0.05) 10%, transparent 11%), radial-gradient(circle at 90% 80%, rgba(255,255,255,0.05) 10%, transparent 11%);
+  background-size: 60px 60px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Título */
 .register-box h1 {
   font-size: 2rem;
-  margin-bottom: 1rem;
-  color: #1e3a8a;
+  margin-bottom: 1.5rem;
+  color: #b45309;
+  position: relative;
+  z-index: 1;
 }
 
-/* inputs */
+/* Inputs */
 .register-box input {
   width: 328px;
   padding: 0.75rem 1rem;
   margin-bottom: 1rem;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
+  border: 1px solid #ffffffaa;
+  border-radius: 12px;
   font-size: 1rem;
   transition: all 0.2s ease;
+  color: #1f2937;
+  background-color: rgba(255, 255, 255, 0.25);
+  position: relative;
+  z-index: 1;
 }
 
 .register-box input:focus {
   outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(252, 211, 77, 0.3);
 }
 
-/* botón */
+/* Inputs autofill */
+.register-box input:-webkit-autofill,
+.register-box input:-webkit-autofill:hover,
+.register-box input:-webkit-autofill:focus,
+.register-box input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0px 1000px rgba(255,255,255,0.25) inset;
+  box-shadow: 0 0 0px 1000px rgba(255,255,255,0.25) inset;
+  -webkit-text-fill-color: #1f2937;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Botón */
 .register-box button {
   width: 100%;
   padding: 0.75rem;
-  background-color: #2563eb;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
   color: white;
   font-size: 1.1rem;
   font-weight: 600;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
 }
 
 .register-box button:hover {
-  background-color: #1d4ed8;
+  background: linear-gradient(135deg, #d97706, #b45309);
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
 }
 
-/* mensajes */
+/* Mensajes */
 .register-box .error {
   color: #dc2626;
   margin-bottom: 1rem;
   font-size: 0.9rem;
+  position: relative;
+  z-index: 1;
 }
 
 .register-box .success {
-  color: #059669;
+  color: #16a34a;
   margin-bottom: 1rem;
   font-size: 0.9rem;
+  position: relative;
+  z-index: 1;
 }
