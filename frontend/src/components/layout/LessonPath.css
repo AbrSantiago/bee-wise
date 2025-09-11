@@ -1,19 +1,26 @@
 .lesson-path {
+  background-image: url(../../assets/bg-home-v2.png);
+  background-repeat: repeat-y;
+  background-position: center top;
+  width: 600px;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 32px; /* Espaciado entre los elementos */
-  margin-top: 40px;
-  margin-left: 4vw; /* Centra el grupo de botones en la pantalla */
+  align-items: center;
+  gap: 56px;
+  /* margin-top: 25px; */
+  padding-top: 25px;
+  margin-left: 0vw;
 }
 
 .lesson-path > *:nth-child(odd) {
-  margin-left: 60px; /* Elementos impares alineados a la izquierda */
+  margin-left: 0px; /* Elementos impares alineados a la izquierda */
 }
 
 .lesson-path > *:nth-child(4n + 2) {
-  margin-left: 120px; /* Elementos impares alineados a la izquierda */
+  margin-left: 280px; /* Elementos impares alineados a la izquierda */
 }
 
 .lesson-path > *:nth-child(4n) {
-  margin-left: 0px; /* Elementos pares desplazados a la derecha */
+  margin-left: -280px; /* Elementos pares desplazados a la derecha */
 }

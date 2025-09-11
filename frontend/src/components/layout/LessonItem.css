@@ -1,89 +1,42 @@
 .lesson-node {
-  width: 400px;
-  height: 100px;
+  width: 69px;
+  height: 69px;
   display: flex;
-  align-items: center;
-  gap: 20px;
-  padding-left: 12px;
-  padding-top: 3px;
-  padding-bottom: 10px;
-
-  /* Nuevo estilo inspirado en check-btn */
-  background: linear-gradient(90deg, #5a5f6a 0%, #464a55 100%);
+  justify-content: center;
+  align-items: flex-end;
+  
+  background-image: url(../../assets/colmena.png);
+  background-position: center;
+  background-size: 100%;
+  background-repeat: no-repeat;
   border: none;
-  border-radius: 90px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
-  color: #fff;
-  font-weight: 600;
-  transition: background 0.2s, transform 0.2s;
   cursor: pointer;
+
+  filter: drop-shadow(10px 5px 5px rgba(17, 17, 17, 0.795));
 }
 
 .lesson-node:hover {
-  background: linear-gradient(90deg, #464a55 0%, #5a5f6a 100%);
-  /* transform: scale(1.02); */
+  /* transform: scale(1.1) translateY(4px); */
+  filter: drop-shadow(10px 5px 5px black);
 }
 
-/* .lesson-node:active {
-  transform: scale(0.98);
-} */
-
 .lesson-btn {
-  width: 90px;
-  height: 90px;
-  background: linear-gradient(to bottom, #6fe000, #4fb400);
-  /* degradado para volumen */
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 4px solid #2a2a2a;
+  font-family: var(--main-font);
+  font-size: large;
+  font-weight: bold;
+  color: white;
 
-  /* efecto de sombra inferior para el relieve */
-  box-shadow:
-    inset 0 6px 12px rgba(255, 255, 255, 0.3),
-    /* brillo arriba */
-    inset 0 -6px 12px rgba(0, 0, 0, 0.3),
-    /* sombra abajo */
-    0 8px 0 #2a2a2a,
-    /* borde sólido abajo */
-    0 10px 20px rgba(0, 0, 0, 0.4);
-  /* sombra proyectada */
-
+  width: 100px;
+  height: 30px;
+  margin-bottom: -25px;
+  
+  cursor: pointer;
+  border-radius: 20px;
+  border: 2px solid #ffe066;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+  background: linear-gradient(to left, #ffb561 0%, #eaa243 100%);
 }
 
 .lesson-btn:hover {
-  transform: translateY(4px);
-
-  /* al presionar, la sombra se achica */
-  box-shadow:
-    inset 0 3px 6px rgba(255, 255, 255, 0.3),
-    inset 0 -3px 6px rgba(0, 0, 0, 0.3),
-    0 3px 0 #2a2a2a,
-    0 6px 12px rgba(0, 0, 0, 0.4);
-}
-
-.lesson-btn-label {
-  font-family: 'Caprasimo', 'Arial', sans-serif;
-  color: #fff;
-  font-weight: 500;
-  font-size: 1.25rem;
-  margin-bottom: 8px;
-  text-align: center;
-}
-
-.star {
-  padding-bottom: 8px;
-  font-size: 3rem;
-  color: white;
-}
-
-.lesson-text-container {
-  height: 110px;
-  padding-top: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
+  background: linear-gradient(to right, #ff9752 0%, #ffa530 100%);
 }

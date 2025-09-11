@@ -13,14 +13,10 @@ export function LessonItem({ id, title, number }: LessonItemProps) {
     <div className="lesson-node-container">
       <div className="lesson-node">
         <Link to={`/practice/${id}`}>
-          <button className="lesson-btn">
-            <span className="star">★</span>
-          </button>
+          <div className="lesson-btn">
+            Lesson {number}
+          </div>
         </Link>
-        <div className="lesson-text-container">
-          <span className="lesson-btn-label">{`Lección ${number}:`}</span>
-          <span className="lesson-btn-label">{`${title}`}</span>
-        </div>
       </div>
     </div>
   );

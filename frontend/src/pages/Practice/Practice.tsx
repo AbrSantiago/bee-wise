@@ -232,114 +232,116 @@ export function PracticePage() {
 
   return (
     <MainLayout title={`Lección ${id}`}>
-      {current ? (
-        <>
-          {current.type === "OPEN" ? (
-            <div className="mt-4">
-              <div className="matrix-container">
-                <p className="question-text">{current.question}</p>
-              </div>
-              <div className="button-true-false">
-                <button
-                  className={`true-false-btn verdadero-btn ${feedback === false && userAnswer === "Verdadero"
-                    ? "incorrect"
-                    : ""
-                    }`}
-                  onClick={() => {
-                    handleTrueFalseClick("Verdadero");
-                    const correct =
-                      "Verdadero".trim() === current.answer.trim();
-                    setFeedback(correct);
-                    setCanContinue(true);
-                  }}
-                  disabled={canContinue}
-                >
-                  Verdadero
-                </button>
-                <button
-                  className={`true-false-btn falso-btn ${feedback === false && userAnswer === "Falso"
-                    ? "incorrect"
-                    : ""
-                    }`}
-                  onClick={() => {
-                    handleTrueFalseClick("Falso");
-                    const correct = "Falso".trim() === current.answer.trim();
-                    setFeedback(correct);
-                    setCanContinue(true);
-                  }}
-                  disabled={canContinue}
-                >
-                  Falso
-                </button>
-              </div>
-            </div>
-          ) : (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
-            >
-              <div className="question-and-answer-container">
+      <div className="exercise-container">
+        {current ? (
+          <>
+            {current.type === "OPEN" ? (
+              <div className="mt-4">
                 <div className="matrix-container">
-                  <BlockMath math={current.question.replace(/\?$/, "")} />
+                  <p className="question-text">{current.question}</p>
                 </div>
-                <div className="answer-slot-container mt-4">
-                  {userAnswer ? <BlockMath math={userAnswer} /> : <></>}
-                </div>
-              </div>
-              <div className="options-container mt-4 flex gap-2 flex-wrap">
-                {current.options?.map((opt) => (
-                  <div
-                    key={opt}
-                    id={opt}
-                    draggable
-                    className={`option-box cursor-pointer ${canContinue ? "disabled" : ""}`}
-                    onClick={() => !canContinue && handleOptionClick(opt)}
-                    style={{
-                      pointerEvents:
-                        canContinue || selectedOption === opt ? "none" : "auto",
-                      opacity:
-                        canContinue || selectedOption === opt ? 0.6 : 1,
+                <div className="button-true-false">
+                  <button
+                    className={`true-false-btn verdadero-btn ${feedback === false && userAnswer === "Verdadero"
+                      ? "incorrect"
+                      : ""
+                      }`}
+                    onClick={() => {
+                      handleTrueFalseClick("Verdadero");
+                      const correct =
+                        "Verdadero".trim() === current.answer.trim();
+                      setFeedback(correct);
+                      setCanContinue(true);
                     }}
+                    disabled={canContinue}
                   >
-                    <BlockMath math={opt} />
-                  </div>
-                ))}
+                    Verdadero
+                  </button>
+                  <button
+                    className={`true-false-btn falso-btn ${feedback === false && userAnswer === "Falso"
+                      ? "incorrect"
+                      : ""
+                      }`}
+                    onClick={() => {
+                      handleTrueFalseClick("Falso");
+                      const correct = "Falso".trim() === current.answer.trim();
+                      setFeedback(correct);
+                      setCanContinue(true);
+                    }}
+                    disabled={canContinue}
+                  >
+                    Falso
+                  </button>
+                </div>
               </div>
-              <button
-                onClick={handleCheck}
-                className="check-btn"
-                disabled={canContinue || !userAnswer}
+            ) : (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
               >
-                Check
-              </button>
-            </DndContext>
-          )}
+                <div className="question-and-answer-container">
+                  <div className="matrix-container">
+                    <BlockMath math={current.question.replace(/\?$/, "")} />
+                  </div>
+                  <div className="answer-slot-container mt-4">
+                    {userAnswer ? <BlockMath math={userAnswer} /> : <></>}
+                  </div>
+                </div>
+                <div className="options-container mt-4 flex gap-2 flex-wrap">
+                  {current.options?.map((opt) => (
+                    <div
+                      key={opt}
+                      id={opt}
+                      draggable
+                      className={`option-box cursor-pointer ${canContinue ? "disabled" : ""}`}
+                      onClick={() => !canContinue && handleOptionClick(opt)}
+                      style={{
+                        pointerEvents:
+                          canContinue || selectedOption === opt ? "none" : "auto",
+                        opacity:
+                          canContinue || selectedOption === opt ? 0.6 : 1,
+                      }}
+                    >
+                      <BlockMath math={opt} />
+                    </div>
+                  ))}
+                </div>
+                <button
+                  onClick={handleCheck}
+                  className="check-btn"
+                  disabled={canContinue || !userAnswer}
+                >
+                  Check
+                </button>
+              </DndContext>
+            )}
 
-          {feedback !== null && (
-            <>
-              {feedback ? (
-                <div className="feedback-message success">
-                  <span>¡Excelente! Seguí así</span>
-                </div>
-              ) : (
-                <div className="feedback-message error">
-                  <span>Mmm, nop. Esa no era, pero no te rindas!</span>
-                </div>
-              )}
-              <button
-                className={`btn-continue mt-4 ${feedback ? "success" : "error"
-                  }`}
-                onClick={handleContinue}
-              >
-                Continuar
-              </button>
-            </>
-          )}
-        </>
-      ) : (
-        <p className="text-gray-500">Cargando ejercicio...</p>
-      )}
+            {feedback !== null && (
+              <>
+                {feedback ? (
+                  <div className="feedback-message success">
+                    <span>¡Excelente! Seguí así</span>
+                  </div>
+                ) : (
+                  <div className="feedback-message error">
+                    <span>Mmm, nop. Esa no era, pero no te rindas!</span>
+                  </div>
+                )}
+                <button
+                  className={`btn-continue mt-4 ${feedback ? "success" : "error"
+                    }`}
+                  onClick={handleContinue}
+                >
+                  Continuar
+                </button>
+              </>
+            )}
+          </>
+        ) : (
+          <p className="text-gray-500">Cargando ejercicio...</p>
+        )}
+      </div>
     </MainLayout>
   );
 }
