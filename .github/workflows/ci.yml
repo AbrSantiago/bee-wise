@@ -37,4 +37,6 @@ jobs:
 
       - name: Run backend tests
         working-directory: ./backend
+        env:
+          CI: true
         run: ./gradlew test --no-daemon

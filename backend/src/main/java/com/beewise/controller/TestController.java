@@ -15,7 +15,7 @@ public class TestController {
 
     @GetMapping("/hello")
     public String hello() {
-        return "Hello from the Bee-Wise backend! \uD83D\uDC1D";
+        return "Hello from the Bee-Wise backend!";
     }
 
     @GetMapping("/status")
@@ -31,7 +31,7 @@ public class TestController {
 
     @GetMapping("/cors")
     public String corsTest() {
-        return "CORS configured correctly \uD83C\uDF10";
+        return "CORS configured correctly";
     }
 
     @GetMapping("/ping")
