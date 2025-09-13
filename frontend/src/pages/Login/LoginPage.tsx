@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import "./LoginPage.css";
+import userService from "../../services/userService";
 
 function LoginPage() {
-  const API_BASE_URL = import.meta.env.VITE_API_URL;
   const { login } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -14,18 +14,10 @@ function LoginPage() {
     setError("");
 
     try {
-      const res = await fetch(`${API_BASE_URL}/users/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-      });
-
-      if (!res.ok) throw new Error("Credenciales inválidas");
-
-      const data = await res.json();
+      const data = await userService.login(username, password);
       login(data.token);
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || "Credenciales inválidas");
     }
   };
 

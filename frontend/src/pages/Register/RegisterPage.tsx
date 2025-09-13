@@ -1,8 +1,8 @@
 import { useState } from "react";
 import "./RegisterPage.css";
+import userService from "../../services/userService";
 
 export default function RegisterPage() {
-  const API_BASE_URL = import.meta.env.VITE_API_URL;
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
   const [email, setEmail] = useState("");
@@ -16,23 +16,19 @@ export default function RegisterPage() {
     setError("");
     setSuccess("");
 
-    // Validación rápida de password
     if (password.length < 6) {
       setError("La contraseña debe tener al menos 6 caracteres");
       return;
     }
 
     try {
-      const res = await fetch(`${API_BASE_URL}/users/auth/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, surname, email, username, password }),
+      await userService.register({
+        name,
+        surname,
+        email,
+        username,
+        password,
       });
-
-      if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(errText || "Error al registrar usuario");
-      }
 
       setSuccess("Usuario registrado con éxito. Ahora podés iniciar sesión.");
       setName("");
@@ -41,7 +37,7 @@ export default function RegisterPage() {
       setUsername("");
       setPassword("");
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || "Error al registrar usuario");
     }
   };
 
