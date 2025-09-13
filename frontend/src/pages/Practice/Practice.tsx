@@ -4,7 +4,6 @@ import "katex/dist/katex.min.css";
 // @ts-ignore
 import { BlockMath } from "react-katex";
 import "./Practice.css";
-import apiClient from "../../services/api";
 import { useParams } from "react-router-dom";
 import {
   DndContext,
@@ -15,14 +14,7 @@ import {
 } from "@dnd-kit/core";
 import { Link } from "react-router-dom";
 import type { DragEndEvent } from "@dnd-kit/core";
-
-type Exercise = {
-  id: number;
-  question: string;
-  answer: string;
-  options: null | string[];
-  type: string; // "OPEN" | "MULTIPLE_CHOICE"
-};
+import lessonService, { type Exercise } from "../../services/lessonService";
 
 export function PracticePage() {
   const { id } = useParams<{ id: string }>();
@@ -37,20 +29,20 @@ export function PracticePage() {
   const [showCorrectionIntro, setShowCorrectionIntro] = useState(false);
   const [hasShownCorrectionIntro, setHasShownCorrectionIntro] = useState(false);
 
-
   const current = exercises[currentExercise];
 
-  const getLesson = async () => {
-    try {
-      const response = await apiClient.get(`/lesson/${id}`);
-      setExercises(response.data.exercises);
-    } catch (error) {
-      console.error("Error fetching practice data!", error);
-    }
-  };
-
   useEffect(() => {
-    if (id) getLesson();
+    const fetchLesson = async () => {
+      try {
+        if (id) {
+          const lesson = await lessonService.getLesson(id);
+          setExercises(lesson.exercises);
+        }
+      } catch (error) {
+        console.error("Error fetching practice data!", error);
+      }
+    };
+    fetchLesson();
   }, [id]);
 
   // --- DnD setup ---
