@@ -19,7 +19,7 @@ FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
 # Copy the jar from the build stage
-COPY --from=build /home/gradle/project/build/libs/bee-wise-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /home/gradle/project/build/libs/beewise-0.0.1-SNAPSHOT.jar app.jar
 
 # Expose the port Spring Boot will use
 EXPOSE 8080
