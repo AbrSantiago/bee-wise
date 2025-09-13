@@ -15,14 +15,14 @@ public class TestController {
 
     @GetMapping("/hello")
     public String hello() {
-        return "¡Hola desde el backend de Bee-Wise! 🐝";
+        return "Hello from the Bee-Wise backend! \uD83D\uDC1D";
     }
 
     @GetMapping("/status")
     public ResponseEntity<Map<String, Object>> status() {
         Map<String, Object> response = new HashMap<>();
         response.put("status", "OK");
-        response.put("message", "Backend funcionando correctamente");
+        response.put("message", "Backend is running properly");
         response.put("timestamp", LocalDateTime.now());
         response.put("service", "Bee-Wise API");
         
@@ -31,7 +31,7 @@ public class TestController {
 
     @GetMapping("/cors")
     public String corsTest() {
-        return "CORS configurado correctamente 🌐";
+        return "CORS configured correctly \uD83C\uDF10";
     }
 
     @GetMapping("/ping")
