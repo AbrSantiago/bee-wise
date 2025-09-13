@@ -5,9 +5,9 @@ FROM gradle:8.3-jdk17 AS build
 WORKDIR /home/gradle/project
 
 # Copy Gradle build files
-COPY backend/build.gradle backend/settings.gradle ./
-COPY backend/gradle ./gradle
-COPY backend/src ./src
+COPY build.gradle settings.gradle ./
+COPY gradle ./gradle
+COPY src ./src
 
 # Build the jar without running tests
 RUN gradle bootJar -x test
