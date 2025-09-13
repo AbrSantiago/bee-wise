@@ -2,6 +2,7 @@ import { useState } from "react";
 import "./RegisterPage.css";
 
 export default function RegisterPage() {
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
   const [email, setEmail] = useState("");
@@ -22,7 +23,7 @@ export default function RegisterPage() {
     }
 
     try {
-      const res = await fetch("http://localhost:8080/users/auth/register", {
+      const res = await fetch(`${API_BASE_URL}/users/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, surname, email, username, password }),

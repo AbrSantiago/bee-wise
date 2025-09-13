@@ -3,6 +3,7 @@ import { useAuth } from "../../context/AuthContext";
 import "./LoginPage.css";
 
 function LoginPage() {
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
   const { login } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -13,7 +14,7 @@ function LoginPage() {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:8080/users/auth/login", {
+      const res = await fetch(`${API_BASE_URL}/users/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
