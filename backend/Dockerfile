@@ -1,5 +1,5 @@
 # Use official Gradle image with JDK 17 for building the project
-FROM gradle:8.3.3-jdk17 AS build
+FROM gradle:8.3-jdk17 AS build
 
 # Set working directory inside the container
 WORKDIR /home/gradle/project
