@@ -21,26 +21,25 @@ public class User {
     private Long id;
 
     @NotBlank(message = "Name cannot be empty")
-    @Size(max = 10, message = "Name is too long")
+    @Size(max = 50, message = "Name is too long")
     private String name;
 
     @NotBlank(message = "Surname cannot be empty")
-    @Size(max = 10, message = "Surname is too long")
+    @Size(max = 50, message = "Surname is too long")
     private String surname;
 
     @NotBlank(message = "Email cannot be empty")
     @Email(message = "Email is not valid")
-    @Size(max = 50, message = "Email is too long")
-    @Column(unique = true)
+    @Size(max = 100, message = "Email is too long")
+    @Column(unique = true, length = 150)
     private String email;
 
     @NotBlank(message = "Username cannot be empty")
-    @Size(max = 10, message = "Username is too long")
-    @Column(unique = true)
+    @Size(max = 30, message = "Username is too long")
+    @Column(unique = true, length = 30)
     private String username;
 
-    @NotBlank(message = "Password cannot be empty")
-    @Size(max = 255, message = "Password is too long")
+    @Column(nullable = false, length = 255)
     private String passwordHash; // Store the hash, not the plain password
 
     @Min(value = 0, message = "Points cannot be negative")

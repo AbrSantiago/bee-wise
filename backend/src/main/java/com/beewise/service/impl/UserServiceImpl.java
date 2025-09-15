@@ -23,16 +23,12 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-
     @Override
     public User registerUser(RegisterUserDTO registerUserDTO) {
-
-        // Verifica si ya existe el email
         if (userRepository.existsByEmail(registerUserDTO.getEmail())) {
             throw new IllegalArgumentException("Email already exists");
         }
 
-        // Verificar si el username ya existe
         if (userRepository.existsByUsername(registerUserDTO.getUsername())) {
             throw new IllegalArgumentException("Username already exists");
         }
@@ -43,7 +39,6 @@ public class UserServiceImpl implements UserService {
         newUser.setEmail(registerUserDTO.getEmail());
         newUser.setUsername(registerUserDTO.getUsername());
 
-        //Hasheo de la password
         String hashedPassword = passwordEncoder.encode(registerUserDTO.getPassword());
         newUser.setPasswordHash(hashedPassword);
 

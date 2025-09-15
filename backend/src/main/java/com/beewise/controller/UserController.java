@@ -35,8 +35,6 @@ public class UserController {
     public ResponseEntity<?> login(@Valid @RequestBody LoginUserDTO loginUserDTO) {
         User user = userService.authenticateUser(loginUserDTO);
         String token = jwtService.generateToken(user.getUsername());
-
-        // AQUÍ SÍ devolver el token
         return ResponseEntity.ok(new AuthResponseDTO(token, user.getEmail(), user.getUsername()));
     }
 
