@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./RegisterPage.css";
 import userService from "../../services/userService";
+import ValidatedInput from "../../components/layout/ValidateInput";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
@@ -8,16 +9,53 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  // --- Validadores individuales ---
+  const validateName = (value: string) => {
+    if (!value.trim()) return "El nombre es obligatorio";
+    if (value.length > 50) return "El nombre no puede superar 50 caracteres";
+    return "";
+  };
+
+  const validateSurname = (value: string) => {
+    if (!value.trim()) return "El apellido es obligatorio";
+    if (value.length > 50) return "El apellido no puede superar 50 caracteres";
+    return "";
+  };
+
+  const validateEmail = (value: string) => {
+    if (!value.trim()) return "El email es obligatorio";
+    if (value.length > 150) return "El email no puede superar 150 caracteres";
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(value)) return "El email no tiene un formato válido";
+    return "";
+  };
+
+  const validateUsername = (value: string) => {
+    if (!value.trim()) return "El usuario es obligatorio";
+    if (value.length > 30) return "El usuario no puede superar 30 caracteres";
+    return "";
+  };
+
+  const validatePassword = (value: string) => {
+    if (!value.trim()) return "La contraseña es obligatoria";
+    if (value.length < 8) return "La contraseña debe tener al menos 8 caracteres";
+    if (value.length > 255) return "La contraseña es demasiado larga";
+    return "";
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
     setSuccess("");
 
-    if (password.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres");
+    if (
+      validateName(name) ||
+      validateSurname(surname) ||
+      validateEmail(email) ||
+      validateUsername(username) ||
+      validatePassword(password)
+    ) {
       return;
     }
 
@@ -37,7 +75,8 @@ export default function RegisterPage() {
       setUsername("");
       setPassword("");
     } catch (err: any) {
-      setError(err.message || "Error al registrar usuario");
+      // Podrías mapear error del backend al campo correspondiente
+      console.error(err);
     }
   };
 
@@ -45,47 +84,51 @@ export default function RegisterPage() {
     <div className="register-container">
       <form onSubmit={handleSubmit} className="register-box">
         <h1>Registro</h1>
-        {error && <p className="error">{error}</p>}
+
         {success && <p className="success">{success}</p>}
 
-        <input
+        <ValidatedInput
           type="text"
           placeholder="Nombre"
           value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
+          setValue={setName}
+          validate={validateName}
+          maxLength={50}
         />
 
-        <input
+        <ValidatedInput
           type="text"
           placeholder="Apellido"
           value={surname}
-          onChange={(e) => setSurname(e.target.value)}
-          required
+          setValue={setSurname}
+          validate={validateSurname}
+          maxLength={50}
         />
 
-        <input
+        <ValidatedInput
           type="email"
           placeholder="Email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
+          setValue={setEmail}
+          validate={validateEmail}
+          maxLength={150}
         />
 
-        <input
+        <ValidatedInput
           type="text"
           placeholder="Usuario"
           value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
+          setValue={setUsername}
+          validate={validateUsername}
+          maxLength={30}
         />
 
-        <input
+        <ValidatedInput
           type="password"
-          placeholder="Contraseña (6-10 caracteres)"
+          placeholder="Contraseña (mínimo 8 caracteres)"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
+          setValue={setPassword}
+          validate={validatePassword}
         />
 
         <button type="submit">Registrarse</button>
