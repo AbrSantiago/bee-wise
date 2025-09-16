@@ -38,10 +38,9 @@ public class UserController {
         return ResponseEntity.ok(new AuthResponseDTO(token, user.getEmail(), user.getUsername()));
     }
 
-    @GetMapping("/allUser")
+    @GetMapping()
     public ResponseEntity<List<User>> getAllUsers (){
         List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
-
 }

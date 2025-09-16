@@ -10,8 +10,10 @@ export default function RegisterPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [success, setSuccess] = useState("");
+  const [generalError, setGeneralError] = useState("");
+  const [usernameError, setUsernameError] = useState("");
+  const [emailError, setEmailError] = useState("");
 
-  // --- Validadores individuales ---
   const validateName = (value: string) => {
     if (!value.trim()) return "El nombre es obligatorio";
     if (value.length > 50) return "El nombre no puede superar 50 caracteres";
@@ -48,6 +50,7 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSuccess("");
+    setGeneralError("");
 
     if (
       validateName(name) ||
@@ -75,8 +78,19 @@ export default function RegisterPage() {
       setUsername("");
       setPassword("");
     } catch (err: any) {
-      // Podrías mapear error del backend al campo correspondiente
-      console.error(err);
+      const data = err?.response?.data;
+
+      if (data?.error) {
+        if (data.error.includes("Username")) {
+          setUsernameError("El nombre de usuario ya existe");
+        } else if (data.error.includes("Email")) {
+          setEmailError("El email ya está en uso");
+        } else {
+          setGeneralError(data.error);
+        }
+      } else {
+        setGeneralError("Error al registrar usuario");
+      }
     }
   };
 
@@ -84,8 +98,6 @@ export default function RegisterPage() {
     <div className="register-container">
       <form onSubmit={handleSubmit} className="register-box">
         <h1>Registro</h1>
-
-        {success && <p className="success">{success}</p>}
 
         <ValidatedInput
           type="text"
@@ -112,6 +124,7 @@ export default function RegisterPage() {
           setValue={setEmail}
           validate={validateEmail}
           maxLength={150}
+          externalError={emailError}
         />
 
         <ValidatedInput
@@ -121,6 +134,7 @@ export default function RegisterPage() {
           setValue={setUsername}
           validate={validateUsername}
           maxLength={30}
+          externalError={usernameError}
         />
 
         <ValidatedInput
@@ -130,6 +144,9 @@ export default function RegisterPage() {
           setValue={setPassword}
           validate={validatePassword}
         />
+
+        {success && <p className="success">{success}</p>}
+        {generalError && <p className="error">{generalError}</p>}
 
         <button type="submit">Registrarse</button>
       </form>

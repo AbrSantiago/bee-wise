@@ -8,6 +8,7 @@ interface ValidatedInputProps {
   validate: (val: string) => string;
   maxLength?: number;
   required?: boolean;
+  externalError?: string;
 }
 
 export default function ValidatedInput({
@@ -18,6 +19,7 @@ export default function ValidatedInput({
   validate,
   maxLength,
   required = true,
+  externalError,
 }: ValidatedInputProps) {
   const [error, setError] = useState("");
 
@@ -41,8 +43,10 @@ export default function ValidatedInput({
         onChange={handleChange}
         onBlur={handleBlur}
         required={required}
+        className={error || externalError ? "input-error" : ""}
       />
       {error && <p className="error">{error}</p>}
+      {!error && externalError && <p className="error">{externalError}</p>}
     </div>
   );
 }

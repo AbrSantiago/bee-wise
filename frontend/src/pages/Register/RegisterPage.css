@@ -57,9 +57,15 @@
   transition: background-color 5000s ease-in-out 0s;
 }
 
+.register-box input.input-error {
+  border-color: #dc2626 !important; /* rojo */
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2); /* glow rojo */
+}
+
 .register-box button {
   width: 100%;
   padding: 0.75rem;
+  margin-top: .5rem;
   background: linear-gradient(135deg, #f59e0b, #d97706);
   color: white;
   font-size: 1.1rem;
