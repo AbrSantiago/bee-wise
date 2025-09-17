@@ -2,6 +2,7 @@ import { useState } from "react";
 import "./RegisterPage.css";
 import userService from "../../services/userService";
 import ValidatedInput from "../../components/layout/ValidateInput";
+import ValidatedPasswordInput from "../../components/layout/ValidatedPasswordInput";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
@@ -9,6 +10,7 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [success, setSuccess] = useState("");
   const [generalError, setGeneralError] = useState("");
   const [usernameError, setUsernameError] = useState("");
@@ -40,25 +42,25 @@ export default function RegisterPage() {
     return "";
   };
 
-  const validatePassword = (value: string) => {
-    if (!value.trim()) return "La contraseña es obligatoria";
-    if (value.length < 8) return "La contraseña debe tener al menos 8 caracteres";
-    if (value.length > 255) return "La contraseña es demasiado larga";
-    return "";
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSuccess("");
     setGeneralError("");
+    setUsernameError("");
+    setEmailError("");
 
+    // Validaciones mínimas antes de enviar
     if (
       validateName(name) ||
       validateSurname(surname) ||
       validateEmail(email) ||
-      validateUsername(username) ||
-      validatePassword(password)
+      validateUsername(username)
     ) {
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setGeneralError("Las contraseñas no coinciden");
       return;
     }
 
@@ -77,6 +79,7 @@ export default function RegisterPage() {
       setEmail("");
       setUsername("");
       setPassword("");
+      setConfirmPassword("");
     } catch (err: any) {
       const data = err?.response?.data;
 
@@ -137,12 +140,11 @@ export default function RegisterPage() {
           externalError={usernameError}
         />
 
-        <ValidatedInput
-          type="password"
-          placeholder="Contraseña (mínimo 8 caracteres)"
-          value={password}
-          setValue={setPassword}
-          validate={validatePassword}
+        <ValidatedPasswordInput
+          password={password}
+          setPassword={setPassword}
+          confirmPassword={confirmPassword}
+          setConfirmPassword={setConfirmPassword}
         />
 
         {success && <p className="success">{success}</p>}
