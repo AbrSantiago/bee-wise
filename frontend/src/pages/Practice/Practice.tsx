@@ -12,9 +12,13 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { Link } from "react-router-dom";
 import type { DragEndEvent } from "@dnd-kit/core";
 import lessonService, { type Exercise } from "../../services/lessonService";
+import TrueFalseButtons from "./components/TrueFalseButtons";
+import DnDOptions from "./components/DnDOptions";
+import FeedbackMessage from "./components/FeedbackMessage";
+import SummaryScreen from "./components/SummaryScreen";
+import CorrectionIntroScreen from "./components/CorrectionIntroScreen";
 
 export function PracticePage() {
   const { id } = useParams<{ id: string }>();
@@ -28,6 +32,11 @@ export function PracticePage() {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [showCorrectionIntro, setShowCorrectionIntro] = useState(false);
   const [hasShownCorrectionIntro, setHasShownCorrectionIntro] = useState(false);
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [endTime, setEndTime] = useState<number | null>(null);
+  const [correctCount, setCorrectCount] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+  const [inCorrectionRound, setInCorrectionRound] = useState(false);
 
   const current = exercises[currentExercise];
 
@@ -37,6 +46,9 @@ export function PracticePage() {
         if (id) {
           const lesson = await lessonService.getLesson(id);
           setExercises(lesson.exercises);
+          setTotalCount(lesson.exercises.length);
+          setCorrectCount(0);
+          setStartTime(Date.now());
         }
       } catch (error) {
         console.error("Error fetching practice data!", error);
@@ -152,6 +164,7 @@ export function PracticePage() {
     const correct = userAnswer.trim() === current.answer.trim();
     setFeedback(correct);
     setCanContinue(true);
+    if (correct && !inCorrectionRound) setCorrectCount((prev) => prev + 1);
   };
 
   const handleContinue = () => {
@@ -174,12 +187,14 @@ export function PracticePage() {
         setShowCorrectionIntro(true);
         setHasShownCorrectionIntro(true);
         setPendingExercises(newPending);
+        setInCorrectionRound(true);
       } else {
         setExercises(newPending);
         setCurrentExercise(0);
         setPendingExercises([]);
       }
     } else {
+      setEndTime(Date.now());
       setShowSummary(true);
     }
   };
@@ -187,16 +202,11 @@ export function PracticePage() {
   if (showSummary) {
     return (
       <MainLayout title={`Lección ${id}`}>
-        <div className="summary-container">
-          <p className="summary-text">
-            ¡Has terminado todos los ejercicios!
-          </p>
-          <Link to={`/`}>
-            <button className="btn-back-home">
-              <span>Volver al inicio</span>
-            </button>
-          </Link>
-        </div>
+        <SummaryScreen
+          time={endTime && startTime ? endTime - startTime : 0}
+          correctCount={correctCount}
+          totalCount={totalCount}
+        />
       </MainLayout>
     );
   }
@@ -204,20 +214,15 @@ export function PracticePage() {
   if (showCorrectionIntro) {
     return (
       <MainLayout title={`Lección ${id}`}>
-        <div className="summary-container">
-          <p className="summary-text">Ahora vamos a corregir los errores</p>
-          <button
-            className="btn-continue error"
-            onClick={() => {
-              setExercises(pendingExercises);
-              setCurrentExercise(0);
-              setPendingExercises([]);
-              setShowCorrectionIntro(false);
-            }}
-          >
-            Continuar
-          </button>
-        </div>
+        <CorrectionIntroScreen
+          lessonId={id}
+          onContinue={() => {
+            setExercises(pendingExercises);
+            setCurrentExercise(0);
+            setPendingExercises([]);
+            setShowCorrectionIntro(false);
+          }}
+        />
       </MainLayout>
     );
   }
@@ -232,39 +237,18 @@ export function PracticePage() {
                 <div className="matrix-container">
                   <p className="question-text">{current.question}</p>
                 </div>
-                <div className="button-true-false">
-                  <button
-                    className={`true-false-btn verdadero-btn ${feedback === false && userAnswer === "Verdadero"
-                      ? "incorrect"
-                      : ""
-                      }`}
-                    onClick={() => {
-                      handleTrueFalseClick("Verdadero");
-                      const correct =
-                        "Verdadero".trim() === current.answer.trim();
-                      setFeedback(correct);
-                      setCanContinue(true);
-                    }}
-                    disabled={canContinue}
-                  >
-                    Verdadero
-                  </button>
-                  <button
-                    className={`true-false-btn falso-btn ${feedback === false && userAnswer === "Falso"
-                      ? "incorrect"
-                      : ""
-                      }`}
-                    onClick={() => {
-                      handleTrueFalseClick("Falso");
-                      const correct = "Falso".trim() === current.answer.trim();
-                      setFeedback(correct);
-                      setCanContinue(true);
-                    }}
-                    disabled={canContinue}
-                  >
-                    Falso
-                  </button>
-                </div>
+                <TrueFalseButtons
+                  userAnswer={userAnswer}
+                  feedback={feedback}
+                  canContinue={canContinue}
+                  onClick={(answer) => {
+                    handleTrueFalseClick(answer);
+                    const correct = answer.trim() === current.answer.trim();
+                    setFeedback(correct);
+                    setCanContinue(true);
+                    if (correct && !inCorrectionRound) setCorrectCount((prev) => prev + 1);
+                  }}
+                />
               </div>
             ) : (
               <DndContext
@@ -280,25 +264,12 @@ export function PracticePage() {
                     {userAnswer ? <BlockMath math={userAnswer} /> : <></>}
                   </div>
                 </div>
-                <div className="options-container mt-4 flex gap-2 flex-wrap">
-                  {current.options?.map((opt) => (
-                    <div
-                      key={opt}
-                      id={opt}
-                      draggable
-                      className={`option-box cursor-pointer ${canContinue ? "disabled" : ""}`}
-                      onClick={() => !canContinue && handleOptionClick(opt)}
-                      style={{
-                        pointerEvents:
-                          canContinue || selectedOption === opt ? "none" : "auto",
-                        opacity:
-                          canContinue || selectedOption === opt ? 0.6 : 1,
-                      }}
-                    >
-                      <BlockMath math={opt} />
-                    </div>
-                  ))}
-                </div>
+                <DnDOptions
+                  options={current.options || []}
+                  canContinue={canContinue}
+                  selectedOption={selectedOption}
+                  handleOptionClick={handleOptionClick}
+                />
                 <button
                   onClick={handleCheck}
                   className="check-btn"
@@ -309,25 +280,15 @@ export function PracticePage() {
               </DndContext>
             )}
 
+            <FeedbackMessage feedback={feedback} />
+
             {feedback !== null && (
-              <>
-                {feedback ? (
-                  <div className="feedback-message success">
-                    <span>¡Excelente! Seguí así</span>
-                  </div>
-                ) : (
-                  <div className="feedback-message error">
-                    <span>Mmm, nop. Esa no era, pero no te rindas!</span>
-                  </div>
-                )}
-                <button
-                  className={`btn-continue mt-4 ${feedback ? "success" : "error"
-                    }`}
-                  onClick={handleContinue}
-                >
-                  Continuar
-                </button>
-              </>
+              <button
+                className={`btn-continue mt-4 ${feedback ? "success" : "error"}`}
+                onClick={handleContinue}
+              >
+                Continuar
+              </button>
             )}
           </>
         ) : (

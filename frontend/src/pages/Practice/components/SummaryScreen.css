@@ -1,0 +1,106 @@
+.summary-container {
+  margin-top: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 40px 24px;
+  border-radius: 24px;
+  background: repeating-linear-gradient(
+    120deg,
+    #fbeec1 0px,
+    #fff1bf 40px,
+    #fff3b0 40px,
+    #ffebaa 80px
+  );
+  /* background: linear-gradient(320deg, #fff3b0, #fcd34d); */
+  box-shadow: 0 4px 32px 0 rgba(80, 60, 10, 0.18);
+  border: 4px solid #ffb800;
+  position: relative;
+  min-width: 320px;
+  max-width: 420px;
+}
+
+/* Hexágono decorativo */
+.summary-container::before {
+  content: "";
+  position: absolute;
+  top: -32px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 64px;
+  height: 64px;
+  background: #ffb800;
+  clip-path: polygon(
+    25% 6%, 75% 6%, 100% 50%,
+    75% 94%, 25% 94%, 0% 50%
+  );
+  box-shadow: 0 2px 8px 0 rgba(80, 60, 10, 0.12);
+  z-index: 1;
+}
+
+.summary-title {
+  font-family: 'Caprasimo', 'Arial', sans-serif;
+  font-size: 2.2em;
+  color: #ffb800;
+  text-shadow: 1px 2px 8px #fffbe6, 0 1px 0 #b8860b;
+  margin-top: 24px;
+  margin-bottom: 0;
+  text-align: center;
+}
+
+.summary-stats {
+  background: #fffbe6;
+  border-radius: 16px;
+  padding: 18px 24px;
+  box-shadow: 0 2px 8px 0 rgba(80, 60, 10, 0.10);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 1.2em;
+  color: #b8860b;
+  border: 2px solid #ffd700;
+}
+
+.summary-stats b {
+  color: #ffb800;
+  font-weight: 700;
+}
+
+.summary-btn-back-home {
+  margin-top: 18px;
+  padding: 12px 32px;
+  font-size: 1.1em;
+  font-family: 'Caprasimo', 'Arial', sans-serif;
+  background: linear-gradient(90deg, #ffd000 60%, #ffb800 100%);
+  /* color: #242424; */
+  color: #fffbe6;
+  border: none;
+  border-radius: 32px;
+  box-shadow: 0 2px 8px 0 rgba(80, 60, 10, 0.10);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.summary-btn-back-home:hover {
+  background: linear-gradient(90deg, #ffb800 60%, #ffd700 100%);
+  transform: scale(1.05);
+  color: #fffbe6;
+}
+
+@media (max-width: 600px) {
+  .summary-container {
+    padding: 24px 8px;
+    min-width: 0;
+    max-width: 98vw;
+  }
+  .summary-text {
+    font-size: 1.4em;
+  }
+  .summary-stats {
+    font-size: 1em;
+    padding: 12px 8px;
+  }
+}
