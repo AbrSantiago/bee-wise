@@ -269,6 +269,9 @@ export function PracticePage() {
                   canContinue={canContinue}
                   selectedOption={selectedOption}
                   handleOptionClick={handleOptionClick}
+                  userAnswer={userAnswer}
+                  feedback={feedback}
+                  current={current}
                 />
                 <button
                   onClick={handleCheck}

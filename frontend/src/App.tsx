@@ -4,7 +4,6 @@ import { PracticePage } from "./pages/Practice/Practice";
 import { ProfilePage } from "./pages/Profile/Profile";
 import { NotFoundPage } from "./pages/NotFound/NotFoundPage";
 import Test from "./pages/Test";
-import PracticeDND from "./pages/Practice/PracticeDND";
 import { RankingPage } from "./pages/Ranking/Ranking";
 import { ChallengesPage } from "./pages/Challenges/Challenges";
 import { AuthProvider } from "./context/AuthContext";
@@ -33,7 +32,6 @@ function App() {
           <Route path="/challenges" element={<ChallengesPage />} />
           <Route path="/ranking" element={<RankingPage />} />
           <Route path="/test" element={<Test />} />
-          <Route path="/drag-and-drop" element={<PracticeDND />} />
         </Route>
 
         <Route path="*" element={<NotFoundPage />} />
