@@ -185,3 +185,8 @@ input[readonly] {
   color: #7c5c0a;
   transform: scale(1.05);
 }
+
+.question-text {
+  font-family: "Computer Modern Serif", serif;
+  font-size: x-large;
+}
