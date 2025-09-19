@@ -25,7 +25,7 @@ export default function SummaryScreen({
       <p className="summary-title">¡Has terminado todos los ejercicios!</p>
       <div className="summary-stats">
         <p>Tiempo total: <b>{formatTime(time)}</b></p>
-        <p>Aciertos: <b>{correctCount} / {totalCount}</b> ({percent}%)</p>
+        <p>Aciertos: <b>{correctCount}/{totalCount}</b> ({percent}%)</p>
       </div>
       <Link to={`/`}>
         <button className="summary-btn-back-home">

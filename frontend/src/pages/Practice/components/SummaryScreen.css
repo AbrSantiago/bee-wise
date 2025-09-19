@@ -8,10 +8,10 @@
   border-radius: 24px;
   background: repeating-linear-gradient(
     120deg,
-    #fbeec1 0px,
-    #fff1bf 40px,
-    #fff3b0 40px,
-    #ffebaa 80px
+    #eee2b5 0px,
+    #f5e7b4 40px,
+    #f7eba8 40px,
+    #f1de9f 80px
   );
   /* background: linear-gradient(320deg, #fff3b0, #fcd34d); */
   box-shadow: 0 4px 32px 0 rgba(80, 60, 10, 0.18);
@@ -50,7 +50,7 @@
 }
 
 .summary-stats {
-  background: #fffbe6;
+  background: #fff6ca;
   border-radius: 16px;
   padding: 18px 24px;
   box-shadow: 0 2px 8px 0 rgba(80, 60, 10, 0.10);
