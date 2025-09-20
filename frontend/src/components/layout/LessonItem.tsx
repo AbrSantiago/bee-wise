@@ -1,4 +1,3 @@
-// LessonItem.tsx
 import { Link } from "react-router-dom";
 import "./LessonItem.css";
 

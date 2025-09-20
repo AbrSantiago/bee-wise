@@ -48,6 +48,9 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LessonProgress> lessonProgresses = new ArrayList<>();
 
+    @Min(value = 1, message = "Current lesson cannot be negative")
+    private int currentLesson = 1;
+
     public User(){}
 
     public User(String name, String surname, String email, String username, String passwordHash, Integer points, List<LessonProgress> lessonProgresses) {

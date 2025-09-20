@@ -1,8 +1,6 @@
 package com.beewise.controller;
 
-import com.beewise.controller.dto.AuthResponseDTO;
-import com.beewise.controller.dto.LoginUserDTO;
-import com.beewise.controller.dto.RegisterUserDTO;
+import com.beewise.controller.dto.*;
 import com.beewise.model.User;
 import com.beewise.service.UserService;
 import com.beewise.service.impl.JwtService;
@@ -42,5 +40,11 @@ public class UserController {
     public ResponseEntity<List<User>> getAllUsers (){
         List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
+    }
+
+    @PostMapping("/lessonComplete")
+    public ResponseEntity<LessonCompleteDTO> lessonComplete(LessonCompleteRequestDTO requestDTO) {
+        LessonCompleteDTO progress = userService.lessonComplete(requestDTO);
+        return ResponseEntity.ok(progress);
     }
 }

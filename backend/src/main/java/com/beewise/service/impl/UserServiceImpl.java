@@ -1,9 +1,15 @@
 package com.beewise.service.impl;
 
+import com.beewise.controller.dto.LessonCompleteDTO;
+import com.beewise.controller.dto.LessonCompleteRequestDTO;
 import com.beewise.controller.dto.LoginUserDTO;
 import com.beewise.controller.dto.RegisterUserDTO;
+import com.beewise.exception.UserNotFoundException;
+import com.beewise.model.Lesson;
 import com.beewise.model.User;
 import com.beewise.repository.UserRepository;
+import com.beewise.service.LessonProgressService;
+import com.beewise.service.LessonService;
 import com.beewise.service.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -17,10 +23,14 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final LessonProgressService progressService;
+    private final LessonService lessonService;
 
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, LessonProgressService progressService, LessonService lessonService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.progressService = progressService;
+        this.lessonService = lessonService;
     }
 
     @Override
@@ -61,7 +71,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
     }
 
     @Override
@@ -73,5 +84,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public LessonCompleteDTO lessonComplete(LessonCompleteRequestDTO requestDTO) {
+        Lesson lesson = lessonService.getLessonById(requestDTO.getCompletedLessonId());
+        User user = userRepository.findById(requestDTO.getUserId())
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        user.setPoints(requestDTO.getCorrectExercises() * 10);
+        user.setCurrentLesson(+1);
+        userRepository.save(user);
+        progressService.upsertProgress(user, lesson);
+        return new LessonCompleteDTO(true, "Progress updated", user.getPoints());
     }
 }
