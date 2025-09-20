@@ -1,26 +1,29 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+// src/App.tsx
+import { Route, Routes } from 'react-router-dom'
+import Home from './pages/Home/Home'
+import { PracticePage } from './pages/Practice/Practice.tsx'
+import { ProfilePage } from './pages/Profile/Profile.tsx'
+import { NotFoundPage } from './pages/NotFound/NotFoundPage.tsx'
+import Test from './pages/Test'
+import PracticeDND from './pages/Practice/PracticeDND.tsx'
+import { RankingPage } from './pages/Ranking/Ranking.tsx'
+import { ChallengesPage } from './pages/Challenges/Challenges.tsx'
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/practice/:id" element={<PracticePage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/challenges" element={<ChallengesPage />} />
+        <Route path="/ranking" element={<RankingPage />} />
+        <Route path="/test" element={<Test />} />
+        <Route path="/drag-and-drop" element={<PracticeDND />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes> 
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

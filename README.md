@@ -28,7 +28,7 @@ Para ejecutar el frontend:
 
 3. Ejecutar el proyecto:
    ```bash
-   npm start
+   npm run dev
    ```
 
-La aplicación se ejecutará en http://localhost:3000
+La aplicación se ejecutará en http://localhost:5173
