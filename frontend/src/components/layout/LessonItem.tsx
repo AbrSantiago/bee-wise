@@ -14,7 +14,7 @@ export function LessonItem({ id, title, number }: LessonItemProps) {
       <Link to={`/practice/${id}`}>
         <div className="lesson-node">
           <div className="hive"></div>
-          <button className="lesson-btn">{`Lesson ${number}`}</button>
+          <button className="lesson-btn">{`Lección ${number}`}</button>
         </div>
       </Link>
     </div>
