@@ -11,13 +11,12 @@ type LessonItemProps = {
 export function LessonItem({ id, title, number }: LessonItemProps) {
   return (
     <div className="lesson-node-container">
-      <div className="lesson-node">
-        <Link to={`/practice/${id}`}>
-          <div className="lesson-btn">
-            Lesson {number}
-          </div>
-        </Link>
-      </div>
+      <Link to={`/practice/${id}`}>
+        <div className="lesson-node">
+          <div className="hive"></div>
+          <button className="lesson-btn">{`Lesson ${number}`}</button>
+        </div>
+      </Link>
     </div>
   );
 }
