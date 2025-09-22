@@ -10,5 +10,5 @@ import java.util.Optional;
 
 @Repository
 public interface LessonProgressRepository extends JpaRepository<LessonProgress, Long> {
-    Optional<LessonProgress> findByUser_IdAndLesson_Id(User user, Lesson lesson);
+    Optional<LessonProgress> findByUser_IdAndLesson_Id(Long userId, Long lessonId);
 }

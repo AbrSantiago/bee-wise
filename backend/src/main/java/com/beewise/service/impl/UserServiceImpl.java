@@ -1,9 +1,6 @@
 package com.beewise.service.impl;
 
-import com.beewise.controller.dto.LessonCompleteDTO;
-import com.beewise.controller.dto.LessonCompleteRequestDTO;
-import com.beewise.controller.dto.LoginUserDTO;
-import com.beewise.controller.dto.RegisterUserDTO;
+import com.beewise.controller.dto.*;
 import com.beewise.exception.UserNotFoundException;
 import com.beewise.model.Lesson;
 import com.beewise.model.User;
@@ -91,10 +88,18 @@ public class UserServiceImpl implements UserService {
         Lesson lesson = lessonService.getLessonById(requestDTO.getCompletedLessonId());
         User user = userRepository.findById(requestDTO.getUserId())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
-        user.setPoints(requestDTO.getCorrectExercises() * 10);
+        user.setPoints(user.getPoints() + requestDTO.getCorrectExercises() * 10);
         user.setCurrentLesson(+1);
         userRepository.save(user);
         progressService.upsertProgress(user, lesson);
         return new LessonCompleteDTO(true, "Progress updated", user.getPoints());
+    }
+
+    @Override
+    public UserPointsDTO getUserPoints(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        return new UserPointsDTO(user.getId(), user.getUsername(), user.getPoints(), user.getCurrentLesson());
     }
 }

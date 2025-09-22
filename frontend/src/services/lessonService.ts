@@ -15,9 +15,26 @@ export type Lesson = {
   exercises: Exercise[];
 };
 
+export type LessonCompleteRequest = {
+  completedLessonId: number;
+  userId: number;
+  correctExercises: number;
+};
+
+export type LessonCompleteResponse = {
+  success: boolean;
+  message: string;
+  totalPoints: number;
+};
+
 const lessonService = {
   async getLesson(id: string): Promise<Lesson> {
     const response = await apiClient.get<Lesson>(`/lesson/${id}`);
+    return response.data;
+  },
+
+  async lessonComplete(request: LessonCompleteRequest): Promise<LessonCompleteResponse> {
+    const response = await apiClient.post<LessonCompleteResponse>("/users/lessonComplete", request);
     return response.data;
   },
 };
