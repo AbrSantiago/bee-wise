@@ -43,8 +43,15 @@ public class UserController {
     }
 
     @PostMapping("/lessonComplete")
-    public ResponseEntity<LessonCompleteDTO> lessonComplete(LessonCompleteRequestDTO requestDTO) {
+    public ResponseEntity<LessonCompleteDTO> lessonComplete(@RequestBody LessonCompleteRequestDTO requestDTO) {
         LessonCompleteDTO progress = userService.lessonComplete(requestDTO);
         return ResponseEntity.ok(progress);
+    }
+
+    @GetMapping("/points")
+    public ResponseEntity<UserPointsDTO> getUserPoints(@RequestHeader("Authorization") String token) {
+        String username = jwtService.extractUsername(token.substring(7));
+        UserPointsDTO userPoints = userService.getUserPoints(username);
+        return ResponseEntity.ok(userPoints);
     }
 }

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useUserPoints } from '../../context/UserPointsContext';
 import './layout.css';
 
 interface HeaderProps {
@@ -7,6 +8,8 @@ interface HeaderProps {
 }
 
 const Header = ({ title, sectionInfo }: HeaderProps) => {
+  const { userPoints, loading } = useUserPoints();
+
   return (
     <header className="main-header">
       {/* Título y sección */}
@@ -19,13 +22,17 @@ const Header = ({ title, sectionInfo }: HeaderProps) => {
       
       {/* Stats del usuario */}
       <div className="user-stats">
-        <div className="stat-item">
+        {/* <div className="stat-item">
           <span className="stat-icon">🔥</span>
-          <span className="stat-value">77</span>
-        </div>
+          <span className="stat-value">
+            {loading ? '...' : (userPoints?.currentLesson || 0)}
+          </span>
+        </div> */}
         <div className="stat-item">
-          <span className="stat-icon">💎</span>
-          <span className="stat-value">2224</span>
+          <span className="stat-icon">🐝</span>
+          <span className="stat-value">
+            {loading ? '...' : (userPoints?.points || 0)}
+          </span>
         </div>
       </div>
     </header>

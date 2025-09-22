@@ -1,9 +1,6 @@
 package com.beewise.service;
 
-import com.beewise.controller.dto.LessonCompleteDTO;
-import com.beewise.controller.dto.LessonCompleteRequestDTO;
-import com.beewise.controller.dto.LoginUserDTO;
-import com.beewise.controller.dto.RegisterUserDTO;
+import com.beewise.controller.dto.*;
 import com.beewise.model.User;
 
 import java.util.List;
@@ -15,4 +12,5 @@ public interface UserService {
     User getUserByUsername(String username);
     List<User> getAllUsers();
     LessonCompleteDTO lessonComplete(LessonCompleteRequestDTO requestDTO);
+    UserPointsDTO getUserPoints(String username);
 }

@@ -7,6 +7,7 @@ import Test from "./pages/Test";
 import { RankingPage } from "./pages/Ranking/Ranking";
 import { ChallengesPage } from "./pages/Challenges/Challenges";
 import { AuthProvider } from "./context/AuthContext";
+import { UserPointsProvider } from "./context/UserPointsContext";
 import { ProtectedLayout } from "./components/layout/ProtectedLayout";
 import LandingPage from "./pages/LandingPage/LandingPage";
 import LoginPage from "./pages/Login/LoginPage";
@@ -16,26 +17,28 @@ import RootRedirect from "./components/layout/RootRedirect";
 function App() {
   return (
     <AuthProvider>
-      <Routes>
-        <Route path="/" element={<RootRedirect />} />
-        
-        {/* Landing con login + register */}
-        <Route path="/landing" element={<LandingPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+      <UserPointsProvider>
+        <Routes>
+          <Route path="/" element={<RootRedirect />} />
+          
+          {/* Landing con login + register */}
+          <Route path="/landing" element={<LandingPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
 
-        {/* Auth required */}
-        <Route element={<ProtectedLayout />}>
-          <Route path="/home" element={<Home />} />
-          <Route path="/practice/:id" element={<PracticePage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/challenges" element={<ChallengesPage />} />
-          <Route path="/ranking" element={<RankingPage />} />
-          <Route path="/test" element={<Test />} />
-        </Route>
+          {/* Auth required */}
+          <Route element={<ProtectedLayout />}>
+            <Route path="/home" element={<Home />} />
+            <Route path="/practice/:id" element={<PracticePage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/challenges" element={<ChallengesPage />} />
+            <Route path="/ranking" element={<RankingPage />} />
+            <Route path="/test" element={<Test />} />
+          </Route>
 
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </UserPointsProvider>
     </AuthProvider>
   );
 }

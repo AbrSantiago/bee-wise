@@ -12,6 +12,13 @@ export type AuthResponse = {
   token: string;
 };
 
+export type UserPointsResponse = {
+  userId: number;
+  username: string;
+  points: number;
+  currentLesson: number;
+};
+
 const userService = {
   async login(username: string, password: string): Promise<AuthResponse> {
     const response = await apiClient.post<AuthResponse>(
@@ -47,6 +54,11 @@ const userService = {
       console.warn("⚠️ Error calling logout endpoint, cleaning local anyway");
     }
     localStorage.removeItem("token");
+  },
+
+  async getUserPoints(): Promise<UserPointsResponse> {
+    const response = await apiClient.get<UserPointsResponse>("/users/points");
+    return response.data;
   },
 };
 

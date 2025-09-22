@@ -5,15 +5,10 @@ import "katex/dist/katex.min.css";
 import { BlockMath } from "react-katex";
 import "./Practice.css";
 import { useParams } from "react-router-dom";
-import {
-  DndContext,
-  closestCenter,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, } from "@dnd-kit/core";
 import type { DragEndEvent } from "@dnd-kit/core";
 import lessonService, { type Exercise } from "../../services/lessonService";
+import { useUserPoints } from "../../context/UserPointsContext";
 import TrueFalseButtons from "./components/TrueFalseButtons";
 import DnDOptions from "./components/DnDOptions";
 import FeedbackMessage from "./components/FeedbackMessage";
@@ -22,6 +17,8 @@ import CorrectionIntroScreen from "./components/CorrectionIntroScreen";
 
 export function PracticePage() {
   const { id } = useParams<{ id: string }>();
+  // const { user } = useUser();
+  const { userPoints,refreshPoints } = useUserPoints();
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [currentExercise, setCurrentExercise] = useState(0);
   const [userAnswer, setUserAnswer] = useState("");
@@ -37,6 +34,7 @@ export function PracticePage() {
   const [correctCount, setCorrectCount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [inCorrectionRound, setInCorrectionRound] = useState(false);
+  const [lessonCompleted, setLessonCompleted] = useState(false);
 
   const current = exercises[currentExercise];
 
@@ -56,6 +54,30 @@ export function PracticePage() {
     };
     fetchLesson();
   }, [id]);
+
+  useEffect(() => {
+    const userId = userPoints?.userId;
+
+    const completeLessonCall = async () => {
+      if (showSummary && !lessonCompleted && id && userId) {
+        try {
+          setLessonCompleted(true);
+          
+          const response = await lessonService.lessonComplete({
+            completedLessonId: parseInt(id),
+            userId: userId,
+            correctExercises: correctCount
+          });
+          await refreshPoints();
+        } catch (error) {
+          console.error("❌ Error completing lesson:", error);
+          setLessonCompleted(false);
+        }
+      }
+    };
+
+    completeLessonCall();
+  }, [showSummary, lessonCompleted, id, userPoints?.userId, correctCount, refreshPoints]);
 
   // --- DnD setup ---
   const sensors = useSensors(useSensor(PointerSensor));

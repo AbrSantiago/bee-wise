@@ -19,7 +19,7 @@ public class LessonProgressServiceImpl implements LessonProgressService {
 
     @Override
     public void upsertProgress(User user, Lesson lesson) {
-        LessonProgress progress = progressRepository.findByUser_IdAndLesson_Id(user, lesson)
+        LessonProgress progress = progressRepository.findByUser_IdAndLesson_Id(user.getId(), lesson.getId())
                 .orElseGet(() -> new LessonProgress(user, lesson));
         progress.setAttempts(+1);
         progressRepository.save(progress);
