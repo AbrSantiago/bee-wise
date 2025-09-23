@@ -2,6 +2,7 @@ package com.beewise.service.impl;
 
 import com.beewise.controller.dto.AnswerDTO;
 import com.beewise.controller.dto.ChallengeRol;
+import com.beewise.controller.dto.SendChallengeDTO;
 import com.beewise.exception.*;
 import com.beewise.model.*;
 import com.beewise.repository.ChallengeRepository;
@@ -11,6 +12,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -24,14 +26,19 @@ public class ChallengeServiceImpl implements ChallengeService {
     }
 
     @Override
-    public Challenge sendChallenge(Long challengerId, Long challengedId, int maxRounds, int questionsPerRound) {
-        User challenger = userService.getUserById(challengerId);
-        User challenged = userService.getUserById(challengedId);
+    public Challenge sendChallenge(SendChallengeDTO dto) {
+        if (Objects.equals(dto.getChallengerId(), dto.getChallengedId())) {
+            throw new UserChallengesHimselfException("User " + dto.getChallengerId() + " cannot challenge himself");
+        }
+        User challenger = userService.getUserById(dto.getChallengerId());
+        User challenged = userService.getUserById(dto.getChallengedId());
         List<ChallengeStatus> statuses = List.of(ChallengeStatus.PENDING, ChallengeStatus.ACTIVE);
-        if (repository.existsByChallengerAndChallengedAndStatusIn(challenger, challenged, statuses)) {
-            throw new ChallengeAlreadyExistsException("Challenge already exists");
+        if (repository.existsByChallengerAndChallengedAndStatusIn(challenger, challenged, statuses) ||
+                repository.existsByChallengerAndChallengedAndStatusIn(challenged, challenger, statuses)) {
+            throw new ChallengeAlreadyExistsException("Challenge between users " + dto.getChallengerId()
+                    + " and " + dto.getChallengedId() + " already exists");
         };
-        Challenge challenge = new Challenge(challenger, challenged, maxRounds, questionsPerRound);
+        Challenge challenge = new Challenge(challenger, challenged, dto.getMaxRounds(), dto.getQuestionsPerRound());
         challenge.getRounds().add(new Round(challenge, 1, RoundStatus.WAITING_CHALLENGER));
         return repository.save(challenge);
     }
@@ -42,6 +49,9 @@ public class ChallengeServiceImpl implements ChallengeService {
                 .orElseThrow(() -> new ChallengeNotFoundException("Challenge with id " + challengeId + " does not exists"));
         if (!challenge.getStatus().equals(ChallengeStatus.PENDING)) {
             throw new ChallengeNotPendingException("Challenge with id " + challengeId + " was already accepted");
+        }
+        if (challenge.getRounds().get(0).getStatus().equals(RoundStatus.WAITING_CHALLENGER)) {
+            throw new WaitingFotChallengerException("Challenger has not played yet");
         }
         challenge.setStatus(ChallengeStatus.ACTIVE);
         return repository.save(challenge);

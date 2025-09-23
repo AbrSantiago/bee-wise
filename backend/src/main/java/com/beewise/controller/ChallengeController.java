@@ -3,6 +3,7 @@ package com.beewise.controller;
 import com.beewise.controller.dto.AnswerDTO;
 import com.beewise.controller.dto.ChallengeDTO;
 import com.beewise.controller.dto.RoundDTO;
+import com.beewise.controller.dto.SendChallengeDTO;
 import com.beewise.model.Challenge;
 import com.beewise.service.ChallengeService;
 import jakarta.validation.Valid;
@@ -18,14 +19,9 @@ public class ChallengeController {
         this.challengeService = challengeService;
     }
 
-    @PostMapping("/send/{challengerId}/to/{challengedId}")
-    public ResponseEntity<ChallengeDTO> sendChallenge(
-            @PathVariable Long challengerId,
-            @PathVariable Long challengedId,
-            @Valid @PathVariable int maxRounds,
-            @Valid @PathVariable int questionsPerRound
-    ) {
-        Challenge challenge = challengeService.sendChallenge(challengerId, challengedId, maxRounds, questionsPerRound);
+    @PostMapping("/send")
+    public ResponseEntity<ChallengeDTO> sendChallenge(@Valid @RequestBody SendChallengeDTO challengeDTO) {
+        Challenge challenge = challengeService.sendChallenge(challengeDTO);
         ChallengeDTO dto = ChallengeDTO.fromChallenge(challenge);
         return ResponseEntity.ok(dto);
     }

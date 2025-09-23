@@ -87,4 +87,16 @@ public class GlobalExceptionHandler {
         Map<String, String> error = Map.of("error", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(WaitingFotChallengerException.class)
+    public ResponseEntity<Map<String, String>> handleWaitingFotChallenger(WaitingFotChallengerException ex) {
+        Map<String, String> error = Map.of("error", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UserChallengesHimselfException.class)
+    public ResponseEntity<Map<String, String>> handleUserChallengesHimself(UserChallengesHimselfException ex) {
+        Map<String, String> error = Map.of("error", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
 }
