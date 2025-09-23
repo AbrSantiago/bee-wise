@@ -32,4 +32,12 @@ public class Round {
         this.roundNumber = roundNumber;
         this.status = status;
     }
+
+    public User winner() {
+        if (challengerScore > challengedScore) {
+            return challenge.getChallenger();
+        } else {
+            return challenge.getChallenged();
+        }
+    }
 }

@@ -62,27 +62,61 @@ public class ChallengeServiceImpl implements ChallengeService {
         Challenge challenge = repository.findById(answer.getChallengeId())
                 .orElseThrow(() -> new ChallengeNotFoundException("Challenge with id " + answer.getChallengeId() + " does not exists"));
         List<Round> rounds = challenge.getRounds();
-        if (answer.getRoundNumber() > challenge.getMaxRounds() || answer.getRoundNumber() < rounds.size()) {
+        if (answer.getRoundNumber() > challenge.getMaxRounds() || answer.getRoundNumber() != rounds.size()) {
             throw new RoundNumberException("Wrong round number");
         }
         Round round = rounds.get(answer.getRoundNumber() - 1);
+        if (round.getStatus().equals(RoundStatus.COMPLETED)) {
+            throw new RoundCompletedException("Round was already completed");
+        }
         if (round.getStatus().equals(RoundStatus.WAITING_CHALLENGED)) {
             if (!answer.getRol().equals(ChallengeRol.CHALLENGED)) {
                 throw new AnswerWrongRolException("Rol should be CHALLENGED");
+            }
+            round.setChallengedScore(answer.getScore());
+            if (answer.getRoundNumber() % 2 == 1) {
+                round.setStatus(RoundStatus.COMPLETED);
+                if (answer.getRoundNumber() + 1 >= challenge.getMaxRounds()) {
+                    Round nextRound = new Round(challenge, answer.getRoundNumber() + 1, RoundStatus.WAITING_CHALLENGED);
+                    challenge.getRounds().add(nextRound);
+                }
             } else {
-                round.setChallengedScore(answer.getScore());
+                round.setStatus(RoundStatus.WAITING_CHALLENGER);
             }
         }
         if (round.getStatus().equals(RoundStatus.WAITING_CHALLENGER)) {
             if (!answer.getRol().equals(ChallengeRol.CHALLENGER)) {
                 throw new AnswerWrongRolException("Rol should be CHALLENGER");
+            }
+            round.setChallengerScore(answer.getScore());
+            if (answer.getRoundNumber() % 2 == 0) {
+                round.setStatus(RoundStatus.COMPLETED);
+                if (answer.getRoundNumber() + 1 >= challenge.getMaxRounds()) {
+                    Round nextRound = new Round(challenge, answer.getRoundNumber() + 1, RoundStatus.WAITING_CHALLENGER);
+                    challenge.getRounds().add(nextRound);
+                }
             } else {
-                round.setChallengerScore(answer.getScore());
+                round.setStatus(RoundStatus.WAITING_CHALLENGED);
             }
         }
-        if (round.getStatus().equals(RoundStatus.COMPLETED)) {
-            throw new RoundCompletedException("Round was already completed");
+        // CHECK IF ENDS
+        if (answer.getRoundNumber() == challenge.getMaxRounds() && round.getStatus() == RoundStatus.COMPLETED) {
+            challenge.setStatus(ChallengeStatus.COMPLETED);
+            long challengerWins = rounds.stream().filter(r -> r.winner() == challenge.getChallenger()).count();
+            long challengeeWins = rounds.stream().filter(r -> r.winner() == challenge.getChallenged()).count();
+            if (challengerWins == challengeeWins) {
+                challenge.setResult(ChallengeResult.DRAW);
+            } else if (challengerWins > challengeeWins) {
+                challenge.setResult(ChallengeResult.CHALLENGER_WIN);
+            } else {
+                challenge.setResult(ChallengeResult.CHALLENGED_WIN);
+            }
         }
         return repository.save(challenge);
+    }
+
+    @Override
+    public List<Challenge> getAll() {
+        return repository.findAll();
     }
 }

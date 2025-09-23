@@ -10,6 +10,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/challenge")
 public class ChallengeController {
@@ -17,6 +19,13 @@ public class ChallengeController {
 
     public ChallengeController(ChallengeService challengeService) {
         this.challengeService = challengeService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ChallengeDTO>> getAll() {
+        List<Challenge> challenges = challengeService.getAll();
+        List<ChallengeDTO> challengeDTOS = challenges.stream().map(ChallengeDTO::new).toList();
+        return ResponseEntity.ok(challengeDTOS);
     }
 
     @PostMapping("/send")
@@ -33,8 +42,8 @@ public class ChallengeController {
         return ResponseEntity.ok(dto);
     }
 
-    @PostMapping("/{challengeId}/round/{round}/answer")
-    public ResponseEntity<ChallengeDTO> answerRound(@RequestBody AnswerDTO answer) {
+    @PostMapping("/answer")
+    public ResponseEntity<ChallengeDTO> answerRound(@Valid @RequestBody AnswerDTO answer) {
         Challenge challenge = challengeService.answerRound(answer);
         ChallengeDTO dto = ChallengeDTO.fromChallenge(challenge);
         return ResponseEntity.ok(dto);
