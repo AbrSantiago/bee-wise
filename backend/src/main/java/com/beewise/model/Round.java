@@ -9,14 +9,14 @@ import lombok.Setter;
 @Setter
 @Entity
 @NoArgsConstructor
-public class ChallengeRound {
+public class Round {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "challenge_id", nullable = false)
-    private Long challengeId;
+    private Challenge challenge;
 
     private int roundNumber;
 
@@ -27,9 +27,9 @@ public class ChallengeRound {
     @Enumerated(EnumType.STRING)
     private RoundStatus status;
 
-    public ChallengeRound(Long challengeId, int roundNumber) {
-        this.challengeId = challengeId;
+    public Round(Challenge challenge, int roundNumber, RoundStatus status) {
+        this.challenge = challenge;
         this.roundNumber = roundNumber;
-        this.status = RoundStatus.WAITING_CHALLENGED;
+        this.status = status;
     }
 }
