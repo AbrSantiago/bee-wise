@@ -19,6 +19,8 @@ public class ChallengeDTO {
     private Long challengedId;
     private ChallengeStatus status;
     private List<RoundDTO> rounds;
+    private int maxRounds;
+    private int questionsPerRound;
     private LocalDate creationDate;
     private LocalDate expireDate;
     private ChallengeResult result;
@@ -32,6 +34,8 @@ public class ChallengeDTO {
                 .stream()
                 .map(RoundDTO::fromChallengeRound)
                 .toList();
+        this.maxRounds = challenge.getMaxRounds();
+        this.questionsPerRound = challenge.getQuestionsPerRound();
         this.creationDate = challenge.getCreationDate();
         this.expireDate = challenge.getExpireDate();
         this.result = challenge.getResult();

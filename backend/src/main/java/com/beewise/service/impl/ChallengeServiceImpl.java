@@ -62,6 +62,9 @@ public class ChallengeServiceImpl implements ChallengeService {
         Challenge challenge = repository.findById(answer.getChallengeId())
                 .orElseThrow(() -> new ChallengeNotFoundException("Challenge with id " + answer.getChallengeId() + " does not exists"));
         List<Round> rounds = challenge.getRounds();
+        if (challenge.getStatus() != ChallengeStatus.ACTIVE && rounds.get(0).getStatus() != RoundStatus.WAITING_CHALLENGER){
+            throw new AnswerNotAllowedException("Not allowed to answer");
+        }
         if (answer.getRoundNumber() > challenge.getMaxRounds() || answer.getRoundNumber() != rounds.size()) {
             throw new RoundNumberException("Wrong round number");
         }
@@ -76,7 +79,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             round.setChallengedScore(answer.getScore());
             if (answer.getRoundNumber() % 2 == 1) {
                 round.setStatus(RoundStatus.COMPLETED);
-                if (answer.getRoundNumber() + 1 >= challenge.getMaxRounds()) {
+                if (answer.getRoundNumber() + 1 <= challenge.getMaxRounds()) {
                     Round nextRound = new Round(challenge, answer.getRoundNumber() + 1, RoundStatus.WAITING_CHALLENGED);
                     challenge.getRounds().add(nextRound);
                 }
@@ -91,7 +94,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             round.setChallengerScore(answer.getScore());
             if (answer.getRoundNumber() % 2 == 0) {
                 round.setStatus(RoundStatus.COMPLETED);
-                if (answer.getRoundNumber() + 1 >= challenge.getMaxRounds()) {
+                if (answer.getRoundNumber() + 1 <= challenge.getMaxRounds()) {
                     Round nextRound = new Round(challenge, answer.getRoundNumber() + 1, RoundStatus.WAITING_CHALLENGER);
                     challenge.getRounds().add(nextRound);
                 }
