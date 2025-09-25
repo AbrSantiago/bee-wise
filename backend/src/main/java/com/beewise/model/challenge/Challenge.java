@@ -1,5 +1,6 @@
-package com.beewise.model;
+package com.beewise.model.challenge;
 
+import com.beewise.model.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.Getter;
@@ -13,11 +14,6 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(
-    uniqueConstraints = @UniqueConstraint(
-            columnNames = {"challenger_id", "challenged_id", "status"}
-    )
-)
 @NoArgsConstructor
 public class Challenge {
     @Id

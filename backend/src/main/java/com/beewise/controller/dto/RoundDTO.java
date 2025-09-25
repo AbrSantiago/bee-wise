@@ -1,7 +1,7 @@
 package com.beewise.controller.dto;
 
-import com.beewise.model.Round;
-import com.beewise.model.RoundStatus;
+import com.beewise.model.challenge.Round;
+import com.beewise.model.challenge.RoundStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

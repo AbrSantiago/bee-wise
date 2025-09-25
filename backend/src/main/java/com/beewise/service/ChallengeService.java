@@ -2,7 +2,7 @@ package com.beewise.service;
 
 import com.beewise.controller.dto.AnswerDTO;
 import com.beewise.controller.dto.SendChallengeDTO;
-import com.beewise.model.Challenge;
+import com.beewise.model.challenge.Challenge;
 
 import java.util.List;
 

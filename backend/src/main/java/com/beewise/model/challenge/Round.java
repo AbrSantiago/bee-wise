@@ -1,5 +1,7 @@
-package com.beewise.model;
+package com.beewise.model.challenge;
 
+import com.beewise.controller.dto.AnswerDTO;
+import com.beewise.model.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,5 +41,25 @@ public class Round {
         } else {
             return challenge.getChallenged();
         }
+    }
+
+    public void answer(AnswerDTO answer) {
+        getState().answer(challenge, this, answer);
+    }
+
+    public RoundState getState() {
+        return RoundStateFactory.fromStatus(this.status);
+    }
+
+    public boolean isCompleted() {
+        return status == RoundStatus.COMPLETED;
+    }
+
+    public boolean isWaitingChallenger() {
+        return status == RoundStatus.WAITING_CHALLENGER;
+    }
+
+    public boolean isWaitingChallenged() {
+        return status == RoundStatus.WAITING_CHALLENGED;
     }
 }

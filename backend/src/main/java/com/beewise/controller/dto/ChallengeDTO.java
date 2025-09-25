@@ -1,8 +1,8 @@
 package com.beewise.controller.dto;
 
-import com.beewise.model.Challenge;
-import com.beewise.model.ChallengeResult;
-import com.beewise.model.ChallengeStatus;
+import com.beewise.model.challenge.Challenge;
+import com.beewise.model.challenge.ChallengeResult;
+import com.beewise.model.challenge.ChallengeStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

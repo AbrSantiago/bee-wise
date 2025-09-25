@@ -1,10 +1,10 @@
 package com.beewise.service.impl;
 
 import com.beewise.controller.dto.AnswerDTO;
-import com.beewise.controller.dto.ChallengeRol;
 import com.beewise.controller.dto.SendChallengeDTO;
 import com.beewise.exception.*;
 import com.beewise.model.*;
+import com.beewise.model.challenge.*;
 import com.beewise.repository.ChallengeRepository;
 import com.beewise.service.ChallengeService;
 import com.beewise.service.UserService;
@@ -37,7 +37,7 @@ public class ChallengeServiceImpl implements ChallengeService {
                 repository.existsByChallengerAndChallengedAndStatusIn(challenged, challenger, statuses)) {
             throw new ChallengeAlreadyExistsException("Challenge between users " + dto.getChallengerId()
                     + " and " + dto.getChallengedId() + " already exists");
-        };
+        }
         Challenge challenge = new Challenge(challenger, challenged, dto.getMaxRounds(), dto.getQuestionsPerRound());
         challenge.getRounds().add(new Round(challenge, 1, RoundStatus.WAITING_CHALLENGER));
         return repository.save(challenge);
@@ -50,7 +50,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         if (!challenge.getStatus().equals(ChallengeStatus.PENDING)) {
             throw new ChallengeNotPendingException("Challenge with id " + challengeId + " was already accepted");
         }
-        if (challenge.getRounds().get(0).getStatus().equals(RoundStatus.WAITING_CHALLENGER)) {
+        if (challenge.getRounds().get(0).isWaitingChallenger()) {
             throw new WaitingFotChallengerException("Challenger has not played yet");
         }
         challenge.setStatus(ChallengeStatus.ACTIVE);
@@ -62,48 +62,17 @@ public class ChallengeServiceImpl implements ChallengeService {
         Challenge challenge = repository.findById(answer.getChallengeId())
                 .orElseThrow(() -> new ChallengeNotFoundException("Challenge with id " + answer.getChallengeId() + " does not exists"));
         List<Round> rounds = challenge.getRounds();
-        if (challenge.getStatus() != ChallengeStatus.ACTIVE && rounds.get(0).getStatus() != RoundStatus.WAITING_CHALLENGER){
+        if (challenge.getStatus() != ChallengeStatus.ACTIVE && rounds.get(0).isWaitingChallenged()){
             throw new AnswerNotAllowedException("Not allowed to answer");
         }
         if (answer.getRoundNumber() > challenge.getMaxRounds() || answer.getRoundNumber() != rounds.size()) {
             throw new RoundNumberException("Wrong round number");
         }
         Round round = rounds.get(answer.getRoundNumber() - 1);
-        if (round.getStatus().equals(RoundStatus.COMPLETED)) {
-            throw new RoundCompletedException("Round was already completed");
-        }
-        if (round.getStatus().equals(RoundStatus.WAITING_CHALLENGED)) {
-            if (!answer.getRol().equals(ChallengeRol.CHALLENGED)) {
-                throw new AnswerWrongRolException("Rol should be CHALLENGED");
-            }
-            round.setChallengedScore(answer.getScore());
-            if (answer.getRoundNumber() % 2 == 1) {
-                round.setStatus(RoundStatus.COMPLETED);
-                if (answer.getRoundNumber() + 1 <= challenge.getMaxRounds()) {
-                    Round nextRound = new Round(challenge, answer.getRoundNumber() + 1, RoundStatus.WAITING_CHALLENGED);
-                    challenge.getRounds().add(nextRound);
-                }
-            } else {
-                round.setStatus(RoundStatus.WAITING_CHALLENGER);
-            }
-        }
-        if (round.getStatus().equals(RoundStatus.WAITING_CHALLENGER)) {
-            if (!answer.getRol().equals(ChallengeRol.CHALLENGER)) {
-                throw new AnswerWrongRolException("Rol should be CHALLENGER");
-            }
-            round.setChallengerScore(answer.getScore());
-            if (answer.getRoundNumber() % 2 == 0) {
-                round.setStatus(RoundStatus.COMPLETED);
-                if (answer.getRoundNumber() + 1 <= challenge.getMaxRounds()) {
-                    Round nextRound = new Round(challenge, answer.getRoundNumber() + 1, RoundStatus.WAITING_CHALLENGER);
-                    challenge.getRounds().add(nextRound);
-                }
-            } else {
-                round.setStatus(RoundStatus.WAITING_CHALLENGED);
-            }
-        }
+        round.answer(answer);
+
         // CHECK IF ENDS
-        if (answer.getRoundNumber() == challenge.getMaxRounds() && round.getStatus() == RoundStatus.COMPLETED) {
+        if (answer.getRoundNumber() == challenge.getMaxRounds() && round.isCompleted()) {
             challenge.setStatus(ChallengeStatus.COMPLETED);
             long challengerWins = rounds.stream().filter(r -> r.winner() == challenge.getChallenger()).count();
             long challengeeWins = rounds.stream().filter(r -> r.winner() == challenge.getChallenged()).count();

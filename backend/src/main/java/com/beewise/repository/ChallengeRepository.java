@@ -1,7 +1,7 @@
 package com.beewise.repository;
 
-import com.beewise.model.Challenge;
-import com.beewise.model.ChallengeStatus;
+import com.beewise.model.challenge.Challenge;
+import com.beewise.model.challenge.ChallengeStatus;
 import com.beewise.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -1,4 +1,4 @@
-package com.beewise.model;
+package com.beewise.model.challenge;
 
 public enum ChallengeStatus {
     PENDING,
