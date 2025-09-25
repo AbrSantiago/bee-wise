@@ -32,6 +32,7 @@ public class Challenge {
     private ChallengeStatus status = ChallengeStatus.PENDING;
 
     @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("roundNumber ASC")
     private List<Round> rounds = new ArrayList<>();
 
     @Min(value = 1, message = "Rounds amount must be positive")

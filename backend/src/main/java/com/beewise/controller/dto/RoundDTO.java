@@ -10,16 +10,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class RoundDTO {
-    private Long id;
-    private Long challengeId;
     private int roundNumber;
     private int challengerScore;
     private int challengedScore;
     private RoundStatus status;
 
     public RoundDTO(Round round) {
-        this.id = round.getId();
-        this.challengeId = round.getChallenge().getId();
         this.roundNumber = round.getRoundNumber();
         this.challengerScore = round.getChallengerScore();
         this.challengedScore = round.getChallengedScore();
