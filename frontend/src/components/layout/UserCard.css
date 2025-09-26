@@ -1,0 +1,70 @@
+.user-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(145deg, #fff8e1, #ffe082);
+  border: 2px solid #fbc02d;
+  border-radius: 16px;
+  padding: 1.2rem;
+  padding-top: 1.6rem;
+  width: 100px;
+  height: 130px;
+  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.user-card::before {
+  content: "🐝";
+  font-size: 1.5rem;
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 42px;
+  height: 42px;
+  background: #ffb800;
+  clip-path: polygon(25% 6%, 75% 6%, 100% 50%, 75% 94%, 25% 94%, 0% 50%);
+  box-shadow: 0 2px 8px 0 rgba(80, 60, 10, 0.12);
+  z-index: 1;
+}
+
+.user-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 6px 6px 16px rgba(0, 0, 0, 0.25);
+}
+
+.user-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.user-card-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #5d4037;
+}
+
+.points {
+  margin: 0.6rem 0;
+  font-weight: bold;
+  color: #6d4c41;
+}
+
+.challenge-btn {
+  background: #fbc02d;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.challenge-btn:hover {
+  background: #ffca28;
+}

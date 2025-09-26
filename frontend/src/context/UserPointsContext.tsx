@@ -1,4 +1,10 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  type ReactNode,
+} from "react";
 import { useAuth } from "./AuthContext";
 import userService, { type UserPointsResponse } from "../services/userService";
 
@@ -8,7 +14,9 @@ type UserPointsContextType = {
   refreshPoints: () => Promise<void>;
 };
 
-const UserPointsContext = createContext<UserPointsContextType | undefined>(undefined);
+const UserPointsContext = createContext<UserPointsContextType | undefined>(
+  undefined
+);
 
 export function UserPointsProvider({ children }: { children: ReactNode }) {
   const { token } = useAuth();
@@ -16,28 +24,25 @@ export function UserPointsProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(false);
 
   const fetchPoints = async () => {
-  if (!token) {
-    console.log('⚠️ No token available');
-    return;
-  }
-  
-  console.log('📤 Fetching user points...');
-  setLoading(true);
-  try {
-    const data = await userService.getUserPoints();
-    console.log('✅ Points fetched:', data);
-    setUserPoints(data);
-  } catch (error) {
-    console.error("❌ Error fetching user points:", error);
-  } finally {
-    setLoading(false);
-  }
-};
+    if (!token) {
+      console.log("⚠️ No token available");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const data = await userService.getUserPoints();
+      setUserPoints(data);
+    } catch (error) {
+      console.error("❌ Error fetching user points:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const refreshPoints = async () => {
-  console.log('🔄 Refreshing points manually...');
-  await fetchPoints();
-};
+    await fetchPoints();
+  };
 
   useEffect(() => {
     if (token) {

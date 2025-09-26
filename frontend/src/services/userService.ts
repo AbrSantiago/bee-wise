@@ -2,10 +2,11 @@ import apiClient from "./api";
 
 export type User = {
   id: number;
-  username: string;
   name: string;
   surname: string;
   email: string;
+  username: string;
+  points: number;
 };
 
 export type AuthResponse = {
@@ -42,8 +43,10 @@ const userService = {
     return response.data;
   },
 
-  async getCurrentUser(): Promise<User> {
-    const response = await apiClient.get<User>("/users/me");
+  async getCurrentUser(token?: string): Promise<User> {
+    const response = await apiClient.get<User>("/users/me", {
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    });
     return response.data;
   },
 
@@ -58,6 +61,11 @@ const userService = {
 
   async getUserPoints(): Promise<UserPointsResponse> {
     const response = await apiClient.get<UserPointsResponse>("/users/points");
+    return response.data;
+  },
+
+  async getUsers(): Promise<User[]> {
+    const response = await apiClient.get<User[]>("/users");
     return response.data;
   },
 };

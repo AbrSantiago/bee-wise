@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, type ReactNode } from "
 import { useAuth } from "./AuthContext";
 import userService, { type User } from "../services/userService";
 
-type UserContextType = {
+export type UserContextType = {
   user: User | null;
   loading: boolean;
   refreshUser: () => Promise<void>;
@@ -20,12 +20,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
       setUser(null);
       return;
     }
-    
+
     setLoading(true);
     try {
-      const userData = await userService.getCurrentUser();
+      const userData = await userService.getCurrentUser(token); // pasar token acá
       setUser(userData);
-      console.log('✅ User loaded:', userData);
+      console.log("✅ User loaded:", userData);
     } catch (error) {
       console.error("❌ Error loading user:", error);
       setUser(null);
@@ -39,6 +39,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
+    if (!token) {
+      setUser(null);
+      return;
+    }
     fetchUser();
   }, [token]);
 

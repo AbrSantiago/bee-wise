@@ -13,31 +13,34 @@ import LandingPage from "./pages/LandingPage/LandingPage";
 import LoginPage from "./pages/Login/LoginPage";
 import RegisterPage from "./pages/Register/RegisterPage";
 import RootRedirect from "./components/layout/RootRedirect";
+import { UserProvider } from "./context/UserContext";
 
 function App() {
   return (
     <AuthProvider>
       <UserPointsProvider>
-        <Routes>
-          <Route path="/" element={<RootRedirect />} />
-          
-          {/* Landing con login + register */}
-          <Route path="/landing" element={<LandingPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+        <UserProvider>
+          <Routes>
+            <Route path="/" element={<RootRedirect />} />
 
-          {/* Auth required */}
-          <Route element={<ProtectedLayout />}>
-            <Route path="/home" element={<Home />} />
-            <Route path="/practice/:id" element={<PracticePage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/challenges" element={<ChallengesPage />} />
-            <Route path="/ranking" element={<RankingPage />} />
-            <Route path="/test" element={<Test />} />
-          </Route>
+            {/* Landing con login + register */}
+            <Route path="/landing" element={<LandingPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
 
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
+            {/* Auth required */}
+            <Route element={<ProtectedLayout />}>
+              <Route path="/home" element={<Home />} />
+              <Route path="/practice/:id" element={<PracticePage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/challenges" element={<ChallengesPage />} />
+              <Route path="/ranking" element={<RankingPage />} />
+              <Route path="/test" element={<Test />} />
+            </Route>
+
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </UserProvider>
       </UserPointsProvider>
     </AuthProvider>
   );

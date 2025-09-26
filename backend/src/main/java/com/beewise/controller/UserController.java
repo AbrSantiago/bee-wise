@@ -36,6 +36,13 @@ public class UserController {
         return ResponseEntity.ok(new AuthResponseDTO(token, user.getEmail(), user.getUsername()));
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<UserDTO> getCurrentUser(@RequestHeader("Authorization") String token) {
+        String username = jwtService.extractUsername(token.substring(7));
+        User user = userService.getUserByUsername(username);
+        return ResponseEntity.ok(new UserDTO(user));
+    }
+
     @GetMapping()
     public ResponseEntity<List<UserDTO>> getAllUsers (){
         List<User> users = userService.getAllUsers();
