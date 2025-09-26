@@ -45,4 +45,64 @@ public class GlobalExceptionHandler {
         Map<String, String> error = Map.of("error", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleUserNotFound(UserNotFoundException ex) {
+        Map<String, String> error = Map.of("error", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ChallengeAlreadyExistsException.class)
+    public ResponseEntity<Map<String, String>> handleChallengeAlreadyExists(ChallengeAlreadyExistsException ex) {
+        Map<String, String> error = Map.of("error", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ChallengeNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleCChallengeNotFound(ChallengeNotFoundException ex) {
+        Map<String, String> error = Map.of("error", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ChallengeNotPendingException.class)
+    public ResponseEntity<Map<String, String>> handleChallengeNotPending(ChallengeNotPendingException ex) {
+        Map<String, String> error = Map.of("error", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RoundNumberException.class)
+    public ResponseEntity<Map<String, String>> handleRoundNumber(RoundNumberException ex) {
+        Map<String, String> error = Map.of("error", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AnswerWrongRolException.class)
+    public ResponseEntity<Map<String, String>> handleAnswerWrongRol(AnswerWrongRolException ex) {
+        Map<String, String> error = Map.of("error", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RoundCompletedException.class)
+    public ResponseEntity<Map<String, String>> handleRoundCompleted(RoundCompletedException ex) {
+        Map<String, String> error = Map.of("error", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(WaitingFotChallengerException.class)
+    public ResponseEntity<Map<String, String>> handleWaitingFotChallenger(WaitingFotChallengerException ex) {
+        Map<String, String> error = Map.of("error", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UserChallengesHimselfException.class)
+    public ResponseEntity<Map<String, String>> handleUserChallengesHimself(UserChallengesHimselfException ex) {
+        Map<String, String> error = Map.of("error", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AnswerNotAllowedException.class)
+    public ResponseEntity<Map<String, String>> handleAnswerNotAllowed(AnswerNotAllowedException ex) {
+        Map<String, String> error = Map.of("error", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
 }

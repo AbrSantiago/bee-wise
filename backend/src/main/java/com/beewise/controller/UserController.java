@@ -37,9 +37,10 @@ public class UserController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<User>> getAllUsers (){
+    public ResponseEntity<List<UserDTO>> getAllUsers (){
         List<User> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
+        List<UserDTO> userDTOS = users.stream().map(UserDTO::new).toList();
+        return ResponseEntity.ok(userDTOS);
     }
 
     @PostMapping("/lessonComplete")
