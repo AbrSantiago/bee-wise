@@ -3,6 +3,8 @@ package com.beewise.controller;
 import com.beewise.controller.dto.AnswerDTO;
 import com.beewise.controller.dto.ChallengeDTO;
 import com.beewise.controller.dto.SendChallengeDTO;
+import com.beewise.controller.dto.UserDTO;
+import com.beewise.model.User;
 import com.beewise.model.challenge.Challenge;
 import com.beewise.service.ChallengeService;
 import jakarta.validation.Valid;
@@ -25,6 +27,13 @@ public class ChallengeController {
         List<Challenge> challenges = challengeService.getAll();
         List<ChallengeDTO> challengeDTOS = challenges.stream().map(ChallengeDTO::new).toList();
         return ResponseEntity.ok(challengeDTOS);
+    }
+
+    @GetMapping("/usersToChallenge/{challengerId}")
+    public ResponseEntity<List<UserDTO>> getUsersToChallenge(@PathVariable Long challengerId) {
+        List<User> users = challengeService.getUsersToChallenge(challengerId);
+        List<UserDTO> useDTOs = users.stream().map(UserDTO::new).toList();
+        return ResponseEntity.ok(useDTOs);
     }
 
     @PostMapping("/send")

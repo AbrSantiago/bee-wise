@@ -4,6 +4,7 @@ import com.beewise.controller.dto.*;
 import com.beewise.exception.UserNotFoundException;
 import com.beewise.model.Lesson;
 import com.beewise.model.User;
+import com.beewise.model.challenge.ChallengeStatus;
 import com.beewise.repository.UserRepository;
 import com.beewise.service.LessonProgressService;
 import com.beewise.service.LessonService;
@@ -101,5 +102,10 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         return new UserPointsDTO(user.getId(), user.getUsername(), user.getPoints(), user.getCurrentLesson());
+    }
+
+    @Override
+    public List<User> getUsersToChallenge(Long challengerId, List<ChallengeStatus> activeStatuses) {
+        return userRepository.findAvailableToChallenge(challengerId, activeStatuses);
     }
 }

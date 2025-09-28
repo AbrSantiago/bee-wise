@@ -91,4 +91,12 @@ public class ChallengeServiceImpl implements ChallengeService {
     public List<Challenge> getAll() {
         return repository.findAll();
     }
+
+    @Override
+    public List<User> getUsersToChallenge(Long challengerId) {
+        return userService.getUsersToChallenge(
+                challengerId,
+                List.of(ChallengeStatus.PENDING, ChallengeStatus.ACTIVE)
+        );
+    }
 }
