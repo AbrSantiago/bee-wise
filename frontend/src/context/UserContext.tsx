@@ -11,19 +11,21 @@ export type UserContextType = {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const { token } = useAuth();
+  const { accessToken } = useAuth();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
 
   const fetchUser = async () => {
-    if (!token) {
+    if (!accessToken) {
       setUser(null);
       return;
     }
 
     setLoading(true);
     try {
-      const userData = await userService.getCurrentUser(token); // pasar token acá
+      const userData = await userService.getCurrentUser(
+        accessToken || undefined
+      );
       setUser(userData);
       console.log("✅ User loaded:", userData);
     } catch (error) {
@@ -39,12 +41,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    if (!token) {
+    if (!accessToken) {
       setUser(null);
       return;
     }
     fetchUser();
-  }, [token]);
+  }, [accessToken]);
 
   return (
     <UserContext.Provider value={{ user, loading, refreshUser }}>

@@ -19,7 +19,7 @@ export default function ChallengeModal({
   onClose,
   onConfirm,
 }: ChallengeModalProps) {
-  const { token } = useAuth();
+  const { accessToken } = useAuth();
   const { user } = useUser();
   const [formData, setFormData] = useState<SendChallengeDTO | null>(null);
   const [error, setError] = useState("");
@@ -46,7 +46,7 @@ export default function ChallengeModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!token || !formData) {
+    if (!accessToken || !formData) {
       console.log("⚠️ Token o formData no disponible");
       return;
     }

@@ -19,12 +19,12 @@ const UserPointsContext = createContext<UserPointsContextType | undefined>(
 );
 
 export function UserPointsProvider({ children }: { children: ReactNode }) {
-  const { token } = useAuth();
+  const { accessToken } = useAuth();
   const [userPoints, setUserPoints] = useState<UserPointsResponse | null>(null);
   const [loading, setLoading] = useState(false);
 
   const fetchPoints = async () => {
-    if (!token) {
+    if (!accessToken) {
       console.log("⚠️ No token available");
       return;
     }
@@ -45,12 +45,12 @@ export function UserPointsProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    if (token) {
+    if (accessToken) {
       fetchPoints();
     } else {
       setUserPoints(null);
     }
-  }, [token]);
+  }, [accessToken]);
 
   return (
     <UserPointsContext.Provider value={{ userPoints, loading, refreshPoints }}>

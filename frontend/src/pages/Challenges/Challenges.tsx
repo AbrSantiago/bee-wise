@@ -8,13 +8,13 @@ import "./Challenges.css";
 import ChallengeModal from "../../components/layout/ChallengeModal";
 
 export function ChallengesPage() {
-  const { token } = useAuth();
+  const { accessToken } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUsername, setSelectedUsername] = useState<string | null>(null);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
 
   const fetchUsers = async () => {
-    if (!token) {
+    if (!accessToken) {
       console.log("⚠️ No token available");
       return;
     }
@@ -29,12 +29,12 @@ export function ChallengesPage() {
   };
 
   useEffect(() => {
-    if (token) {
+    if (accessToken) {
       fetchUsers();
     } else {
       setUsers([]);
     }
-  }, [token]);
+  }, [accessToken]);
 
   const handleConfirmChallenge = (rounds: number, questions: number) => {
     console.log(

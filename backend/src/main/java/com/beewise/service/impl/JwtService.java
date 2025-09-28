@@ -2,8 +2,8 @@ package com.beewise.service.impl;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -20,8 +20,12 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    @Value("${jwt.expiration}")
-    private long jwtExpiration;
+    @Value("${jwt.access-expiration}")   // 30 min
+    private long accessTokenExpiration;
+
+    @Getter
+    @Value("${jwt.refresh-expiration}")  // 7 days
+    private long refreshTokenExpiration;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -32,12 +36,12 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(String username) {
-        return generateToken(new HashMap<>(), username);
+    public String generateAccessToken(String username) {
+        return buildToken(new HashMap<>(), username, accessTokenExpiration);
     }
 
-    public String generateToken(Map<String, Object> extraClaims, String username) {
-        return buildToken(extraClaims, username, jwtExpiration);
+    public String generateRefreshToken(String username) {
+        return buildToken(new HashMap<>(), username, refreshTokenExpiration);
     }
 
     private String buildToken(Map<String, Object> extraClaims, String username, long expiration) {
@@ -52,11 +56,20 @@ public class JwtService {
 
     public boolean isTokenValid(String token, String username) {
         final String tokenUsername = extractUsername(token);
-        return (tokenUsername.equals(username)) && !isTokenExpired(token);
+        return (tokenUsername.equals(username)) && notIsTokenExpired(token);
     }
 
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+    public boolean validateRefreshToken(String token) {
+        try {
+            extractAllClaims(token);
+            return notIsTokenExpired(token);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private boolean notIsTokenExpired(String token) {
+        return !extractExpiration(token).before(new Date());
     }
 
     private Date extractExpiration(String token) {
@@ -75,4 +88,5 @@ public class JwtService {
         byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
 }

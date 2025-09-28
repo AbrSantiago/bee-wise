@@ -2,9 +2,9 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 export default function RootRedirect() {
-  const { token } = useAuth();
+  const { accessToken } = useAuth();
 
-  if (token) {
+  if (accessToken) {
     return <Navigate to="/home" replace />;
   }
 

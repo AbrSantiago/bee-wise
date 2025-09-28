@@ -10,7 +10,8 @@ export type User = {
 };
 
 export type AuthResponse = {
-  token: string;
+  accessToken: string;
+  refreshToken: string;
 };
 
 export type UserPointsResponse = {
@@ -68,6 +69,14 @@ const userService = {
     const response = await apiClient.get<User[]>("/users");
     return response.data;
   },
+
+  async refresh(refreshToken: string): Promise<AuthResponse> {
+    const response = await apiClient.post<AuthResponse>(
+      "/users/auth/refresh",
+      { refreshToken }
+    );
+    return response.data;
+  }
 };
 
 export default userService;

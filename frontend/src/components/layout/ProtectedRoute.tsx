@@ -3,9 +3,9 @@ import { useAuth } from "../../context/AuthContext";
 import type { JSX } from "react";
 
 export function ProtectedRoute({ children }: { children: JSX.Element }) {
-  const { token } = useAuth();
+  const { accessToken } = useAuth();
 
-  if (!token) {
+  if (!accessToken) {
     return <Navigate to="/landing" replace />;
   }
 

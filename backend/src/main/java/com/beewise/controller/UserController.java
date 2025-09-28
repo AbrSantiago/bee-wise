@@ -4,6 +4,7 @@ import com.beewise.controller.dto.*;
 import com.beewise.model.User;
 import com.beewise.service.UserService;
 import com.beewise.service.impl.JwtService;
+import com.beewise.service.impl.TokenServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,11 +16,12 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
-
+    private final TokenServiceImpl tokenService;
     private final JwtService jwtService;
 
-    public UserController(UserService userService, JwtService jwtService) {
+    public UserController(UserService userService, TokenServiceImpl tokenService, JwtService jwtService) {
         this.userService = userService;
+        this.tokenService = tokenService;
         this.jwtService = jwtService;
     }
 
@@ -30,10 +32,22 @@ public class UserController {
     }
 
     @PostMapping("/auth/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginUserDTO loginUserDTO) {
+    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginUserDTO loginUserDTO) {
         User user = userService.authenticateUser(loginUserDTO);
-        String token = jwtService.generateToken(user.getUsername());
-        return ResponseEntity.ok(new AuthResponseDTO(token, user.getEmail(), user.getUsername()));
+        String accessToken = jwtService.generateAccessToken(user.getUsername());
+        String refreshToken = jwtService.generateRefreshToken(user.getUsername());
+        return ResponseEntity.ok(new LoginResponseDTO(
+                accessToken,
+                refreshToken,
+                user.getEmail(),
+                user.getUsername()
+        ));
+    }
+
+    @PostMapping("/auth/refresh")
+    public ResponseEntity<RefreshTokenResponseDTO> refreshToken(@RequestBody RefreshTokenRequestDTO request) {
+        RefreshTokenResponseDTO response = tokenService.rotateRefreshToken(request.getRefreshToken());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/me")

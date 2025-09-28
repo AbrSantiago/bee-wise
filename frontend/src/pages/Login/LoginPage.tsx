@@ -15,7 +15,7 @@ function LoginPage() {
 
     try {
       const data = await userService.login(username, password);
-      login(data.token);
+      login(data);
     } catch (err: any) {
       setError(err.message || "Credenciales inválidas");
     }
