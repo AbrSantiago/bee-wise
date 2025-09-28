@@ -1,6 +1,5 @@
 package com.beewise.controller.dto;
 
-import com.beewise.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
