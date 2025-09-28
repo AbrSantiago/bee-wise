@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
 import MainLayout from "../../components/layout/MainLayout";
 import { motion } from "framer-motion";
-import userService, { type User } from "../../services/userService";
+import { type User } from "../../services/userService";
 import { useAuth } from "../../context/AuthContext";
 import UserCard from "../../components/layout/UserCard";
 import "./Challenges.css";
 import ChallengeModal from "../../components/layout/ChallengeModal";
+import challengeService from "../../services/challengeService";
+import { useUser } from "../../context/UserContext";
 
 export function ChallengesPage() {
   const { accessToken } = useAuth();
+  const { user } = useUser();
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUsername, setSelectedUsername] = useState<string | null>(null);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
@@ -20,11 +23,10 @@ export function ChallengesPage() {
     }
 
     try {
-      const data = await userService.getUsers();
+      const data = await challengeService.getUsersToChallenge(user!.id);
       setUsers(data);
     } catch (error) {
       console.error("❌ Error fetching user points:", error);
-    } finally {
     }
   };
 

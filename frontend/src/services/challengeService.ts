@@ -1,4 +1,5 @@
 import apiClient from "./api";
+import type { User } from "./userService";
 
 export type ChallengeStatus = "PENDING" | "ACTIVE" | "EXPIRED" | "COMPLETED";
 export type ChallengeResult = "CHALLENGER_WIN" | "CHALLENGED_WIN" | "DRAW" | null;
@@ -41,6 +42,11 @@ export type AnswerDTO = {
 const challengeService = {
   async getAll(): Promise<ChallengeDTO[]> {
     const response = await apiClient.get<ChallengeDTO[]>("/challenge");
+    return response.data;
+  },
+  
+  async getUsersToChallenge(challengerId: number): Promise<User[]> {
+    const response = await apiClient.get<User[]>(`/challenge/usersToChallenge/${challengerId}`);
     return response.data;
   },
 
