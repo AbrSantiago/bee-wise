@@ -22,11 +22,38 @@ export default function ChallengesSection({
   );
 
   // Filtrar desafíos activos donde el usuario participa
-  const activeChallenges = challenges.filter(
-    (challenge) =>
-      challenge.status === "ACTIVE" &&
-      (challenge.challengerId === currentUserId || challenge.challengedId === currentUserId)
-  );
+  // Filtrar desafíos activos donde le toca jugar al usuario
+const activeChallenges = challenges.filter((challenge) => {
+  if (challenge.status !== "ACTIVE") return false;
+  if (challenge.challengerId !== currentUserId && challenge.challengedId !== currentUserId) return false;
+  
+  console.log(`Filtering challenge ${challenge.id}:`, challenge);
+  
+  // Si no hay rondas y soy el challenger, puedo empezar
+  if (!challenge.rounds || challenge.rounds.length === 0) {
+    return challenge.challengerId === currentUserId;
+  }
+  
+  // Obtener la última ronda
+  const lastRound = challenge.rounds[challenge.rounds.length - 1];
+  
+  // Si la ronda está esperando a alguien específico
+  if (lastRound.status === "WAITING_CHALLENGER" && challenge.challengerId === currentUserId) {
+    return true;
+  }
+  
+  if (lastRound.status === "WAITING_CHALLENGED" && challenge.challengedId === currentUserId) {
+    return true;
+  }
+  
+  // Si la última ronda está completada y no hemos llegado al máximo de rondas,
+  // le toca al challenger iniciar la siguiente ronda
+  if (lastRound.status === "COMPLETED" && challenge.rounds.length < challenge.maxRounds) {
+    return challenge.challengerId === currentUserId;
+  }
+  
+  return false;
+});
 
   const handleAccept = async (challengeId: number) => {
     try {

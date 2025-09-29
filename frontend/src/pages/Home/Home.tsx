@@ -30,25 +30,30 @@ function Home() {
   };
 
   const getChallenges = async () => {
-    if (!token) return;
+  if (!token) return;
+  
+  try {
+
+    const allChallenges = await challengeService.getAll();
+
     
-    try {
-      const allChallenges = await challengeService.getAll();
-      // Filtrar desafíos donde el usuario actual es el challenger o challenged
-      const userChallenges = allChallenges.filter(
-        (challenge) =>
-          challenge.challengerId === user?.id || challenge.challengedId === user?.id
-      );
-      setChallenges(userChallenges);
-    } catch (error) {
-      console.error("Error fetching challenges:", error);
-    }
-  };
+    // Filtrar desafíos donde el usuario actual es el challenger o challenged
+    const userChallenges = allChallenges.filter(
+      (challenge) =>
+        challenge.challengerId === user?.id || challenge.challengedId === user?.id
+    );
+
+    
+    setChallenges(userChallenges);
+  } catch (error) {
+    console.error("Error fetching challenges:", error);
+  }
+};
 
   const handleAcceptChallenge = async (challengeId: number) => {
     try {
       const updatedChallenge = await challengeService.acceptChallenge(challengeId);
-      // Actualizar la lista de desafíos
+
       setChallenges((prev) =>
         prev.map((challenge) =>
           challenge.id === challengeId ? updatedChallenge : challenge
@@ -59,46 +64,68 @@ function Home() {
     }
   };
 
-  const shouldShowChallenges = () => {
-    if (!user?.id) return false;
+const shouldShowChallenges = () => {
+  if (!user?.id) {
+    console.log("❌ No user ID");
+    return false;
+  }
+  
+  if (challenges.length === 0) {
+    console.log("❌ No challenges found");
+    return false;
+  }
+  
+  const result = challenges.some((challenge) => {
     
-    return challenges.some((challenge) => {
-      // Mostrar si hay desafíos pendientes donde el usuario es el challenged
-      if (challenge.status === "PENDING" && challenge.challengedId === user.id) {
+    if (challenge.rounds && challenge.rounds.length > 0) {
+      console.log("- Last round:", challenge.rounds[challenge.rounds.length - 1]);
+    }
+    
+    // Mostrar desafíos pendientes donde soy el challenged
+    if (challenge.status === "PENDING" && challenge.challengedId === user.id) {
+      return true;
+    }
+    
+    // Solo mostrar desafíos ACTIVOS donde participo
+    if (challenge.status === "ACTIVE" && 
+        (challenge.challengerId === user.id || challenge.challengedId === user.id)) {
+            
+      // Si no hay rondas aún
+      if (!challenge.rounds || challenge.rounds.length === 0) {
+        // Solo mostrar si soy el challenger (para que pueda empezar)
+        if (challenge.challengerId === user.id) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+      
+      // Hay al menos una ronda - obtener la última
+      const lastRound = challenge.rounds[challenge.rounds.length - 1];
+      // Si la ronda está esperando específicamente al usuario actual
+      if (lastRound.status === "WAITING_CHALLENGER" && challenge.challengerId === user.id) {
         return true;
       }
       
-      // Mostrar si hay desafíos activos donde le toca jugar al usuario
-      if (challenge.status === "ACTIVE" && 
-          (challenge.challengerId === user.id || challenge.challengedId === user.id)) {
-        
-        // Si no hay rondas aún, le toca al challenger
-        if (challenge.rounds.length === 0) {
-          return challenge.challengerId === user.id;
-        }
-        
-        // Obtener la última ronda
-        const lastRound = challenge.rounds[challenge.rounds.length - 1];
-        
-        // Si la última ronda está completada y no hemos llegado al máximo de rondas,
-        // le toca al challenger iniciar la siguiente ronda
-        if (lastRound.status === "COMPLETED" && challenge.rounds.length < challenge.maxRounds) {
-          return challenge.challengerId === user.id;
-        }
-        
-        // Si la ronda está esperando a alguien específico
-        if (lastRound.status === "WAITING_CHALLENGER" && challenge.challengerId === user.id) {
-          return true;
-        }
-        
-        if (lastRound.status === "WAITING_CHALLENGED" && challenge.challengedId === user.id) {
-          return true;
-        }
+      if (lastRound.status === "WAITING_CHALLENGED" && challenge.challengedId === user.id) {
+        return true;
       }
       
+      // Si la última ronda está completada y no hemos llegado al máximo de rondas,
+      // le toca al challenger iniciar la siguiente ronda
+      if (lastRound.status === "COMPLETED" && challenge.rounds.length < challenge.maxRounds) {
+        if (challenge.challengerId === user.id) {
+          return true;
+        } else {
+          return false;
+        }
+      }
       return false;
-    });
-  };
+    }
+    return false;
+  });
+  return result;
+};
 
   useEffect(() => {
     getLessons();
@@ -113,7 +140,13 @@ function Home() {
   return (
     <MainLayout title="Matrices">
       <LessonPath lessons={lessons} />
-      <ChallengesSection challenges={challenges} currentUserId={user?.id || 0} onAcceptChallenge={handleAcceptChallenge} />
+      {shouldShowChallenges() && (
+        <ChallengesSection 
+          challenges={challenges} 
+          currentUserId={user?.id || 0} 
+          onAcceptChallenge={handleAcceptChallenge} 
+        />
+      )}
     </MainLayout>
   );
 }
