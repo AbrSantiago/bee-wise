@@ -5,3 +5,32 @@
   text-align: center;
   height: 100vh;
 }
+
+.home-container {
+  display: flex;
+  gap: 2rem;
+  padding: 1rem;
+  min-height: calc(100vh - 120px);
+  align-items: flex-start;
+}
+
+.lessons-section {
+  flex: 1;
+  min-width: 0;
+}
+
+.challenges-section {
+  flex-shrink: 0;
+  width: 350px;
+}
+
+@media (max-width: 1024px) {
+  .home-container {
+    flex-direction: column;
+  }
+  
+  .challenges-section {
+    order: -1;
+    width: 100%;
+  }
+}
