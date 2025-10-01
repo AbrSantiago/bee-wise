@@ -41,8 +41,16 @@ export type AnswerDTO = {
 
 const challengeService = {
   async getAll(): Promise<ChallengeDTO[]> {
-    const response = await apiClient.get<ChallengeDTO[]>("/challenge");
-    return response.data;
+    console.log("🔄 Calling GET /challenge");
+    try {
+      const response = await apiClient.get<ChallengeDTO[]>("/challenge");
+      console.log("📨 Response from /challenge:", response);
+      console.log("📦 Response data:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("❌ Error in challengeService.getAll():", error);
+      throw error;
+    }
   },
   
   async getUsersToChallenge(challengerId: number): Promise<User[]> {

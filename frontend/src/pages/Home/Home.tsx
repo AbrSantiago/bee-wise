@@ -15,7 +15,7 @@ type Lesson = {
 };
 
 function Home() {
-  const { token } = useAuth();
+  const { accessToken } = useAuth();
   const { user } = useUser();
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [challenges, setChallenges] = useState<ChallengeDTO[]>([]);
@@ -30,19 +30,29 @@ function Home() {
   };
 
   const getChallenges = async () => {
-  if (!token) return;
+  if (!accessToken) {
+    console.log("❌ No accessToken available");
+    return;
+  }
   
   try {
-
+    console.log("🚀 Fetching challenges...");
     const allChallenges = await challengeService.getAll();
-
+    console.log("📦 All challenges from API:", allChallenges);
+    
+    console.log("👤 Current user:", user);
     
     // Filtrar desafíos donde el usuario actual es el challenger o challenged
     const userChallenges = allChallenges.filter(
-      (challenge) =>
-        challenge.challengerId === user?.id || challenge.challengedId === user?.id
+      (challenge) => {
+        const isUserChallenger = challenge.challengerId === user?.id;
+        const isUserChallenged = challenge.challengedId === user?.id;
+        console.log(`Challenge ${challenge.id}: challenger=${challenge.challengerId}, challenged=${challenge.challengedId}, user=${user?.id}, isChallenger=${isUserChallenger}, isChallenged=${isUserChallenged}`);
+        return isUserChallenger || isUserChallenged;
+      }
     );
-
+    
+    console.log("🎯 User challenges after filtering:", userChallenges);
     
     setChallenges(userChallenges);
   } catch (error) {
@@ -64,89 +74,28 @@ function Home() {
     }
   };
 
-const shouldShowChallenges = () => {
-  if (!user?.id) {
-    console.log("❌ No user ID");
-    return false;
-  }
-  
-  if (challenges.length === 0) {
-    console.log("❌ No challenges found");
-    return false;
-  }
-  
-  const result = challenges.some((challenge) => {
-    
-    if (challenge.rounds && challenge.rounds.length > 0) {
-      console.log("- Last round:", challenge.rounds[challenge.rounds.length - 1]);
-    }
-    
-    // Mostrar desafíos pendientes donde soy el challenged
-    if (challenge.status === "PENDING" && challenge.challengedId === user.id) {
-      return true;
-    }
-    
-    // Solo mostrar desafíos ACTIVOS donde participo
-    if (challenge.status === "ACTIVE" && 
-        (challenge.challengerId === user.id || challenge.challengedId === user.id)) {
-            
-      // Si no hay rondas aún
-      if (!challenge.rounds || challenge.rounds.length === 0) {
-        // Solo mostrar si soy el challenger (para que pueda empezar)
-        if (challenge.challengerId === user.id) {
-          return true;
-        } else {
-          return false;
-        }
-      }
-      
-      // Hay al menos una ronda - obtener la última
-      const lastRound = challenge.rounds[challenge.rounds.length - 1];
-      // Si la ronda está esperando específicamente al usuario actual
-      if (lastRound.status === "WAITING_CHALLENGER" && challenge.challengerId === user.id) {
-        return true;
-      }
-      
-      if (lastRound.status === "WAITING_CHALLENGED" && challenge.challengedId === user.id) {
-        return true;
-      }
-      
-      // Si la última ronda está completada y no hemos llegado al máximo de rondas,
-      // le toca al challenger iniciar la siguiente ronda
-      if (lastRound.status === "COMPLETED" && challenge.rounds.length < challenge.maxRounds) {
-        if (challenge.challengerId === user.id) {
-          return true;
-        } else {
-          return false;
-        }
-      }
-      return false;
-    }
-    return false;
-  });
-  return result;
-};
-
   useEffect(() => {
     getLessons();
   }, []);
 
   useEffect(() => {
-    if (token && user) {
-      getChallenges();
-    }
-  }, [token, user]);
+  console.log("🎯 useEffect triggered - accessToken:", !!accessToken, "user:", !!user);
+  if (accessToken && user) {
+    console.log("✅ Calling getChallenges...");
+    getChallenges();
+  } else {
+    console.log("❌ Not calling getChallenges - missing accessToken or user");
+  }
+}, [accessToken, user]);
 
   return (
     <MainLayout title="Matrices">
       <LessonPath lessons={lessons} />
-      {shouldShowChallenges() && (
-        <ChallengesSection 
-          challenges={challenges} 
-          currentUserId={user?.id || 0} 
-          onAcceptChallenge={handleAcceptChallenge} 
-        />
-      )}
+      <ChallengesSection 
+        challenges={challenges} 
+        currentUserId={user?.id || 0} 
+        onAcceptChallenge={handleAcceptChallenge} 
+      />
     </MainLayout>
   );
 }
