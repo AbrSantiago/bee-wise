@@ -28,7 +28,7 @@
 
 .tab-button {
   flex: 1;
-  background: #f5f5f5;
+  background: #d97706;
   border: 2px solid #ddd;
   border-radius: 8px;
   padding: 0.5rem;
@@ -170,4 +170,21 @@
     margin: 1rem;
     width: calc(100% - 2rem);
   }
+}
+
+.no-challenges {
+  text-align: center;
+  color: #666;
+  padding: 2rem 1rem;
+}
+
+.no-challenges p {
+  margin: 0.5rem 0;
+  font-size: 1rem;
+}
+
+.sub-text {
+  font-size: 0.8rem !important;
+  color: #999 !important;
+  font-style: italic;
 }

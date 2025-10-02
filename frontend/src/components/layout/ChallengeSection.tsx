@@ -15,46 +15,61 @@ export default function ChallengesSection({
 }: ChallengesSectionProps) {
   const [activeTab, setActiveTab] = useState<"pending" | "active">("pending");
 
+  // LOGS DE DEBUG - agregar temporalmente
+  console.log("=== ChallengesSection Debug ===");
+  console.log("Current User ID:", currentUserId);
+  console.log("All challenges:", challenges);
+  console.log("Challenges length:", challenges.length);
+
   // Filtrar desafíos pendientes donde el usuario actual es el challenged
   const pendingChallenges = challenges.filter(
-    (challenge) =>
-      challenge.status === "PENDING" && challenge.challengedId === currentUserId
+    (challenge) => {
+      console.log(`Challenge ${challenge.id}:`, {
+        status: challenge.status,
+        challengerId: challenge.challengerId,
+        challengedId: challenge.challengedId,
+        isPending: challenge.status === "PENDING",
+        isUserChallenged: challenge.challengedId === currentUserId,
+        shouldShow: challenge.status === "PENDING" && challenge.challengedId === currentUserId
+      });
+      return challenge.status === "PENDING" && challenge.challengedId === currentUserId;
+    }
   );
 
-  // Filtrar desafíos activos donde el usuario participa
-  // Filtrar desafíos activos donde le toca jugar al usuario
-const activeChallenges = challenges.filter((challenge) => {
-  if (challenge.status !== "ACTIVE") return false;
-  if (challenge.challengerId !== currentUserId && challenge.challengedId !== currentUserId) return false;
-  
-  console.log(`Filtering challenge ${challenge.id}:`, challenge);
-  
-  // Si no hay rondas y soy el challenger, puedo empezar
-  if (!challenge.rounds || challenge.rounds.length === 0) {
-    return challenge.challengerId === currentUserId;
-  }
-  
-  // Obtener la última ronda
-  const lastRound = challenge.rounds[challenge.rounds.length - 1];
-  
-  // Si la ronda está esperando a alguien específico
-  if (lastRound.status === "WAITING_CHALLENGER" && challenge.challengerId === currentUserId) {
-    return true;
-  }
-  
-  if (lastRound.status === "WAITING_CHALLENGED" && challenge.challengedId === currentUserId) {
-    return true;
-  }
-  
-  // Si la última ronda está completada y no hemos llegado al máximo de rondas,
-  // le toca al challenger iniciar la siguiente ronda
-  if (lastRound.status === "COMPLETED" && challenge.rounds.length < challenge.maxRounds) {
-    return challenge.challengerId === currentUserId;
-  }
-  
-  return false;
-});
+  console.log("Pending challenges after filter:", pendingChallenges);
 
+  // Filtrar desafíos activos donde le toca jugar al usuario
+  const activeChallenges = challenges.filter((challenge) => {
+    if (challenge.status !== "ACTIVE") return false;
+    if (challenge.challengerId !== currentUserId && challenge.challengedId !== currentUserId) return false;
+    
+    // Si no hay rondas y soy el challenger, puedo empezar
+    if (!challenge.rounds || challenge.rounds.length === 0) {
+      return challenge.challengerId === currentUserId;
+    }
+    
+    // Obtener la última ronda
+    const lastRound = challenge.rounds[challenge.rounds.length - 1];
+    
+    // Si la ronda está esperando a alguien específico
+    if (lastRound.status === "WAITING_CHALLENGER" && challenge.challengerId === currentUserId) {
+      return true;
+    }
+    
+    if (lastRound.status === "WAITING_CHALLENGED" && challenge.challengedId === currentUserId) {
+      return true;
+    }
+    
+    // Si la última ronda está completada y no hemos llegado al máximo de rondas,
+    // le toca al challenger iniciar la siguiente ronda
+    if (lastRound.status === "COMPLETED" && challenge.rounds.length < challenge.maxRounds) {
+      return challenge.challengerId === currentUserId;
+    }
+    
+    return false;
+  });
+
+  console.log("Active challenges after filter:", activeChallenges);
   const handleAccept = async (challengeId: number) => {
     try {
       await onAcceptChallenge(challengeId);
@@ -62,6 +77,30 @@ const activeChallenges = challenges.filter((challenge) => {
       console.error("Error accepting challenge:", error);
     }
   };
+
+  const getActionText = (challenge: ChallengeDTO) => {
+    if (!challenge.rounds || challenge.rounds.length === 0) {
+      return "Empezar ronda";
+    }
+    
+    const lastRound = challenge.rounds[challenge.rounds.length - 1];
+    
+    if (lastRound.status === "COMPLETED" && challenge.rounds.length < challenge.maxRounds) {
+      return "Nueva ronda";
+    }
+    
+    if (lastRound.status === "WAITING_CHALLENGER" || lastRound.status === "WAITING_CHALLENGED") {
+      return "Jugar turno";
+    }
+    
+    return "Jugar";
+  };
+
+  // Determinar qué tab mostrar por defecto
+  const defaultTab = pendingChallenges.length > 0 ? "pending" : "active";
+  if (activeTab === "pending" && pendingChallenges.length === 0 && activeChallenges.length > 0) {
+    setActiveTab("active");
+  }
 
   return (
     <div className="challenges-widget">
@@ -78,7 +117,7 @@ const activeChallenges = challenges.filter((challenge) => {
           className={`tab-button ${activeTab === "active" ? "active" : ""}`}
           onClick={() => setActiveTab("active")}
         >
-          Activos ({activeChallenges.length})
+          Tu turno ({activeChallenges.length})
         </button>
       </div>
 
@@ -86,7 +125,10 @@ const activeChallenges = challenges.filter((challenge) => {
         {activeTab === "pending" && (
           <div className="challenges-list">
             {pendingChallenges.length === 0 ? (
-              <p className="no-challenges">No tienes desafíos pendientes</p>
+              <div className="no-challenges">
+                <p>No tenes desafíos pendientes</p>
+                <p className="sub-text">Los nuevos desafíos aparecerán acá</p>
+              </div>
             ) : (
               pendingChallenges.slice(0, 5).map((challenge) => (
                 <div key={challenge.id} className="challenge-item pending">
@@ -113,23 +155,26 @@ const activeChallenges = challenges.filter((challenge) => {
         {activeTab === "active" && (
           <div className="challenges-list">
             {activeChallenges.length === 0 ? (
-              <p className="no-challenges">No tienes desafíos activos</p>
+              <div className="no-challenges">
+                <p>No es tu turno</p>
+                <p className="sub-text">Espera a que sea tu momento de jugar</p>
+              </div>
             ) : (
               activeChallenges.slice(0, 5).map((challenge) => (
                 <div key={challenge.id} className="challenge-item active">
                   <div className="challenge-info">
-                    <h4>Desafío activo</h4>
+                    <h4>Es tu turno</h4>
                     <p>Rondas: {challenge.maxRounds}</p>
                     <p>Preguntas: {challenge.questionsPerRound}</p>
                     <div className="challenge-progress">
-                      <p>Ronda actual: {challenge.rounds.length || 1}</p>
-                      {challenge.rounds.length > 0 && (
+                      <p>Ronda: {(challenge.rounds?.length || 0) + 1}/{challenge.maxRounds}</p>
+                      {challenge.rounds && challenge.rounds.length > 0 && (
                         <p>Estado: {challenge.rounds[challenge.rounds.length - 1].status}</p>
                       )}
                     </div>
                   </div>
                   <button className="play-button">
-                    Jugar
+                    {getActionText(challenge)}
                   </button>
                 </div>
               ))
