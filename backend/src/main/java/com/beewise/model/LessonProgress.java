@@ -29,7 +29,7 @@ public class LessonProgress {
 
     private LocalDate firstTimeCompletedDate;
 
-    protected LessonProgress() {
+    public LessonProgress() {
         this.firstTimeCompletedDate = LocalDate.now();
     }
 

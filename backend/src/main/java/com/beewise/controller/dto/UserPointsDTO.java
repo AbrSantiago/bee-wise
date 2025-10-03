@@ -12,4 +12,8 @@ public class UserPointsDTO {
     private String username;
     private Integer points;
     private Integer currentLesson;
+
+    public UserPointsDTO() {
+
+    }
 }

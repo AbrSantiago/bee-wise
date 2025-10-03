@@ -27,7 +27,7 @@ public class Lesson {
     @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL)
     private List<Exercise> exercises;
 
-    protected Lesson() {}
+    public Lesson() {}
 
     public Lesson(String title, String description){
         this.title = title;
