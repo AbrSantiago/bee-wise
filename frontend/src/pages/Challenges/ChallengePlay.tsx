@@ -217,10 +217,15 @@ export function ChallengePlayPage() {
         score: totalCount,
       };
 
-      await challengeService.answerRound(answerDTO);
+      const challenge = await challengeService.answerRound(answerDTO);
 
-      alert("Turn submitted! Next player notified.");
-      navigate("/home");
+      if (challenge.status === "COMPLETED") {
+        alert(`Challenge completed! Result: ${challenge.result}`);
+        navigate("/challenges");
+      } else {
+        alert("Turn submitted! Next player notified.");
+        navigate("/challenges");
+      }
     } catch (error) {
       console.error("Error submitting turn:", error);
     }
@@ -259,8 +264,7 @@ export function ChallengePlayPage() {
                     const correct = answer.trim() === current.answer.trim();
                     setFeedback(correct);
                     setCanContinue(true);
-                    if (correct)
-                      setCorrectCount((prev) => prev + 1);
+                    if (correct) setCorrectCount((prev) => prev + 1);
                   }}
                 />
               </div>

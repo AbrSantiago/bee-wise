@@ -17,7 +17,6 @@ import CorrectionIntroScreen from "./components/CorrectionIntroScreen";
 
 export function PracticePage() {
   const { id } = useParams<{ id: string }>();
-  // const { user } = useUser();
   const { userPoints,refreshPoints } = useUserPoints();
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [currentExercise, setCurrentExercise] = useState(0);
