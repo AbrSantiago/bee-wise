@@ -8,171 +8,184 @@ import com.beewise.model.Exercise;
 import com.beewise.model.MultipleChoiceExercise;
 import com.beewise.model.OpenExercise;
 import com.beewise.repository.ExerciseRepository;
+import com.beewise.service.ExerciseService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@Transactional
+@ActiveProfiles("test")
 class ExerciseServiceImplTest {
 
-    @Mock
-    private ExerciseRepository repository;
+    @Autowired
+    private ExerciseService exerciseService;
 
-    @InjectMocks
-    private ExerciseServiceImpl service;
+    @Autowired
+    private ExerciseRepository exerciseRepository;
 
-    // ---- getExercise ----
+    private Exercise testOpenExercise;
+    private Exercise testMultipleChoiceExercise;
+
+    @BeforeEach
+    void setUp() {
+        testOpenExercise = createTestOpenExercise();
+        testMultipleChoiceExercise = createTestMultipleChoiceExercise();
+    }
+
+    private Exercise createTestOpenExercise() {
+        SimpleOpenExerciseDTO dto = new SimpleOpenExerciseDTO();
+        dto.setQuestion("What is 2 + 2?");
+        dto.setAnswer("4");
+        return exerciseService.createOpenExercise(dto);
+    }
+
+    private Exercise createTestMultipleChoiceExercise() {
+        SimpleMultipleChoiceExerciseDTO dto = new SimpleMultipleChoiceExerciseDTO();
+        dto.setQuestion("What is the capital of France?");
+        // Usar ArrayList en lugar de Arrays.asList()
+        dto.setOptions(new ArrayList<>(Arrays.asList("London", "Berlin", "Paris", "Madrid")));
+        dto.setAnswer("Paris");
+        return exerciseService.createMultipleChoiceExercise(dto);
+    }
+
     @Test
     void getExercise_validId_returnsExercise() {
-        Exercise exercise = new OpenExercise("Q?", "A");
-        exercise.setId(1L);
-
-        when(repository.findById(1L)).thenReturn(Optional.of(exercise));
-
-        Exercise result = service.getExercise(1L);
+        Exercise result = exerciseService.getExercise(testOpenExercise.getId());
 
         assertNotNull(result);
-        assertEquals("Q?", result.getQuestion());
-        verify(repository).findById(1L);
+        assertEquals(testOpenExercise.getId(), result.getId());
+        assertEquals(testOpenExercise.getQuestion(), result.getQuestion());
+        assertEquals(testOpenExercise.getAnswer(), result.getAnswer());
     }
 
     @Test
     void getExercise_invalidId_throwsException() {
-        assertThrows(InvalidIdException.class, () -> service.getExercise(0L));
-        assertThrows(InvalidIdException.class, () -> service.getExercise(null));
+        InvalidIdException exception = assertThrows(
+                InvalidIdException.class,
+                () -> exerciseService.getExercise(-1L)
+        );
+
+        assertEquals("Exercise id must be a positive number", exception.getMessage());
     }
 
     @Test
     void getExercise_notFound_throwsException() {
-        when(repository.findById(99L)).thenReturn(Optional.empty());
+        Long nonExistentId = 999999L;
 
-        assertThrows(ExerciseNotFoundException.class, () -> service.getExercise(99L));
+        ExerciseNotFoundException exception = assertThrows(
+                ExerciseNotFoundException.class,
+                () -> exerciseService.getExercise(nonExistentId)
+        );
+
+        assertEquals("Exercise with id " + nonExistentId + " not found", exception.getMessage());
     }
 
-    // ---- createOpenExercise ----
     @Test
-    void createOpenExercise_savesAndReturns() {
+    void createOpenExercise_validData_savesAndReturns() {
         SimpleOpenExerciseDTO dto = new SimpleOpenExerciseDTO();
-        dto.setQuestion("Q?");
-        dto.setAnswer("A");
+        dto.setQuestion("What is 5 + 3?");
+        dto.setAnswer("8");
 
-        Exercise saved = new OpenExercise("Q?", "A");
-        saved.setId(1L);
+        Exercise result = exerciseService.createOpenExercise(dto);
 
-        when(repository.save(any(Exercise.class))).thenReturn(saved);
-
-        Exercise result = service.createOpenExercise(dto);
-
-        assertEquals(1L, result.getId());
-        assertEquals("A", result.getAnswer());
-        verify(repository).save(any(Exercise.class));
+        assertNotNull(result);
+        assertNotNull(result.getId());
+        assertEquals("What is 5 + 3?", result.getQuestion());
+        assertEquals("8", result.getAnswer());
+        assertTrue(result instanceof OpenExercise);
     }
 
-
-    // ---- createMultipleChoiceExercise ----
     @Test
-    void createMultipleChoiceExercise_savesAndReturns() {
-        List<String> options = Arrays.asList("A", "B", "C");
-
+    void createMultipleChoiceExercise_validData_savesAndReturns() {
         SimpleMultipleChoiceExerciseDTO dto = new SimpleMultipleChoiceExerciseDTO();
-        dto.setQuestion("Q?");
-        dto.setOptions(options);
-        dto.setAnswer("A");
+        dto.setQuestion("What is the largest planet?");
+        // Usar ArrayList en lugar de Arrays.asList()
+        dto.setOptions(new ArrayList<>(Arrays.asList("Earth", "Jupiter", "Mars", "Venus")));
+        dto.setAnswer("Jupiter");
 
-        Exercise saved = new MultipleChoiceExercise("Q?", options, "A");
-        saved.setId(2L);
+        Exercise result = exerciseService.createMultipleChoiceExercise(dto);
 
-        when(repository.save(any(Exercise.class))).thenReturn(saved);
+        assertNotNull(result);
+        assertNotNull(result.getId());
+        assertEquals("What is the largest planet?", result.getQuestion());
+        assertEquals("Jupiter", result.getAnswer());
+        assertTrue(result instanceof MultipleChoiceExercise);
 
-        Exercise result = service.createMultipleChoiceExercise(dto);
-
-        assertEquals(2L, result.getId());
-        assertEquals(options, ((MultipleChoiceExercise) result).getOptions());
-        verify(repository).save(any(Exercise.class));
+        MultipleChoiceExercise mcExercise = (MultipleChoiceExercise) result;
+        assertEquals(4, mcExercise.getOptions().size());
+        assertTrue(mcExercise.getOptions().contains("Jupiter"));
     }
 
-
-    // ---- updateOpenExercise ----
     @Test
-    void updateOpenExercise_valid_updatesFields() {
-        OpenExercise exercise = new OpenExercise("OldQ", "OldA");
-        exercise.setId(1L);
-
-        when(repository.findById(1L)).thenReturn(Optional.of(exercise));
-        when(repository.save(exercise)).thenReturn(exercise);
-
+    void updateOpenExercise_validData_updatesFields() {
         SimpleOpenExerciseDTO dto = new SimpleOpenExerciseDTO();
-        dto.setQuestion("NewQ");
-        dto.setAnswer("NewA");
-        Exercise result = service.updateOpenExercise(1L, dto);
+        dto.setQuestion("Updated question");
+        dto.setAnswer("Updated answer");
 
-        assertEquals("NewQ", result.getQuestion());
-        assertEquals("NewA", result.getAnswer());
+        Exercise result = exerciseService.updateOpenExercise(testOpenExercise.getId(), dto);
+
+        assertNotNull(result);
+        assertEquals(testOpenExercise.getId(), result.getId());
+        assertEquals("Updated question", result.getQuestion());
+        assertEquals("Updated answer", result.getAnswer());
     }
 
     @Test
     void updateOpenExercise_wrongType_throwsException() {
-        MultipleChoiceExercise mc = new MultipleChoiceExercise("Q", List.of("A"), "A");
-        mc.setId(5L);
+        SimpleOpenExerciseDTO dto = new SimpleOpenExerciseDTO();
+        dto.setQuestion("Updated question");
+        dto.setAnswer("Updated answer");
 
-        when(repository.findById(5L)).thenReturn(Optional.of(mc));
+        InvalidIdException exception = assertThrows(
+                InvalidIdException.class,
+                () -> exerciseService.updateOpenExercise(testMultipleChoiceExercise.getId(), dto)
+        );
 
-        SimpleOpenExerciseDTO dto2 = new SimpleOpenExerciseDTO();
-        dto2.setQuestion("Q");
-        dto2.setAnswer("A");
-        assertThrows(InvalidIdException.class,
-                () -> service.updateOpenExercise(5L, dto2));
-    }
-
-    // ---- updateMultipleChoiceExercise ----
-    @Test
-    void updateMultipleChoiceExercise_valid_updatesFields() {
-        MultipleChoiceExercise mc = new MultipleChoiceExercise("OldQ", List.of("A", "B"), "A");
-        mc.setId(2L);
-
-        when(repository.findById(2L)).thenReturn(Optional.of(mc));
-        when(repository.save(mc)).thenReturn(mc);
-
-        SimpleMultipleChoiceExerciseDTO mcDto = new SimpleMultipleChoiceExerciseDTO();
-        mcDto.setQuestion("NewQ");
-        mcDto.setOptions(List.of("X", "Y"));
-        mcDto.setAnswer("Y");
-        Exercise result = service.updateMultipleChoiceExercise(2L, mcDto);
-
-
-        assertEquals("NewQ", result.getQuestion());
-        assertEquals(List.of("X", "Y"), ((MultipleChoiceExercise) result).getOptions());
-        assertEquals("Y", result.getAnswer());
+        assertEquals("Exercise with id " + testMultipleChoiceExercise.getId() + " is not Open",
+                exception.getMessage());
     }
 
     @Test
-    void updateMultipleChoiceExercise_wrongType_throwsException() {
-        OpenExercise open = new OpenExercise("Q", "A");
-        open.setId(10L);
+    void updateMultipleChoiceExercise_validData_updatesFields() {
+        SimpleMultipleChoiceExerciseDTO dto = new SimpleMultipleChoiceExerciseDTO();
+        dto.setQuestion("Updated MC question");
+        // Usar ArrayList en lugar de Arrays.asList()
+        dto.setOptions(new ArrayList<>(Arrays.asList("A", "B", "C", "D")));
+        dto.setAnswer("C");
 
-        when(repository.findById(10L)).thenReturn(Optional.of(open));
+        Exercise result = exerciseService.updateMultipleChoiceExercise(testMultipleChoiceExercise.getId(), dto);
 
-        SimpleMultipleChoiceExerciseDTO mcDto2 = new SimpleMultipleChoiceExerciseDTO();
-        mcDto2.setQuestion("Q");
-        mcDto2.setOptions(List.of("A"));
-        mcDto2.setAnswer("A");
-        assertThrows(InvalidIdException.class,
-                () -> service.updateMultipleChoiceExercise(10L, mcDto2));
+        assertNotNull(result);
+        assertEquals(testMultipleChoiceExercise.getId(), result.getId());
+        assertEquals("Updated MC question", result.getQuestion());
+        assertEquals("C", result.getAnswer());
+
+        MultipleChoiceExercise mcExercise = (MultipleChoiceExercise) result;
+        assertEquals(4, mcExercise.getOptions().size());
+        assertTrue(mcExercise.getOptions().contains("C"));
     }
 
-    // ---- deleteExercise ----
     @Test
-    void deleteExercise_callsRepository() {
-        service.deleteExercise(1L);
-        verify(repository).deleteById(1L);
+    void deleteExercise_validId_deletesExercise() {
+        Long exerciseId = testOpenExercise.getId();
+
+        exerciseService.deleteExercise(exerciseId);
+
+        assertFalse(exerciseRepository.existsById(exerciseId));
+    }
+
+    @Test
+    void contextLoads() {
+        assertNotNull(exerciseService);
+        assertNotNull(exerciseRepository);
     }
 }

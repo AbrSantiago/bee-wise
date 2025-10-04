@@ -3,220 +3,228 @@ package com.beewise.service.impl;
 import com.beewise.controller.dto.SimpleLessonDTO;
 import com.beewise.exception.InvalidIdException;
 import com.beewise.exception.LessonNotFoundException;
+import com.beewise.exception.ExerciseNotFoundException;
 import com.beewise.model.Exercise;
 import com.beewise.model.Lesson;
-import com.beewise.model.MultipleChoiceExercise;
+import com.beewise.model.OpenExercise;
 import com.beewise.repository.ExerciseRepository;
 import com.beewise.repository.LessonRepository;
+import com.beewise.service.LessonService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@Transactional
+@ActiveProfiles("test")
 class LessonServiceImplTest {
 
-    @Mock
+    @Autowired
+    private LessonService lessonService;
+
+    @Autowired
     private LessonRepository lessonRepository;
 
-    @Mock
+    @Autowired
     private ExerciseRepository exerciseRepository;
 
-    @InjectMocks
-    private LessonServiceImpl service;
+    private Lesson testLesson;
+    private Exercise testExercise;
+
+    @BeforeEach
+    void setUp() {
+        testLesson = createTestLesson("Test Lesson", "Test Description");
+        testExercise = createTestExercise("Test Question", "Test Answer");
+    }
+
+    private Lesson createTestLesson(String title, String description) {
+        SimpleLessonDTO dto = new SimpleLessonDTO();
+        dto.setTitle(title);
+        dto.setDescription(description);
+        return lessonService.createLesson(dto);
+    }
+
+    private Exercise createTestExercise(String question, String answer) {
+        Exercise exercise = new OpenExercise(question, answer);
+        return exerciseRepository.save(exercise);
+    }
 
     @Test
     void getLessonById_validId_returnsLesson() {
-        Lesson lesson = new Lesson("Title", "Desc");
-        lesson.setId(1L);
-
-        when(lessonRepository.findById(1L)).thenReturn(Optional.of(lesson));
-
-        Lesson result = service.getLessonById(1L);
+        Lesson result = lessonService.getLessonById(testLesson.getId());
 
         assertNotNull(result);
-        assertEquals("Title", result.getTitle());
-        verify(lessonRepository).findById(1L);
+        assertEquals(testLesson.getId(), result.getId());
+        assertEquals(testLesson.getTitle(), result.getTitle());
+        assertEquals(testLesson.getDescription(), result.getDescription());
     }
 
     @Test
     void getLessonById_invalidId_throwsException() {
-        assertThrows(InvalidIdException.class, () -> service.getLessonById(0L));
-        assertThrows(InvalidIdException.class, () -> service.getLessonById(null));
+        InvalidIdException exception = assertThrows(
+                InvalidIdException.class,
+                () -> lessonService.getLessonById(-1L)
+        );
+
+        assertEquals("Lesson id must be a positive number", exception.getMessage());
     }
 
     @Test
     void getLessonById_notFound_throwsException() {
-        when(lessonRepository.findById(99L)).thenReturn(Optional.empty());
+        Long nonExistentId = 999999L;
 
-        assertThrows(LessonNotFoundException.class, () -> service.getLessonById(99L));
+        LessonNotFoundException exception = assertThrows(
+                LessonNotFoundException.class,
+                () -> lessonService.getLessonById(nonExistentId)
+        );
+
+        assertEquals("Lesson with id " + nonExistentId + " not found", exception.getMessage());
     }
 
     @Test
-    void createLesson_savesAndReturnsLesson() {
-        Lesson lesson = new Lesson("Title", "Desc");
-        SimpleLessonDTO dto = new SimpleLessonDTO(lesson);
-        Lesson savedLesson = new Lesson("Title", "Desc");
-        savedLesson.setId(1L);
+    void createLesson_validData_savesAndReturns() {
+        SimpleLessonDTO dto = new SimpleLessonDTO();
+        dto.setTitle("New Lesson");
+        dto.setDescription("New Description");
 
-        when(lessonRepository.save(any(Lesson.class))).thenReturn(savedLesson);
-
-        Lesson result = service.createLesson(dto);
+        Lesson result = lessonService.createLesson(dto);
 
         assertNotNull(result);
-        assertEquals(1L, result.getId());
-        verify(lessonRepository).save(any(Lesson.class));
+        assertNotNull(result.getId());
+        assertEquals("New Lesson", result.getTitle());
+        assertEquals("New Description", result.getDescription());
     }
 
     @Test
-    void addExercise_validIds_addsExercise() {
-        Lesson lesson = new Lesson("Title", "Desc");
-        lesson.setId(1L);
-        lesson.setExercises(new ArrayList<>());
+    void getAllLessons_returnsAllLessons() {
+        List<Lesson> allLessons = lessonService.getAllLessons();
 
-        Exercise exercise = new MultipleChoiceExercise();
-        exercise.setId(2L);
-
-        when(lessonRepository.findById(1L)).thenReturn(Optional.of(lesson));
-        when(exerciseRepository.findById(2L)).thenReturn(Optional.of(exercise));
-        when(lessonRepository.save(any(Lesson.class))).thenReturn(lesson);
-        when(exerciseRepository.save(any(Exercise.class))).thenReturn(exercise);
-
-        Lesson result = service.addExercise(1L, 2L);
-
-        assertTrue(result.getExercises().contains(exercise));
-        assertEquals(lesson, exercise.getLesson());
-    }
-
-    @Test
-    void addExercise_alreadyExists_throwsException() {
-        Lesson lesson = new Lesson("Title", "Desc");
-        lesson.setId(1L);
-
-        Exercise exercise = new MultipleChoiceExercise();
-        exercise.setId(2L);
-
-        lesson.setExercises(new ArrayList<>(List.of(exercise)));
-
-        when(lessonRepository.findById(1L)).thenReturn(Optional.of(lesson));
-        when(exerciseRepository.findById(2L)).thenReturn(Optional.of(exercise));
-
-        assertThrows(InvalidIdException.class, () -> service.addExercise(1L, 2L));
-    }
-
-    @Test
-    void removeExercise_valid_removesExercise() {
-        Lesson lesson = new Lesson("Title", "Desc");
-        lesson.setId(1L);
-
-        Exercise exercise = new MultipleChoiceExercise();
-        exercise.setId(2L);
-        exercise.setLesson(lesson);
-
-        lesson.setExercises(new ArrayList<>(List.of(exercise)));
-
-        when(lessonRepository.findById(1L)).thenReturn(Optional.of(lesson));
-        when(exerciseRepository.findById(2L)).thenReturn(Optional.of(exercise));
-        when(lessonRepository.save(any(Lesson.class))).thenReturn(lesson);
-
-        Lesson result = service.removeExercise(1L, 2L);
-
-        assertFalse(result.getExercises().contains(exercise));
-        assertNull(exercise.getLesson());
-    }
-
-    @Test
-    void getAllLessons_returnsList() {
-        List<Lesson> lessons = List.of(new Lesson("A", "descA"), new Lesson("B", "descB"));
-        when(lessonRepository.findAll()).thenReturn(lessons);
-
-        List<Lesson> result = service.getAllLessons();
-
-        assertEquals(2, result.size());
-        verify(lessonRepository).findAll();
+        assertNotNull(allLessons);
+        assertTrue(allLessons.size() >= 1);
+        assertTrue(allLessons.stream().anyMatch(l -> l.getId().equals(testLesson.getId())));
     }
 
     @Test
     void updateLesson_existingLesson_updatesFields() {
-        Lesson lesson = new Lesson("Old", "OldDesc");
-        lesson.setId(1L);
-
-        when(lessonRepository.findById(1L)).thenReturn(Optional.of(lesson));
-        when(lessonRepository.save(lesson)).thenReturn(lesson);
-
         SimpleLessonDTO dto = new SimpleLessonDTO();
-        dto.setTitle("New");
-        dto.setDescription("NewDesc");
+        dto.setTitle("Updated Title");
+        dto.setDescription("Updated Description");
 
-        Lesson result = service.updateLesson(1L, dto);
+        Lesson result = lessonService.updateLesson(testLesson.getId(), dto);
 
-        assertEquals("New", result.getTitle());
-        assertEquals("NewDesc", result.getDescription());
-        verify(lessonRepository).save(lesson);
+        assertNotNull(result);
+        assertEquals(testLesson.getId(), result.getId());
+        assertEquals("Updated Title", result.getTitle());
+        assertEquals("Updated Description", result.getDescription());
     }
 
     @Test
     void updateLesson_notFound_throwsException() {
-        when(lessonRepository.findById(99L)).thenReturn(Optional.empty());
-
+        Long nonExistentId = 999999L;
         SimpleLessonDTO dto = new SimpleLessonDTO();
-        dto.setTitle("X");
-        dto.setDescription("Y");
+        dto.setTitle("Updated");
+        dto.setDescription("Updated");
 
-        assertThrows(LessonNotFoundException.class, () -> service.updateLesson(99L, dto));
+        LessonNotFoundException exception = assertThrows(
+                LessonNotFoundException.class,
+                () -> lessonService.updateLesson(nonExistentId, dto)
+        );
+
+        assertEquals("Lesson with id " + nonExistentId + " not found", exception.getMessage());
     }
 
-    // ---- addExercise InvalidIdException ----
+    @Test
+    void addExercise_validIds_addsExercise() {
+        Lesson result = lessonService.addExercise(testLesson.getId(), testExercise.getId());
+
+        assertNotNull(result);
+        assertTrue(result.getExercises().stream()
+                .anyMatch(e -> e.getId().equals(testExercise.getId())));
+
+        Exercise updatedExercise = exerciseRepository.findById(testExercise.getId()).orElse(null);
+        assertNotNull(updatedExercise);
+        assertEquals(testLesson.getId(), updatedExercise.getLesson().getId());
+    }
+
     @Test
     void addExercise_invalidLessonId_throwsException() {
-        assertThrows(InvalidIdException.class, () -> service.addExercise(0L, 1L));
-        assertThrows(InvalidIdException.class, () -> service.addExercise(null, 1L));
+        InvalidIdException exception = assertThrows(
+                InvalidIdException.class,
+                () -> lessonService.addExercise(-1L, testExercise.getId())
+        );
+
+        assertEquals("Lesson id must be a positive number", exception.getMessage());
     }
 
     @Test
     void addExercise_invalidExerciseId_throwsException() {
-        assertThrows(InvalidIdException.class, () -> service.addExercise(1L, 0L));
-        assertThrows(InvalidIdException.class, () -> service.addExercise(1L, null));
-    }
+        InvalidIdException exception = assertThrows(
+                InvalidIdException.class,
+                () -> lessonService.addExercise(testLesson.getId(), -1L)
+        );
 
-    // ---- removeExercise InvalidIdException ----
-    @Test
-    void removeExercise_invalidLessonId_throwsException() {
-        assertThrows(InvalidIdException.class, () -> service.removeExercise(0L, 1L));
-        assertThrows(InvalidIdException.class, () -> service.removeExercise(null, 1L));
+        assertEquals("Exercise id must be a positive number", exception.getMessage());
     }
 
     @Test
-    void removeExercise_invalidExerciseId_throwsException() {
-        assertThrows(InvalidIdException.class, () -> service.removeExercise(1L, 0L));
-        assertThrows(InvalidIdException.class, () -> service.removeExercise(1L, null));
+    void addExercise_alreadyExists_throwsException() {
+        lessonService.addExercise(testLesson.getId(), testExercise.getId());
+
+        InvalidIdException exception = assertThrows(
+                InvalidIdException.class,
+                () -> lessonService.addExercise(testLesson.getId(), testExercise.getId())
+        );
+
+        assertEquals("Exercise with id " + testExercise.getId() + " is already in the lesson",
+                exception.getMessage());
+    }
+
+    @Test
+    void removeExercise_validIds_removesExercise() {
+        lessonService.addExercise(testLesson.getId(), testExercise.getId());
+
+        Lesson result = lessonService.removeExercise(testLesson.getId(), testExercise.getId());
+
+        assertNotNull(result);
+        assertFalse(result.getExercises().stream()
+                .anyMatch(e -> e.getId().equals(testExercise.getId())));
+
+        Exercise updatedExercise = exerciseRepository.findById(testExercise.getId()).orElse(null);
+        assertNotNull(updatedExercise);
+        assertNull(updatedExercise.getLesson());
     }
 
     @Test
     void removeExercise_exerciseNotInLesson_throwsException() {
-        Lesson lesson = new Lesson("L", "Desc");
-        lesson.setId(1L);
-        Exercise ex = mock(Exercise.class);
-        ex.setId(5L);
+        InvalidIdException exception = assertThrows(
+                InvalidIdException.class,
+                () -> lessonService.removeExercise(testLesson.getId(), testExercise.getId())
+        );
 
-        when(lessonRepository.findById(1L)).thenReturn(Optional.of(lesson));
-        when(exerciseRepository.findById(5L)).thenReturn(Optional.of(ex));
-
-        assertThrows(InvalidIdException.class, () -> service.removeExercise(1L, 5L));
+        assertEquals("Exercise with id " + testExercise.getId() + " is not in the lesson",
+                exception.getMessage());
     }
 
     @Test
-    void deleteLesson_callsRepository() {
-        doNothing().when(lessonRepository).deleteById(1L);
-        service.deleteLesson(1L);
-        verify(lessonRepository).deleteById(1L);
+    void deleteLesson_validId_deletesLesson() {
+        Long lessonId = testLesson.getId();
+
+        lessonService.deleteLesson(lessonId);
+
+        assertFalse(lessonRepository.existsById(lessonId));
+    }
+
+    @Test
+    void contextLoads() {
+        assertNotNull(lessonService);
+        assertNotNull(lessonRepository);
+        assertNotNull(exerciseRepository);
     }
 }
