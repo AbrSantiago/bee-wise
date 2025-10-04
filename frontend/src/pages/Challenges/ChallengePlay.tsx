@@ -8,7 +8,6 @@ import challengeService, {
 import type { Exercise } from "../../services/lessonService";
 import SummaryScreen from "../Practice/components/SummaryScreen";
 import TrueFalseButtons from "../Practice/components/TrueFalseButtons";
-
 import "katex/dist/katex.min.css";
 // @ts-ignore
 import { BlockMath } from "react-katex";

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { type ChallengeDTO } from "../../services/challengeService";
 import "../../components/layout/ChallengeSection.css";
+import { useNavigate } from "react-router-dom";
 
 interface ChallengesSectionProps {
   challenges: ChallengeDTO[];
@@ -13,7 +14,18 @@ export default function ChallengesSection({
   currentUserId,
   onAcceptChallenge,
 }: ChallengesSectionProps) {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"pending" | "active">("pending");
+
+  const handlePlayTurn = (challenge: ChallengeDTO) => {
+    const roundNumber = challenge.rounds?.length || 0; // ej: si hay 1 ronda completa, empieza la 2da
+    const rol =
+      challenge.challengerId === currentUserId ? "CHALLENGER" : "CHALLENGED";
+
+    navigate(
+      `/challenge/${challenge.id}/round/${roundNumber}/${challenge.questionsPerRound}/${rol}`
+    );
+  };
 
   // LOGS DE DEBUG - agregar temporalmente
   console.log("=== ChallengesSection Debug ===");
@@ -105,7 +117,7 @@ export default function ChallengesSection({
   return (
     <div className="challenges-widget">
       <h3 className="challenges-title">Desafíos</h3>
-      
+
       <div className="challenges-tabs">
         <button
           className={`tab-button ${activeTab === "pending" ? "active" : ""}`}
@@ -137,7 +149,8 @@ export default function ChallengesSection({
                     <p>Rondas: {challenge.maxRounds}</p>
                     <p>Preguntas: {challenge.questionsPerRound}</p>
                     <p className="challenge-date">
-                      Expira: {new Date(challenge.expireDate).toLocaleDateString()}
+                      Expira:{" "}
+                      {new Date(challenge.expireDate).toLocaleDateString()}
                     </p>
                   </div>
                   <button
@@ -167,13 +180,22 @@ export default function ChallengesSection({
                     <p>Rondas: {challenge.maxRounds}</p>
                     <p>Preguntas: {challenge.questionsPerRound}</p>
                     <div className="challenge-progress">
-                      <p>Ronda: {(challenge.rounds?.length || 0) + 1}/{challenge.maxRounds}</p>
+                      <p>
+                        Ronda: {(challenge.rounds?.length || 0) + 1}/
+                        {challenge.maxRounds}
+                      </p>
                       {challenge.rounds && challenge.rounds.length > 0 && (
-                        <p>Estado: {challenge.rounds[challenge.rounds.length - 1].status}</p>
+                        <p>
+                          Estado:{" "}
+                          {challenge.rounds[challenge.rounds.length - 1].status}
+                        </p>
                       )}
                     </div>
                   </div>
-                  <button className="play-button">
+                  <button
+                    className="play-button"
+                    onClick={() => handlePlayTurn(challenge)}
+                  >
                     {getActionText(challenge)}
                   </button>
                 </div>
