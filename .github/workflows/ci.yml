@@ -39,5 +39,5 @@ jobs:
         working-directory: ./backend
         env:
           CI: true
-          SPRING_PROFILES_ACTIVE: ci
+          SPRING_PROFILES_ACTIVE: test
         run: ./gradlew test --no-daemon
