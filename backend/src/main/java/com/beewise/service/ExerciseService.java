@@ -4,6 +4,8 @@ import com.beewise.controller.dto.SimpleMultipleChoiceExerciseDTO;
 import com.beewise.controller.dto.SimpleOpenExerciseDTO;
 import com.beewise.model.Exercise;
 
+import java.util.List;
+
 public interface ExerciseService {
     Exercise getExercise(Long id);
     Exercise createOpenExercise(SimpleOpenExerciseDTO dto);
@@ -11,4 +13,5 @@ public interface ExerciseService {
     Exercise createMultipleChoiceExercise(SimpleMultipleChoiceExerciseDTO dto);
     Exercise updateMultipleChoiceExercise(Long id, SimpleMultipleChoiceExerciseDTO dto);
     void deleteExercise(Long id);
+    List<Exercise> getRandomExercises(int limit);
 }

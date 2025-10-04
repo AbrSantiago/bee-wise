@@ -8,8 +8,10 @@ import "./Challenges.css";
 import ChallengeModal from "../../components/layout/ChallengeModal";
 import challengeService from "../../services/challengeService";
 import { useUser } from "../../context/UserContext";
+import { useNavigate } from "react-router-dom";
 
 export function ChallengesPage() {
+  const navigate = useNavigate();
   const { accessToken } = useAuth();
   const { user } = useUser();
   const [users, setUsers] = useState<User[]>([]);
@@ -38,11 +40,15 @@ export function ChallengesPage() {
     }
   }, [accessToken]);
 
-  const handleConfirmChallenge = (rounds: number, questions: number) => {
+  const handleConfirmChallenge = (
+    challengeId: number,
+    rounds: number,
+    questions: number
+  ) => {
     console.log(
       `Desafiando a ${selectedUsername} con ${rounds} rondas y ${questions} preguntas`
     );
-    setSelectedUsername(null); // cerrar modal
+    navigate(`/challenge/${challengeId}/round/1/${questions}/CHALLENGER`);
   };
 
   return (

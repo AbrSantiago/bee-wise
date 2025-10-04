@@ -9,7 +9,11 @@ import com.beewise.model.OpenExercise;
 import com.beewise.repository.ExerciseRepository;
 import com.beewise.service.ExerciseService;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -71,5 +75,11 @@ public class ExerciseServiceImpl implements ExerciseService {
     @Override
     public void deleteExercise(Long id) {
         repository.deleteById(id);
+    }
+
+    @Override
+    public List<Exercise> getRandomExercises(int limit) {
+        Pageable pageable = PageRequest.of(0, 5);
+        return repository.findRandomExercises(pageable);
     }
 }

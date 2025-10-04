@@ -1,4 +1,5 @@
 import apiClient from "./api";
+import type { Exercise } from "./lessonService";
 import type { User } from "./userService";
 
 export type ChallengeStatus = "PENDING" | "ACTIVE" | "EXPIRED" | "COMPLETED";
@@ -35,9 +36,11 @@ export type SendChallengeDTO = {
 export type AnswerDTO = {
   challengeId: number;
   roundNumber: number;
-  rol: "CHALLENGER" | "CHALLENGED";
+  rol: ChallengeRol;
   score: number;
 };
+
+export type ChallengeRol = "CHALLENGER" | "CHALLENGED";
 
 const challengeService = {
   async getAll(): Promise<ChallengeDTO[]> {
@@ -79,6 +82,18 @@ const challengeService = {
       data
     );
     return response.data;
+  },
+
+  async getRandomExercises(limit: number): Promise<Exercise[]> {
+    try {
+      const response = await apiClient.get<Exercise[]>(
+        `/challenge/randomExercises?limit=${limit}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("❌ Error fetching random exercises:", error);
+      throw error;
+    }
   },
 };
 
