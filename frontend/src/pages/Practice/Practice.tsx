@@ -43,6 +43,8 @@ export function PracticePage() {
       try {
         if (id) {
           const lesson = await lessonService.getLesson(id);
+          console.log("2 - Agarro una lesson:", lesson);
+          
           setExercises(lesson.exercises);
           setTotalCount(lesson.exercises.length);
           setCorrectCount(0);

@@ -23,6 +23,8 @@ function Home() {
   const getLessons = async () => {
     try {
       const response = await apiClient.get("/lesson");
+      console.log("1 - traigo las lecciones :", response.data);
+      
       setLessons(response.data);
     } catch (error) {
       console.error("There was an error fetching the practice data!", error);

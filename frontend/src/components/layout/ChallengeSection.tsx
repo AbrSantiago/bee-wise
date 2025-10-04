@@ -15,28 +15,12 @@ export default function ChallengesSection({
 }: ChallengesSectionProps) {
   const [activeTab, setActiveTab] = useState<"pending" | "active">("pending");
 
-  // LOGS DE DEBUG - agregar temporalmente
-  console.log("=== ChallengesSection Debug ===");
-  console.log("Current User ID:", currentUserId);
-  console.log("All challenges:", challenges);
-  console.log("Challenges length:", challenges.length);
-
   // Filtrar desafíos pendientes donde el usuario actual es el challenged
   const pendingChallenges = challenges.filter(
     (challenge) => {
-      console.log(`Challenge ${challenge.id}:`, {
-        status: challenge.status,
-        challengerId: challenge.challengerId,
-        challengedId: challenge.challengedId,
-        isPending: challenge.status === "PENDING",
-        isUserChallenged: challenge.challengedId === currentUserId,
-        shouldShow: challenge.status === "PENDING" && challenge.challengedId === currentUserId
-      });
       return challenge.status === "PENDING" && challenge.challengedId === currentUserId;
     }
   );
-
-  console.log("Pending challenges after filter:", pendingChallenges);
 
   // Filtrar desafíos activos donde le toca jugar al usuario
   const activeChallenges = challenges.filter((challenge) => {
@@ -69,7 +53,6 @@ export default function ChallengesSection({
     return false;
   });
 
-  console.log("Active challenges after filter:", activeChallenges);
   const handleAccept = async (challengeId: number) => {
     try {
       await onAcceptChallenge(challengeId);
