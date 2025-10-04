@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -22,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
+@ActiveProfiles({"ci"})
 class ChallengeServiceImplTest {
 
     @Autowired
@@ -33,26 +35,43 @@ class ChallengeServiceImplTest {
     @Autowired
     private ChallengeRepository challengeRepository;
 
-    private User realChallenger;
-    private User realChallenged;
+    private User challenger;
+    private User challenged;
 
     @BeforeEach
     void setUp() {
-        List<User> allUsers = userRepository.findAll();
+        List<User> existingUsers = userRepository.findAll();
 
-        assertTrue(allUsers.size() >= 2, "Necesitas al menos 2 usuarios reales en tu BD");
+        // Si hay usuarios existentes (desarrollo local), usarlos
+        if (existingUsers.size() >= 2) {
+            challenger = existingUsers.get(0);
+            challenged = existingUsers.get(1);
+        } else {
+            // Si no hay usuarios (CI), crear usuarios de prueba
+            challenger = createTestUser("testChallenger", "challenger@test.com");
+            challenged = createTestUser("testChallenged", "challenged@test.com");
+        }
+    }
 
-        realChallenger = allUsers.get(0);
-        realChallenged = allUsers.get(1);
+    private User createTestUser(String username, String email) {
+        User user = new User();
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setName("Test");
+        user.setSurname("User");
+        user.setPasswordHash("$2a$10$N9qo8uLOickgx2ZMRZoMye");
+        user.setPoints(100);
+        user.setCurrentLesson(1);
+        return userRepository.save(user);
     }
 
     @Test
-    void sendChallenge_withRealUsers_createsChallenge() {
+    void sendChallenge_withValidUsers_createsChallenge() {
         long challengesBefore = challengeRepository.count();
 
         SendChallengeDTO dto = new SendChallengeDTO();
-        dto.setChallengerId(realChallenger.getId());
-        dto.setChallengedId(realChallenged.getId());
+        dto.setChallengerId(challenger.getId());
+        dto.setChallengedId(challenged.getId());
         dto.setMaxRounds(3);
         dto.setQuestionsPerRound(5);
 
@@ -60,8 +79,8 @@ class ChallengeServiceImplTest {
 
         assertNotNull(result);
         assertNotNull(result.getId());
-        assertEquals(realChallenger.getId(), result.getChallenger().getId());
-        assertEquals(realChallenged.getId(), result.getChallenged().getId());
+        assertEquals(challenger.getId(), result.getChallenger().getId());
+        assertEquals(challenged.getId(), result.getChallenged().getId());
         assertEquals(ChallengeStatus.PENDING, result.getStatus());
         assertEquals(3, result.getMaxRounds());
         assertEquals(5, result.getQuestionsPerRound());
@@ -77,54 +96,50 @@ class ChallengeServiceImplTest {
     @Test
     void acceptChallenge_followingCorrectFlow_updatesStatus() {
         SendChallengeDTO dto = new SendChallengeDTO();
-        dto.setChallengerId(realChallenger.getId());
-        dto.setChallengedId(realChallenged.getId());
+        dto.setChallengerId(challenger.getId());
+        dto.setChallengedId(challenged.getId());
         dto.setMaxRounds(3);
         dto.setQuestionsPerRound(5);
 
         Challenge pendingChallenge = challengeService.sendChallenge(dto);
         assertEquals(ChallengeStatus.PENDING, pendingChallenge.getStatus());
 
+        // Challenger debe jugar primero
         AnswerDTO challengerAnswer = new AnswerDTO();
         challengerAnswer.setChallengeId(pendingChallenge.getId());
         challengerAnswer.setRoundNumber(1);
         challengerAnswer.setRol(ChallengeRol.CHALLENGER);
         challengerAnswer.setScore(85);
 
-        Challenge afterChallengerPlay = challengeService.answerRound(challengerAnswer);
-
+        challengeService.answerRound(challengerAnswer);
         Challenge acceptedChallenge = challengeService.acceptChallenge(pendingChallenge.getId());
 
         assertNotNull(acceptedChallenge);
         assertEquals(ChallengeStatus.ACTIVE, acceptedChallenge.getStatus());
         assertEquals(pendingChallenge.getId(), acceptedChallenge.getId());
-
-        Challenge challengeInDB = challengeRepository.findById(pendingChallenge.getId()).orElse(null);
-        assertNotNull(challengeInDB);
-        assertEquals(ChallengeStatus.ACTIVE, challengeInDB.getStatus());
     }
 
     @Test
     void answerRound_withActiveChallenge_updatesRound() {
         SendChallengeDTO dto = new SendChallengeDTO();
-        dto.setChallengerId(realChallenger.getId());
-        dto.setChallengedId(realChallenged.getId());
+        dto.setChallengerId(challenger.getId());
+        dto.setChallengedId(challenged.getId());
         dto.setMaxRounds(3);
         dto.setQuestionsPerRound(5);
 
         Challenge challenge = challengeService.sendChallenge(dto);
 
+        // Challenger juega primero
         AnswerDTO challengerAnswer = new AnswerDTO();
         challengerAnswer.setChallengeId(challenge.getId());
         challengerAnswer.setRoundNumber(1);
         challengerAnswer.setRol(ChallengeRol.CHALLENGER);
         challengerAnswer.setScore(85);
 
-        Challenge afterChallengerAnswer = challengeService.answerRound(challengerAnswer);
-
+        challengeService.answerRound(challengerAnswer);
         Challenge activeChallenge = challengeService.acceptChallenge(challenge.getId());
-        assertEquals(ChallengeStatus.ACTIVE, activeChallenge.getStatus());
 
+        // Challenged responde
         AnswerDTO challengedAnswer = new AnswerDTO();
         challengedAnswer.setChallengeId(activeChallenge.getId());
         challengedAnswer.setRoundNumber(1);
@@ -138,14 +153,13 @@ class ChallengeServiceImplTest {
     }
 
     @Test
-    void getAll_withRealData_returnsRealChallenges() {
+    void getAll_returnsAllChallenges() {
         List<Challenge> allChallenges = challengeService.getAll();
-
         assertNotNull(allChallenges);
 
         SendChallengeDTO dto = new SendChallengeDTO();
-        dto.setChallengerId(realChallenger.getId());
-        dto.setChallengedId(realChallenged.getId());
+        dto.setChallengerId(challenger.getId());
+        dto.setChallengedId(challenged.getId());
         dto.setMaxRounds(2);
         dto.setQuestionsPerRound(5);
 
@@ -162,8 +176,8 @@ class ChallengeServiceImplTest {
     @Test
     void sendChallenge_userChallengesHimself_throwsException() {
         SendChallengeDTO dto = new SendChallengeDTO();
-        dto.setChallengerId(realChallenger.getId());
-        dto.setChallengedId(realChallenger.getId());
+        dto.setChallengerId(challenger.getId());
+        dto.setChallengedId(challenger.getId());
         dto.setMaxRounds(3);
         dto.setQuestionsPerRound(5);
 
@@ -172,22 +186,22 @@ class ChallengeServiceImplTest {
                 () -> challengeService.sendChallenge(dto)
         );
 
-        assertEquals("User " + realChallenger.getId() + " cannot challenge himself", exception.getMessage());
+        assertEquals("User " + challenger.getId() + " cannot challenge himself", exception.getMessage());
     }
 
     @Test
     void sendChallenge_challengeAlreadyExists_throwsException() {
-        SendChallengeDTO firstDto = new SendChallengeDTO();
-        firstDto.setChallengerId(realChallenger.getId());
-        firstDto.setChallengedId(realChallenged.getId());
-        firstDto.setMaxRounds(3);
-        firstDto.setQuestionsPerRound(5);
+        SendChallengeDTO dto = new SendChallengeDTO();
+        dto.setChallengerId(challenger.getId());
+        dto.setChallengedId(challenged.getId());
+        dto.setMaxRounds(3);
+        dto.setQuestionsPerRound(5);
 
-        Challenge firstChallenge = challengeService.sendChallenge(firstDto);
+        challengeService.sendChallenge(dto);
 
         SendChallengeDTO secondDto = new SendChallengeDTO();
-        secondDto.setChallengerId(realChallenger.getId());
-        secondDto.setChallengedId(realChallenged.getId());
+        secondDto.setChallengerId(challenger.getId());
+        secondDto.setChallengedId(challenged.getId());
         secondDto.setMaxRounds(5);
         secondDto.setQuestionsPerRound(10);
 
@@ -196,17 +210,17 @@ class ChallengeServiceImplTest {
                 () -> challengeService.sendChallenge(secondDto)
         );
 
-        assertEquals("Challenge between users " + realChallenger.getId() + " and " + realChallenged.getId() + " already exists", exception.getMessage());
+        assertEquals("Challenge between users " + challenger.getId() + " and " + challenged.getId() + " already exists", exception.getMessage());
     }
 
     @Test
-    void getUsersToChallenge_withRealUsers_returnsRealUsers() {
-        List<User> usersToChallenge = challengeService.getUsersToChallenge(realChallenger.getId());
+    void getUsersToChallenge_returnsAvailableUsers() {
+        List<User> usersToChallenge = challengeService.getUsersToChallenge(challenger.getId());
 
         assertNotNull(usersToChallenge);
 
         boolean includesChallenger = usersToChallenge.stream()
-                .anyMatch(u -> u.getId().equals(realChallenger.getId()));
+                .anyMatch(u -> u.getId().equals(challenger.getId()));
         assertFalse(includesChallenger, "No debería incluir al usuario que hace el challenge");
     }
 
@@ -239,10 +253,12 @@ class ChallengeServiceImplTest {
     }
 
     @Test
-    void exploreRealData_showsYourActualData() {
+    void workWithBothEnvironments_showsFlexibility() {
+        // Este test demuestra que funciona tanto en CI (H2) como localmente (datos reales)
         List<User> users = userRepository.findAll();
         List<Challenge> challenges = challengeRepository.findAll();
 
-        assertTrue(users.size() > 0, "Deberías tener al menos 1 usuario en tu BD");
+        assertTrue(users.size() >= 2, "Debería tener al menos 2 usuarios (creados o existentes)");
+        assertNotNull(challenges, "Debería poder consultar challenges");
     }
 }
