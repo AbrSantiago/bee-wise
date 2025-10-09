@@ -47,7 +47,7 @@ input[readonly] {
 .answer-slot-container {
   padding: 0rem 0.5rem;
   background-color: #0c2144;
-  
+
   min-width: 80px;
   min-height: 80px;
 
@@ -66,12 +66,24 @@ input[readonly] {
 }
 
 @keyframes shake {
-  0% { transform: translateX(0); }
-  20% { transform: translateX(-8px); }
-  40% { transform: translateX(8px); }
-  60% { transform: translateX(-8px); }
-  80% { transform: translateX(8px); }
-  100% { transform: translateX(0); }
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-8px);
+  }
+  40% {
+    transform: translateX(8px);
+  }
+  60% {
+    transform: translateX(-8px);
+  }
+  80% {
+    transform: translateX(8px);
+  }
+  100% {
+    transform: translateX(0);
+  }
 }
 
 .check-btn {
@@ -83,7 +95,7 @@ input[readonly] {
   font-weight: 600;
   background: linear-gradient(90deg, #43ea7b 0%, #2bc47a 100%);
   color: #fff;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
   transition: background 0.2s, transform 0.2s;
   outline: none;
   margin-top: 24px;
@@ -116,7 +128,7 @@ input[readonly] {
   font-weight: 600;
   color: #fff;
   cursor: pointer;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
   transition: background 0.2s, transform 0.2s;
   outline: none;
   margin-top: 24px;
@@ -151,8 +163,14 @@ input[readonly] {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px);}
-  to { opacity: 1; transform: translateY(0);}
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .btn-back-home {
@@ -163,7 +181,7 @@ input[readonly] {
   font-weight: 600;
   color: #7c5c0a;
   background: linear-gradient(90deg, #ffe066 0%, #ffd700 100%);
-  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
   cursor: pointer;
   transition: background 0.2s, transform 0.2s, color 0.2s;
   outline: none;
@@ -206,4 +224,44 @@ input[readonly] {
   font-size: 1.5em;
   pointer-events: none;
   filter: drop-shadow(0 1px 2px #222);
+}
+
+/* Timer Styles */
+.timer-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.timer-display {
+  background-color: #4caf50;
+  color: white;
+  padding: 19px 20px;
+  border-radius: 50px;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  min-width: 80px;
+  transition: all 0.3s ease;
+}
+
+.timer-warning .timer-display {
+  background-color: #f44336;
+  color: white;
+}
+
+.timer-pulse {
+  animation: pulse 0.8s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
