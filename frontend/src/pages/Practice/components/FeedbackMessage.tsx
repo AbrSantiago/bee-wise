@@ -1,9 +1,22 @@
 interface Props {
   feedback: boolean | null;
+  isTimeOut?: boolean;
 }
 
-export default function FeedbackMessage({ feedback }: Props) {
+export default function FeedbackMessage({
+  feedback,
+  isTimeOut = false,
+}: Props) {
   if (feedback === null) return null;
+
+  if (feedback === false && isTimeOut) {
+    return (
+      <div className="feedback-message error">
+        <span> Ops, se te terminó el tiempo!</span>
+      </div>
+    );
+  }
+
   return feedback ? (
     <div className="feedback-message success">
       <span>¡Excelente! Seguí así</span>
