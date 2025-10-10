@@ -45,6 +45,9 @@ export function ChallengePlayPage() {
   const navigate = useNavigate();
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [loading, setLoading] = useState(true);
+  const [timeLeft, setTimeLeft] = useState(25);
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [isTimeOut, setIsTimeOut] = useState(false);
 
   const current = exercises[currentExercise];
 
@@ -152,6 +155,9 @@ export function ChallengePlayPage() {
   };
 
   const handleCheck = () => {
+    setIsTimerRunning(false);
+    setIsTimeOut(false); 
+
     const correct = userAnswer.trim() === current.answer.trim();
     setFeedback(correct);
     setCanContinue(true);
@@ -164,11 +170,11 @@ export function ChallengePlayPage() {
       newPending.push(current);
     }
 
-    // Reiniciamos estados del ejercicio actual
     setUserAnswer("");
     setSelectedOption(null);
     setFeedback(null);
     setCanContinue(false);
+    setIsTimeOut(false);
 
     if (currentExercise < exercises.length - 1) {
       setCurrentExercise((prev) => prev + 1);
@@ -178,6 +184,13 @@ export function ChallengePlayPage() {
       setShowSummary(true);
       handleSubmitTurn();
     }
+  };
+
+  const handleTimeOut = () => {
+    setFeedback(false);
+    setCanContinue(true);
+    setIsTimeOut(true);
+    console.log("⏰ Tiempo agotado para la pregunta");
   };
 
   useEffect(() => {
@@ -202,6 +215,35 @@ export function ChallengePlayPage() {
 
     fetchExercises();
   }, [challengeId, roundNumber]);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+
+    if (isTimerRunning && timeLeft > 0) {
+      interval = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            setIsTimerRunning(false);
+            handleTimeOut();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isTimerRunning, timeLeft]);
+
+  useEffect(() => {
+    if (current && !loading) {
+      setTimeLeft(25);
+      setIsTimerRunning(true);
+      console.log("🚀 Timer iniciado para nueva pregunta");
+    }
+  }, [currentExercise, current, loading]);
 
   const handleSubmitTurn = async () => {
     try {
@@ -248,6 +290,16 @@ export function ChallengePlayPage() {
   return (
     <MainLayout title={`Desafío`}>
       <div className="exercise-container">
+        {/* Timer Component */}
+        <div
+          className={`timer-container ${timeLeft <= 10 ? "timer-warning" : ""}`}
+        >
+          <div
+            className={`timer-display ${timeLeft <= 10 ? "timer-pulse" : ""}`}
+          >
+            Tiempo restante : {timeLeft}s
+          </div>
+        </div>
         {current ? (
           <>
             {current.type === "OPEN" ? (
@@ -260,6 +312,8 @@ export function ChallengePlayPage() {
                   feedback={feedback}
                   canContinue={canContinue}
                   onClick={(answer) => {
+                    setIsTimerRunning(false);
+                    setIsTimeOut(false);
                     handleTrueFalseClick(answer);
                     const correct = answer.trim() === current.answer.trim();
                     setFeedback(correct);
@@ -301,7 +355,7 @@ export function ChallengePlayPage() {
               </DndContext>
             )}
 
-            <FeedbackMessage feedback={feedback} />
+            <FeedbackMessage feedback={feedback} isTimeOut={isTimeOut} />
 
             {feedback !== null && (
               <button
