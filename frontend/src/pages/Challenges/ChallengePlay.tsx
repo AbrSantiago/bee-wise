@@ -155,9 +155,8 @@ export function ChallengePlayPage() {
   };
 
   const handleCheck = () => {
-    // Detener el timer cuando responde
     setIsTimerRunning(false);
-    setIsTimeOut(false); // No fue timeout
+    setIsTimeOut(false); 
 
     const correct = userAnswer.trim() === current.answer.trim();
     setFeedback(correct);
@@ -171,7 +170,6 @@ export function ChallengePlayPage() {
       newPending.push(current);
     }
 
-    // Reiniciamos estados del ejercicio actual
     setUserAnswer("");
     setSelectedOption(null);
     setFeedback(null);
@@ -189,11 +187,9 @@ export function ChallengePlayPage() {
   };
 
   const handleTimeOut = () => {
-    // Marcar como respuesta incorrecta
     setFeedback(false);
     setCanContinue(true);
     setIsTimeOut(true);
-    // No sumamos puntos (ya que es como una respuesta incorrecta)
     console.log("⏰ Tiempo agotado para la pregunta");
   };
 
@@ -220,7 +216,6 @@ export function ChallengePlayPage() {
     fetchExercises();
   }, [challengeId, roundNumber]);
 
-  // Timer useEffect
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
 
@@ -228,9 +223,7 @@ export function ChallengePlayPage() {
       interval = setInterval(() => {
         setTimeLeft((prev) => {
           if (prev <= 1) {
-            // Se agotó el tiempo
             setIsTimerRunning(false);
-            // Aquí llamaremos a la función de tiempo agotado
             handleTimeOut();
             return 0;
           }
@@ -244,10 +237,8 @@ export function ChallengePlayPage() {
     };
   }, [isTimerRunning, timeLeft]);
 
-  // useEffect para iniciar timer en cada nueva pregunta
   useEffect(() => {
     if (current && !loading) {
-      // Resetear y iniciar timer para nueva pregunta
       setTimeLeft(25);
       setIsTimerRunning(true);
       console.log("🚀 Timer iniciado para nueva pregunta");
@@ -321,10 +312,8 @@ export function ChallengePlayPage() {
                   feedback={feedback}
                   canContinue={canContinue}
                   onClick={(answer) => {
-                    // Detener el timer cuando responde
                     setIsTimerRunning(false);
-                    setIsTimeOut(false); // No fue timeout
-
+                    setIsTimeOut(false);
                     handleTrueFalseClick(answer);
                     const correct = answer.trim() === current.answer.trim();
                     setFeedback(correct);
