@@ -66,4 +66,10 @@ public class ChallengeController {
                 .toList();
         return ResponseEntity.ok(exerciseDTOS);
     }
+
+    @GetMapping("/getRandomCategory")
+    public ResponseEntity<ExerciseCategory> getRandomCategory() {
+        ExerciseCategory randomCategory = challengeService.getRandomCategory();
+        return ResponseEntity.ok(randomCategory);
+    }
 }
