@@ -22,6 +22,8 @@ import {
 import type { DragEndEvent } from "@dnd-kit/core";
 import FeedbackMessage from "../Practice/components/FeedbackMessage";
 import DnDOptions from "../Practice/components/DnDOptions";
+import ChallengeUserCard from "./ChallengeUserCard";
+import { useUser } from "../../context/UserContext";
 
 export function ChallengePlayPage() {
   const [currentExercise, setCurrentExercise] = useState(0);
@@ -43,6 +45,7 @@ export function ChallengePlayPage() {
     rol: ChallengeRol;
   }>();
   const navigate = useNavigate();
+  const user = useUser();
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [loading, setLoading] = useState(true);
   const [timeLeft, setTimeLeft] = useState(25);
@@ -194,7 +197,7 @@ export function ChallengePlayPage() {
   };
 
   useEffect(() => {
-    if (!challengeId || !roundNumber) return;
+    if (!user.user || !challengeId || !roundNumber) return;
 
     const fetchExercises = async () => {
       setLoading(true);
@@ -289,88 +292,99 @@ export function ChallengePlayPage() {
 
   return (
     <MainLayout title={`Desafío`}>
-      <div className="exercise-container">
-        {/* Timer Component */}
-        <div
-          className={`timer-container ${timeLeft <= 10 ? "timer-warning" : ""}`}
-        >
-          <div
-            className={`timer-display ${timeLeft <= 10 ? "timer-pulse" : ""}`}
-          >
-            Tiempo restante : {timeLeft}s
-          </div>
+      {/* Timer Component */}
+      <div
+        className={`timer-container ${timeLeft <= 10 ? "timer-warning" : ""}`}
+      >
+        <div className={`timer-display ${timeLeft <= 10 ? "timer-pulse" : ""}`}>
+          Tiempo restante : {timeLeft}s
         </div>
-        {current ? (
-          <>
-            {current.type === "OPEN" ? (
-              <div className="mt-4">
-                <div className="matrix-container">
-                  <p className="question-text">{current.question}</p>
-                </div>
-                <TrueFalseButtons
-                  userAnswer={userAnswer}
-                  feedback={feedback}
-                  canContinue={canContinue}
-                  onClick={(answer) => {
-                    setIsTimerRunning(false);
-                    setIsTimeOut(false);
-                    handleTrueFalseClick(answer);
-                    const correct = answer.trim() === current.answer.trim();
-                    setFeedback(correct);
-                    setCanContinue(true);
-                    if (correct) setCorrectCount((prev) => prev + 1);
-                  }}
-                />
-              </div>
-            ) : (
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-              >
-                <div className="question-and-answer-container">
+      </div>
+      <div className="challenge-content">
+        <ChallengeUserCard
+          username={user.user!.username}
+          avatarUrl="/assets/avatars/default1.png"
+          ranking={128}
+          isCurrentUser={true}
+        />
+        <div className="exercise-container">
+          {current ? (
+            <>
+              {current.type === "OPEN" ? (
+                <div className="mt-4">
                   <div className="matrix-container">
-                    <BlockMath math={current.question.replace(/\?$/, "")} />
+                    <p className="question-text">{current.question}</p>
                   </div>
-                  <div className="answer-slot-container mt-4">
-                    {userAnswer ? <BlockMath math={userAnswer} /> : <></>}
-                  </div>
+                  <TrueFalseButtons
+                    userAnswer={userAnswer}
+                    feedback={feedback}
+                    canContinue={canContinue}
+                    onClick={(answer) => {
+                      setIsTimerRunning(false);
+                      setIsTimeOut(false);
+                      handleTrueFalseClick(answer);
+                      const correct = answer.trim() === current.answer.trim();
+                      setFeedback(correct);
+                      setCanContinue(true);
+                      if (correct) setCorrectCount((prev) => prev + 1);
+                    }}
+                  />
                 </div>
-                <DnDOptions
-                  options={current.options || []}
-                  canContinue={canContinue}
-                  selectedOption={selectedOption}
-                  handleOptionClick={handleOptionClick}
-                  userAnswer={userAnswer}
-                  feedback={feedback}
-                  current={current}
-                />
-                <button
-                  onClick={handleCheck}
-                  className="check-btn"
-                  disabled={canContinue || !userAnswer}
+              ) : (
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
                 >
-                  Check
+                  <div className="question-and-answer-container">
+                    <div className="matrix-container">
+                      <BlockMath math={current.question.replace(/\?$/, "")} />
+                    </div>
+                    <div className="answer-slot-container mt-4">
+                      {userAnswer ? <BlockMath math={userAnswer} /> : <></>}
+                    </div>
+                  </div>
+                  <DnDOptions
+                    options={current.options || []}
+                    canContinue={canContinue}
+                    selectedOption={selectedOption}
+                    handleOptionClick={handleOptionClick}
+                    userAnswer={userAnswer}
+                    feedback={feedback}
+                    current={current}
+                  />
+                  <button
+                    onClick={handleCheck}
+                    className="check-btn"
+                    disabled={canContinue || !userAnswer}
+                  >
+                    Check
+                  </button>
+                </DndContext>
+              )}
+
+              <FeedbackMessage feedback={feedback} isTimeOut={isTimeOut} />
+
+              {feedback !== null && (
+                <button
+                  className={`btn-continue mt-4 ${
+                    feedback ? "success" : "error"
+                  }`}
+                  onClick={handleContinue}
+                >
+                  Continuar
                 </button>
-              </DndContext>
-            )}
-
-            <FeedbackMessage feedback={feedback} isTimeOut={isTimeOut} />
-
-            {feedback !== null && (
-              <button
-                className={`btn-continue mt-4 ${
-                  feedback ? "success" : "error"
-                }`}
-                onClick={handleContinue}
-              >
-                Continuar
-              </button>
-            )}
-          </>
-        ) : (
-          <p className="text-gray-500">Cargando ejercicio...</p>
-        )}
+              )}
+            </>
+          ) : (
+            <p className="text-gray-500">Cargando ejercicio...</p>
+          )}
+        </div>
+        <ChallengeUserCard
+          username="Oponente"
+          avatarUrl="/assets/avatars/default2.png"
+          ranking={142}
+        />
       </div>
     </MainLayout>
   );

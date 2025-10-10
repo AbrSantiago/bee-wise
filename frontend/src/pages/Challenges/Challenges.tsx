@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import MainLayout from "../../components/layout/MainLayout";
-import { motion } from "framer-motion";
 import { type User } from "../../services/userService";
 import { useAuth } from "../../context/AuthContext";
 import UserCard from "../../components/layout/UserCard";

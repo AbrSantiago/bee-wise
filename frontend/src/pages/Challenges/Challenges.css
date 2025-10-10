@@ -1,3 +1,8 @@
+.challenge-content {
+  display: flex;
+  gap: 10px;
+}
+
 .challenges {
   margin-top: 20px;
 }
