@@ -26,5 +26,8 @@ public abstract class Exercise {
     @JoinColumn(name = "lesson_id")
     private Lesson lesson;
 
+    @Enumerated(EnumType.STRING)
+    private ExerciseCategory category;
+
     public abstract void setOptions(List<String> options);
 }
