@@ -7,6 +7,7 @@ import com.beewise.model.*;
 import com.beewise.model.challenge.*;
 import com.beewise.repository.ChallengeRepository;
 import com.beewise.service.ChallengeService;
+import com.beewise.service.ExerciseService;
 import com.beewise.service.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -19,10 +20,12 @@ import java.util.Objects;
 public class ChallengeServiceImpl implements ChallengeService {
     private final ChallengeRepository repository;
     private final UserService userService;
+    private final ExerciseService exerciseService;
 
-    public ChallengeServiceImpl(ChallengeRepository repository, UserService userService) {
+    public ChallengeServiceImpl(ChallengeRepository repository, UserService userService, ExerciseService exerciseService) {
         this.repository = repository;
         this.userService = userService;
+        this.exerciseService = exerciseService;
     }
 
     @Override
@@ -98,5 +101,10 @@ public class ChallengeServiceImpl implements ChallengeService {
                 challengerId,
                 List.of(ChallengeStatus.PENDING, ChallengeStatus.ACTIVE)
         );
+    }
+
+    @Override
+    public List<Exercise> getRandomExercises(int limit) {
+        return exerciseService.getRandomExercises(limit);
     }
 }

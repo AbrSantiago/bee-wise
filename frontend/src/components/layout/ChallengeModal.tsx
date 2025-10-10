@@ -10,7 +10,7 @@ interface ChallengeModalProps {
   opponentId: number;
   opponent: string;
   onClose: () => void;
-  onConfirm: (rounds: number, questions: number) => void;
+  onConfirm: (challengeId: number, rounds: number, questions: number) => void;
 }
 
 export default function ChallengeModal({
@@ -54,9 +54,9 @@ export default function ChallengeModal({
     setError("");
 
     try {
-      await challengeService.sendChallenge(formData);
+      const challenge = await challengeService.sendChallenge(formData);
       console.log("✅ Challenge enviado:", formData);
-      onConfirm(formData.maxRounds, formData.questionsPerRound);
+      onConfirm(challenge.id, formData.maxRounds, formData.questionsPerRound);
       onClose(); // cerrar modal al enviar
     } catch (err: any) {
       setError(err.message || "Error al enviar el desafío");

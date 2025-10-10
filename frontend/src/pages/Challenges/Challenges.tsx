@@ -8,8 +8,10 @@ import "./Challenges.css";
 import ChallengeModal from "../../components/layout/ChallengeModal";
 import challengeService from "../../services/challengeService";
 import { useUser } from "../../context/UserContext";
+import { useNavigate } from "react-router-dom";
 
 export function ChallengesPage() {
+  const navigate = useNavigate();
   const { accessToken } = useAuth();
   const { user } = useUser();
   const [users, setUsers] = useState<User[]>([]);
@@ -38,51 +40,43 @@ export function ChallengesPage() {
     }
   }, [accessToken]);
 
-  const handleConfirmChallenge = (rounds: number, questions: number) => {
+  const handleConfirmChallenge = (
+    challengeId: number,
+    rounds: number,
+    questions: number
+  ) => {
     console.log(
       `Desafiando a ${selectedUsername} con ${rounds} rondas y ${questions} preguntas`
     );
-    setSelectedUsername(null); // cerrar modal
+    navigate(`/challenge/${challengeId}/round/1/${questions}/CHALLENGER`);
   };
 
   return (
     <MainLayout title="Desafíos">
-      <div className="flex flex-col items-center justify-center h-[70vh] text-center">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-          className="flex flex-col items-center gap-4"
-        >
-          <h1 className="text-4xl font-bold text-gray-800">¡Muy Pronto!</h1>
-          <p className="text-lg text-gray-500 max-w-md">
-            Estamos preparando algo genial. Volvé más tarde para descubrir los
-            nuevos desafíos.
-          </p>
-        </motion.div>
-      </div>
-      <div className="user-cards-container">
-        {users.map((user) => (
-          <UserCard
-            key={user.id}
-            username={user.username}
-            points={user.points}
-            onChallenge={() => {
-              setSelectedUserId(user.id);
-              setSelectedUsername(user.username);
-            }}
+      <div className="challenges">
+        <h1>⚔️ Elegí tu oponente ⚔️</h1>
+        <div className="user-cards-container">
+          {users.map((user) => (
+            <UserCard
+              key={user.id}
+              username={user.username}
+              points={user.points}
+              onChallenge={() => {
+                setSelectedUserId(user.id);
+                setSelectedUsername(user.username);
+              }}
+            />
+          ))}
+        </div>
+        {selectedUsername && selectedUserId && (
+          <ChallengeModal
+            opponentId={selectedUserId}
+            opponent={selectedUsername}
+            onClose={() => setSelectedUsername(null)}
+            onConfirm={handleConfirmChallenge}
           />
-        ))}
+        )}
       </div>
-
-      {selectedUsername && selectedUserId && (
-        <ChallengeModal
-          opponentId={selectedUserId}
-          opponent={selectedUsername}
-          onClose={() => setSelectedUsername(null)}
-          onConfirm={handleConfirmChallenge}
-        />
-      )}
     </MainLayout>
   );
 }

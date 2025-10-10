@@ -14,6 +14,7 @@ import LoginPage from "./pages/Login/LoginPage";
 import RegisterPage from "./pages/Register/RegisterPage";
 import RootRedirect from "./components/layout/RootRedirect";
 import { UserProvider } from "./context/UserContext";
+import { ChallengePlayPage } from "./pages/Challenges/ChallengePlay";
 
 function App() {
   return (
@@ -36,6 +37,10 @@ function App() {
               <Route path="/challenges" element={<ChallengesPage />} />
               <Route path="/ranking" element={<RankingPage />} />
               <Route path="/test" element={<Test />} />
+              <Route
+                path="/challenge/:challengeId/round/:roundNumber/:questionsPerRound/:rol"
+                element={<ChallengePlayPage />}
+              />
             </Route>
 
             <Route path="*" element={<NotFoundPage />} />
