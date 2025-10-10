@@ -4,6 +4,7 @@ import com.beewise.controller.dto.*;
 import com.beewise.exception.ExerciseNotFoundException;
 import com.beewise.exception.InvalidIdException;
 import com.beewise.model.Exercise;
+import com.beewise.model.ExerciseCategory;
 import com.beewise.model.MultipleChoiceExercise;
 import com.beewise.model.OpenExercise;
 import com.beewise.repository.ExerciseRepository;
@@ -78,8 +79,8 @@ public class ExerciseServiceImpl implements ExerciseService {
     }
 
     @Override
-    public List<Exercise> getRandomExercises(int limit) {
-        Pageable pageable = PageRequest.of(0, 5);
-        return repository.findRandomExercises(pageable);
+    public List<Exercise> getRandomExercises(int limit, ExerciseCategory category) {
+        Pageable pageable = PageRequest.of(0, limit);
+        return repository.findRandomExercisesByCategory(category, pageable);
     }
 }
