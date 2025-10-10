@@ -2,6 +2,7 @@ package com.beewise.controller;
 
 import com.beewise.controller.dto.*;
 import com.beewise.model.Exercise;
+import com.beewise.model.ExerciseCategory;
 import com.beewise.model.User;
 import com.beewise.model.challenge.Challenge;
 import com.beewise.service.ChallengeService;
@@ -56,9 +57,13 @@ public class ChallengeController {
     }
 
     @GetMapping("/randomExercises")
-    public ResponseEntity<List<ExerciseDTO>> getRandomExercises(@RequestParam int limit) {
-        List<Exercise> exercises = challengeService.getRandomExercises(limit);
-        List<ExerciseDTO> exerciseDTOS = exercises.stream().map(ExerciseDTO::fromExercise).toList();
+    public ResponseEntity<List<ExerciseDTO>> getRandomExercises(
+            @RequestParam int limit,
+            @RequestParam ExerciseCategory category) {
+        List<Exercise> exercises = challengeService.getRandomExercises(limit, category);
+        List<ExerciseDTO> exerciseDTOS = exercises.stream()
+                .map(ExerciseDTO::fromExercise)
+                .toList();
         return ResponseEntity.ok(exerciseDTOS);
     }
 }

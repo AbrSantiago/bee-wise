@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 @Service
 @Transactional
@@ -104,7 +105,14 @@ public class ChallengeServiceImpl implements ChallengeService {
     }
 
     @Override
-    public List<Exercise> getRandomExercises(int limit) {
-        return exerciseService.getRandomExercises(limit);
+    public List<Exercise> getRandomExercises(int limit, ExerciseCategory category) {
+        return exerciseService.getRandomExercises(limit, category);
+    }
+
+    @Override
+    public ExerciseCategory getRandomCategory() {
+        ExerciseCategory[] categories = ExerciseCategory.values();
+        int randomIndex = new Random().nextInt(categories.length);
+        return categories[randomIndex];
     }
 }
