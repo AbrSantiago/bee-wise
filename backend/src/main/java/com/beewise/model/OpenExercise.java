@@ -12,9 +12,10 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 public class OpenExercise extends Exercise {
-    public OpenExercise(String question, String answer) {
+    public OpenExercise(String question, String answer, ExerciseCategory category) {
         this.setQuestion(question);
         this.setAnswer(answer);
+        this.setCategory(category);
     }
 
     @Override

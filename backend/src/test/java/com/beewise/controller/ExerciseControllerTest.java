@@ -2,6 +2,7 @@ package com.beewise.controller;
 
 import com.beewise.controller.dto.SimpleMultipleChoiceExerciseDTO;
 import com.beewise.controller.dto.SimpleOpenExerciseDTO;
+import com.beewise.model.ExerciseCategory;
 import com.beewise.model.MultipleChoiceExercise;
 import com.beewise.model.OpenExercise;
 import com.beewise.service.ExerciseService;
@@ -33,7 +34,7 @@ class ExerciseControllerTest {
 
     @Test
     void getExercise_returnsDto() {
-        OpenExercise ex = new OpenExercise("Q?", "A");
+        OpenExercise ex = new OpenExercise("Q?", "A", ExerciseCategory.MATRICES);
         ex.setId(1L);
 
         when(service.getExercise(1L)).thenReturn(ex);
@@ -52,7 +53,7 @@ class ExerciseControllerTest {
         dto.setQuestion("Q?");
         dto.setAnswer("A");
 
-        OpenExercise ex = new OpenExercise("Q?", "A");
+        OpenExercise ex = new OpenExercise("Q?", "A", ExerciseCategory.MATRICES);
         ex.setId(2L);
 
         when(service.createOpenExercise(dto)).thenReturn(ex);
@@ -96,7 +97,7 @@ class ExerciseControllerTest {
         dto.setQuestion("Q2");
         dto.setAnswer("B");
 
-        OpenExercise ex = new OpenExercise("Q2", "B");
+        OpenExercise ex = new OpenExercise("Q2", "B", ExerciseCategory.MATRICES);
         ex.setId(4L);
 
         when(service.updateOpenExercise(4L, dto)).thenReturn(ex);

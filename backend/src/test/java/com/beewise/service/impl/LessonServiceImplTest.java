@@ -5,6 +5,7 @@ import com.beewise.exception.InvalidIdException;
 import com.beewise.exception.LessonNotFoundException;
 import com.beewise.exception.ExerciseNotFoundException;
 import com.beewise.model.Exercise;
+import com.beewise.model.ExerciseCategory;
 import com.beewise.model.Lesson;
 import com.beewise.model.OpenExercise;
 import com.beewise.repository.ExerciseRepository;
@@ -41,7 +42,7 @@ class LessonServiceImplTest {
     @BeforeEach
     void setUp() {
         testLesson = createTestLesson("Test Lesson", "Test Description");
-        testExercise = createTestExercise("Test Question", "Test Answer");
+        testExercise = createTestExercise("Test Question", "Test Answer", ExerciseCategory.MATRICES);
     }
 
     private Lesson createTestLesson(String title, String description) {
@@ -51,8 +52,8 @@ class LessonServiceImplTest {
         return lessonService.createLesson(dto);
     }
 
-    private Exercise createTestExercise(String question, String answer) {
-        Exercise exercise = new OpenExercise(question, answer);
+    private Exercise createTestExercise(String question, String answer, ExerciseCategory category) {
+        Exercise exercise = new OpenExercise(question, answer, category);
         return exerciseRepository.save(exercise);
     }
 
