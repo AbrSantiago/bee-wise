@@ -4,6 +4,7 @@ import MainLayout from "../../components/layout/MainLayout";
 import challengeService, {
   type AnswerDTO,
   type ChallengeRol,
+  type OpponentDTO,
 } from "../../services/challengeService";
 import type { Exercise } from "../../services/lessonService";
 import SummaryScreen from "../Practice/components/SummaryScreen";
@@ -45,7 +46,9 @@ export function ChallengePlayPage() {
     rol: ChallengeRol;
   }>();
   const navigate = useNavigate();
-  const user = useUser();
+  const { user } = useUser();
+  const [opponent, setOpponent] = useState<OpponentDTO | null>(null);
+  const [loadingOpponent, setLoadingOpponent] = useState(false);
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [loading, setLoading] = useState(true);
   const [timeLeft, setTimeLeft] = useState(25);
@@ -159,7 +162,7 @@ export function ChallengePlayPage() {
 
   const handleCheck = () => {
     setIsTimerRunning(false);
-    setIsTimeOut(false); 
+    setIsTimeOut(false);
 
     const correct = userAnswer.trim() === current.answer.trim();
     setFeedback(correct);
@@ -197,13 +200,14 @@ export function ChallengePlayPage() {
   };
 
   useEffect(() => {
-    if (!user.user || !challengeId || !roundNumber) return;
+    if (!user || !challengeId || !roundNumber) return;
 
     const fetchExercises = async () => {
       setLoading(true);
       try {
         const data = await challengeService.getRandomExercises(
-          Number(questionsPerRound)
+          Number(questionsPerRound),
+          "MATRICES"
         );
         setExercises(data);
         setTotalCount(data.length);
@@ -216,7 +220,23 @@ export function ChallengePlayPage() {
       }
     };
 
+    const fetchOpponent = async () => {
+      setLoadingOpponent(true);
+      try {
+        const data = await challengeService.getOpponent(
+          Number(challengeId),
+          user.username
+        );
+        setOpponent(data);
+      } catch (error) {
+        console.error("Error fetching opponent:", error);
+      } finally {
+        setLoadingOpponent(false);
+      }
+    };
+
     fetchExercises();
+    fetchOpponent();
   }, [challengeId, roundNumber]);
 
   useEffect(() => {
@@ -301,12 +321,18 @@ export function ChallengePlayPage() {
         </div>
       </div>
       <div className="challenge-content">
-        <ChallengeUserCard
-          username={user.user!.username}
-          avatarUrl="/assets/avatars/default1.png"
-          ranking={128}
-          isCurrentUser={true}
-        />
+        {user ? (
+          <ChallengeUserCard
+            username={user.username}
+            avatarUrl={
+              "https://png.pngtree.com/png-vector/20220817/ourmid/pngtree-women-cartoon-avatar-in-flat-style-png-image_6110776.png"
+            }
+            ranking={3}
+            isCurrentUser={true}
+          />
+        ) : (
+          <p className="opponent-error">No se pudo cargar el usuario</p>
+        )}
         <div className="exercise-container">
           {current ? (
             <>
@@ -380,11 +406,19 @@ export function ChallengePlayPage() {
             <p className="text-gray-500">Cargando ejercicio...</p>
           )}
         </div>
-        <ChallengeUserCard
-          username="Oponente"
-          avatarUrl="/assets/avatars/default2.png"
-          ranking={142}
-        />
+        {loadingOpponent ? (
+          <p className="opponent-loading">Cargando oponente...</p>
+        ) : opponent ? (
+          <ChallengeUserCard
+            username={opponent.username}
+            avatarUrl={
+              "https://cdn-icons-png.flaticon.com/512/1253/1253756.png"
+            }
+            ranking={13}
+          />
+        ) : (
+          <p className="opponent-error">No se pudo cargar el oponente</p>
+        )}
       </div>
     </MainLayout>
   );

@@ -72,4 +72,13 @@ public class ChallengeController {
         ExerciseCategory randomCategory = challengeService.getRandomCategory();
         return ResponseEntity.ok(randomCategory);
     }
+
+    @GetMapping("/{challengeId}/opponent/{username}")
+    public ResponseEntity<OpponentDTO> getOpponent(
+            @PathVariable Long challengeId,
+            @PathVariable String username
+    ) {
+        User user = challengeService.getOpponent(challengeId, username);
+        return ResponseEntity.ok(new OpponentDTO(user));
+    }
 }

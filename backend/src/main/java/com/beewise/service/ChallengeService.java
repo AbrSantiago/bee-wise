@@ -2,6 +2,7 @@ package com.beewise.service;
 
 import com.beewise.controller.dto.AnswerDTO;
 import com.beewise.controller.dto.SendChallengeDTO;
+import com.beewise.controller.dto.UserDTO;
 import com.beewise.model.Exercise;
 import com.beewise.model.ExerciseCategory;
 import com.beewise.model.User;
@@ -17,4 +18,5 @@ public interface ChallengeService {
     List<User> getUsersToChallenge(Long challengerId);
     List<Exercise> getRandomExercises(int limit, ExerciseCategory category);
     ExerciseCategory getRandomCategory();
+    User getOpponent(Long challengeId, String username);
 }

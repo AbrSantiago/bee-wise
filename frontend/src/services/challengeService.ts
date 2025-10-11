@@ -40,6 +40,12 @@ export type AnswerDTO = {
   score: number;
 };
 
+export type OpponentDTO = {
+  username: string;
+  avatarUrl: string;
+  ranking: number;
+};
+
 export type ChallengeRol = "CHALLENGER" | "CHALLENGED";
 
 const challengeService = {
@@ -84,14 +90,24 @@ const challengeService = {
     return response.data;
   },
 
-  async getRandomExercises(limit: number): Promise<Exercise[]> {
+  async getRandomExercises(limit: number, category: string): Promise<Exercise[]> {
     try {
       const response = await apiClient.get<Exercise[]>(
-        `/challenge/randomExercises?limit=${limit}`
+        `/challenge/randomExercises?limit=${limit}&category=${category}`
       );
       return response.data;
     } catch (error) {
       console.error("❌ Error fetching random exercises:", error);
+      throw error;
+    }
+  },
+  
+  async getOpponent(challengeId: number, username: string): Promise<OpponentDTO> {
+    try {
+      const response = await apiClient.get<OpponentDTO>(`/challenge/${challengeId}/opponent/${username}`);
+      return response.data;
+    } catch (error) {
+      console.error("❌ Error fetching opponent:", error);
       throw error;
     }
   },
