@@ -15,6 +15,7 @@ import RegisterPage from "./pages/Register/RegisterPage";
 import RootRedirect from "./components/layout/RootRedirect";
 import { UserProvider } from "./context/UserContext";
 import { ChallengePlayPage } from "./pages/Challenges/ChallengePlay";
+import Roulette from "./components/layout/Roulette";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
             <Route path="/landing" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/roulette" element={<Roulette />} />
 
             {/* Auth required */}
             <Route element={<ProtectedLayout />}>
