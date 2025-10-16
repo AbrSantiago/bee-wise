@@ -313,112 +313,116 @@ export function ChallengePlayPage() {
   return (
     <MainLayout title={`Desafío`}>
       {/* Timer Component */}
-      <div
-        className={`timer-container ${timeLeft <= 10 ? "timer-warning" : ""}`}
-      >
-        <div className={`timer-display ${timeLeft <= 10 ? "timer-pulse" : ""}`}>
-          Tiempo restante : {timeLeft}s
+      <div className="challenge-container">
+        <div
+          className={`timer-container ${timeLeft <= 10 ? "timer-warning" : ""}`}
+        >
+          <div
+            className={`timer-display ${timeLeft <= 10 ? "timer-pulse" : ""}`}
+          >
+            Tiempo restante : {timeLeft}s
+          </div>
         </div>
-      </div>
-      <div className="challenge-content">
-        {user ? (
-          <ChallengeUserCard
-            username={user.username}
-            avatarUrl={
-              "https://png.pngtree.com/png-vector/20220817/ourmid/pngtree-women-cartoon-avatar-in-flat-style-png-image_6110776.png"
-            }
-            ranking={3}
-            isCurrentUser={true}
-          />
-        ) : (
-          <p className="opponent-error">No se pudo cargar el usuario</p>
-        )}
-        <div className="exercise-container">
-          {current ? (
-            <>
-              {current.type === "OPEN" ? (
-                <div className="mt-4">
-                  <div className="matrix-container">
-                    <p className="question-text">{current.question}</p>
-                  </div>
-                  <TrueFalseButtons
-                    userAnswer={userAnswer}
-                    feedback={feedback}
-                    canContinue={canContinue}
-                    onClick={(answer) => {
-                      setIsTimerRunning(false);
-                      setIsTimeOut(false);
-                      handleTrueFalseClick(answer);
-                      const correct = answer.trim() === current.answer.trim();
-                      setFeedback(correct);
-                      setCanContinue(true);
-                      if (correct) setCorrectCount((prev) => prev + 1);
-                    }}
-                  />
-                </div>
-              ) : (
-                <DndContext
-                  sensors={sensors}
-                  collisionDetection={closestCenter}
-                  onDragEnd={handleDragEnd}
-                >
-                  <div className="question-and-answer-container">
-                    <div className="matrix-container">
-                      <BlockMath math={current.question.replace(/\?$/, "")} />
-                    </div>
-                    <div className="answer-slot-container mt-4">
-                      {userAnswer ? <BlockMath math={userAnswer} /> : <></>}
-                    </div>
-                  </div>
-                  <DnDOptions
-                    options={current.options || []}
-                    canContinue={canContinue}
-                    selectedOption={selectedOption}
-                    handleOptionClick={handleOptionClick}
-                    userAnswer={userAnswer}
-                    feedback={feedback}
-                    current={current}
-                  />
-                  <button
-                    onClick={handleCheck}
-                    className="check-btn"
-                    disabled={canContinue || !userAnswer}
-                  >
-                    Check
-                  </button>
-                </DndContext>
-              )}
-
-              <FeedbackMessage feedback={feedback} isTimeOut={isTimeOut} />
-
-              {feedback !== null && (
-                <button
-                  className={`btn-continue mt-4 ${
-                    feedback ? "success" : "error"
-                  }`}
-                  onClick={handleContinue}
-                >
-                  Continuar
-                </button>
-              )}
-            </>
+        <div className="challenge-content">
+          {user ? (
+            <ChallengeUserCard
+              username={user.username}
+              avatarUrl={
+                "https://png.pngtree.com/png-vector/20220817/ourmid/pngtree-women-cartoon-avatar-in-flat-style-png-image_6110776.png"
+              }
+              ranking={3}
+              isCurrentUser={true}
+            />
           ) : (
-            <p className="text-gray-500">Cargando ejercicio...</p>
+            <p className="opponent-error">No se pudo cargar el usuario</p>
+          )}
+          <div className="exercise-container">
+            {current ? (
+              <>
+                {current.type === "OPEN" ? (
+                  <div className="mt-4">
+                    <div className="matrix-container">
+                      <p className="question-text">{current.question}</p>
+                    </div>
+                    <TrueFalseButtons
+                      userAnswer={userAnswer}
+                      feedback={feedback}
+                      canContinue={canContinue}
+                      onClick={(answer) => {
+                        setIsTimerRunning(false);
+                        setIsTimeOut(false);
+                        handleTrueFalseClick(answer);
+                        const correct = answer.trim() === current.answer.trim();
+                        setFeedback(correct);
+                        setCanContinue(true);
+                        if (correct) setCorrectCount((prev) => prev + 1);
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <div className="question-and-answer-container">
+                      <div className="matrix-container">
+                        <BlockMath math={current.question.replace(/\?$/, "")} />
+                      </div>
+                      <div className="answer-slot-container mt-4">
+                        {userAnswer ? <BlockMath math={userAnswer} /> : <></>}
+                      </div>
+                    </div>
+                    <DnDOptions
+                      options={current.options || []}
+                      canContinue={canContinue}
+                      selectedOption={selectedOption}
+                      handleOptionClick={handleOptionClick}
+                      userAnswer={userAnswer}
+                      feedback={feedback}
+                      current={current}
+                    />
+                    <button
+                      onClick={handleCheck}
+                      className="check-btn"
+                      disabled={canContinue || !userAnswer}
+                    >
+                      Check
+                    </button>
+                  </DndContext>
+                )}
+
+                <FeedbackMessage feedback={feedback} isTimeOut={isTimeOut} />
+
+                {feedback !== null && (
+                  <button
+                    className={`btn-continue mt-4 ${
+                      feedback ? "success" : "error"
+                    }`}
+                    onClick={handleContinue}
+                  >
+                    Continuar
+                  </button>
+                )}
+              </>
+            ) : (
+              <p className="text-gray-500">Cargando ejercicio...</p>
+            )}
+          </div>
+          {loadingOpponent ? (
+            <p className="opponent-loading">Cargando oponente...</p>
+          ) : opponent ? (
+            <ChallengeUserCard
+              username={opponent.username}
+              avatarUrl={
+                "https://cdn-icons-png.flaticon.com/512/1253/1253756.png"
+              }
+              ranking={13}
+            />
+          ) : (
+            <p className="opponent-error">No se pudo cargar el oponente</p>
           )}
         </div>
-        {loadingOpponent ? (
-          <p className="opponent-loading">Cargando oponente...</p>
-        ) : opponent ? (
-          <ChallengeUserCard
-            username={opponent.username}
-            avatarUrl={
-              "https://cdn-icons-png.flaticon.com/512/1253/1253756.png"
-            }
-            ranking={13}
-          />
-        ) : (
-          <p className="opponent-error">No se pudo cargar el oponente</p>
-        )}
       </div>
     </MainLayout>
   );
