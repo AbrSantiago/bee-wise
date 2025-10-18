@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -72,4 +73,11 @@ public class ChallengeController {
         ExerciseCategory randomCategory = challengeService.getRandomCategory();
         return ResponseEntity.ok(randomCategory);
     }
+
+    @GetMapping("/categories")
+    public ResponseEntity<List<ExerciseCategory>> getAllCategories() {
+        List<ExerciseCategory> categories = Arrays.asList(ExerciseCategory.values());
+        return ResponseEntity.ok(categories);
+    }
+
 }

@@ -1,111 +1,61 @@
-body {
-  padding: 0;
-  margin: 0;
-  height: 100vh;
+.roulette-display {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
-  /* background: radial-gradient(
-    circle,
-    rgba(97, 172, 203, 1) 25%,
-    rgba(9, 72, 255, 1) 70%
-  ); */
+  margin-bottom: 20px;
+  /* Espacio para la flecha de arriba */
+  padding-top: 40px; 
 }
 
 #wheel {
-  width: 800px;
-  height: 800px;
+  width: 450px;
+  height: 450px;
   border-radius: 50%;
-  border: 15px solid #000;
+  border: 10px solid #2c3e50;
   position: relative;
   overflow: hidden;
-  transition: transform 5s ease-out; /* Cambiado a 5 segundos */
+  /* La transición se aplica desde el componente JS */
+}
+
+/* La flecha que indica el premio */
+.roulette-pointer {
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-top: 30px solid #e74c3c; /* Flecha roja */
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
 }
 
 .segment {
-  height: 50px;
-  width: 400px;
+  /* Crea un triángulo apuntando al centro */
+  height: 0;
+  width: 225px; /* Mitad del ancho de la ruleta */
   position: absolute;
   clip-path: polygon(100% 0, 50% 100%, 0 0);
-  transform: translate(-50%);
   transform-origin: bottom;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  font-weight: bold;
-  font-family: sans-serif;
-  color: #fff;
-  margin-top: -19%;
-  margin-left: 25%;
+  left: 25%; /* (ancho ruleta - ancho segmento) / 2 */
+  top: 0;
+  border-bottom-width: 225px; /* Mitad de la altura de la ruleta */
+  border-bottom-style: solid;
+  /* El color se aplica desde el componente JS */
 }
 
 .segment-text {
-  position: absolute;
-  left: -70px;
-  bottom: -350px;
-  width: 550px;
-  height: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform: rotate(-90deg);
-  font-size: 20px;
-  font-weight: bold;
-  color: aqua;
-}
-
-/*Calculamos la rotacion para 9 segmentos (40º por segmento)*/
-
-.segment:nth-child(1) {
-  border-bottom: 500px solid red;
-  transform: rotate(0deg);
-}
-.segment:nth-child(2) {
-  border-bottom: 500px solid blue;
-  transform: rotate(40deg);
-}
-.segment:nth-child(3) {
-  border-bottom: 500px solid green;
-  transform: rotate(80deg);
-}
-.segment:nth-child(4) {
-  border-bottom: 500px solid yellow;
-  transform: rotate(120deg);
-}
-.segment:nth-child(5) {
-  border-bottom: 500px solid black;
-  transform: rotate(160deg);
-}
-.segment:nth-child(6) {
-  border-bottom: 500px solid blueviolet;
-  transform: rotate(200deg);
-}
-.segment:nth-child(7) {
-  border-bottom: 500px solid rosybrown;
-  transform: rotate(240deg);
-}
-.segment:nth-child(8) {
-  border-bottom: 500px solid tomato;
-  transform: rotate(280deg);
-}
-.segment:nth-child(9) {
-  border-bottom: 500px solid white;
-  transform: rotate(320deg);
-}
-
-#spinButton {
-  font-size: 20px;
-  margin-left: 20px; /* Espaciado entre la rueda y el botón */
-  padding: 10px 20px;
-  cursor: pointer;
-}
-
-
-.roulette-container {
-  position: relative;
-  display: flex;
-  align-items: center;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -140px; /* Ajustar según tamaño */
+    text-align: center;
+    transform: rotate(-90deg);
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    text-transform: capitalize;
 }
