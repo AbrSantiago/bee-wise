@@ -10,12 +10,14 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class ShopItemDTO {
+    private Long id;
     private String name;
     private ItemCategory category;
     private String image;
     private int price;
 
     public ShopItemDTO(ShopItem item) {
+        this.id = item.getId();
         this.name = item.getName();
         this.category = item.getCategory();
         this.image = item.getImageUrl();

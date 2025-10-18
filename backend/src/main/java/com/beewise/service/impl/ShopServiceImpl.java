@@ -1,19 +1,19 @@
 package com.beewise.service.impl;
 
-import com.beewise.controller.dto.ShopItemDTO;
+import com.beewise.controller.dto.NewShopItemDTO;
 import com.beewise.exception.ShopItemDoesNotExistsException;
 import com.beewise.model.ShopItem;
 import com.beewise.repository.ShopItemRepository;
-import com.beewise.service.ShopItemService;
+import com.beewise.service.ShopService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class ShopItemServiceImpl implements ShopItemService {
+public class ShopServiceImpl implements ShopService {
     private final ShopItemRepository repository;
 
-    public ShopItemServiceImpl(ShopItemRepository repository) {
+    public ShopServiceImpl(ShopItemRepository repository) {
         this.repository = repository;
     }
 
@@ -24,7 +24,7 @@ public class ShopItemServiceImpl implements ShopItemService {
     }
 
     @Override
-    public ShopItem createShopItem(ShopItemDTO dto) {
+    public ShopItem createShopItem(NewShopItemDTO dto) {
         ShopItem item = new ShopItem(
                 dto.getName(),
                 dto.getCategory(),
@@ -32,5 +32,11 @@ public class ShopItemServiceImpl implements ShopItemService {
                 dto.getPrice()
         );
         return repository.save(item);
+    }
+
+    @Override
+    public ShopItem getItem(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new ShopItemDoesNotExistsException("Item with " + id + " does not exists"));
     }
 }

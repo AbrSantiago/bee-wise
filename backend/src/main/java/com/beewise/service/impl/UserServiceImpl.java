@@ -1,19 +1,20 @@
 package com.beewise.service.impl;
 
 import com.beewise.controller.dto.*;
-import com.beewise.exception.UserNotFoundException;
+import com.beewise.exception.*;
+import com.beewise.model.Avatar;
 import com.beewise.model.Lesson;
+import com.beewise.model.ShopItem;
 import com.beewise.model.User;
 import com.beewise.model.challenge.ChallengeStatus;
 import com.beewise.repository.UserRepository;
-import com.beewise.service.LessonProgressService;
-import com.beewise.service.LessonService;
-import com.beewise.service.UserService;
+import com.beewise.service.*;
 import jakarta.transaction.Transactional;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -23,12 +24,21 @@ public class UserServiceImpl implements UserService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final LessonProgressService progressService;
     private final LessonService lessonService;
+    private final AvatarService avatarService;
+    private final ShopService shopService;
 
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, LessonProgressService progressService, LessonService lessonService) {
+    public UserServiceImpl(
+            UserRepository userRepository,
+            BCryptPasswordEncoder passwordEncoder,
+            LessonProgressService progressService,
+            LessonService lessonService,
+            AvatarService avatarService, ShopService shopService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.progressService = progressService;
         this.lessonService = lessonService;
+        this.avatarService = avatarService;
+        this.shopService = shopService;
     }
 
     @Override
@@ -46,11 +56,8 @@ public class UserServiceImpl implements UserService {
         newUser.setSurname(registerUserDTO.getSurname());
         newUser.setEmail(registerUserDTO.getEmail());
         newUser.setUsername(registerUserDTO.getUsername());
-
-        String hashedPassword = passwordEncoder.encode(registerUserDTO.getPassword());
-        newUser.setPasswordHash(hashedPassword);
-
-        newUser.setPoints(0);
+        newUser.setPasswordHash(passwordEncoder.encode(registerUserDTO.getPassword()));
+        newUser.setAvatar(avatarService.newDefaultAvatar(newUser));
 
         return userRepository.save(newUser);
     }
@@ -107,5 +114,46 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getUsersToChallenge(Long challengerId, List<ChallengeStatus> activeStatuses) {
         return userRepository.findAvailableToChallenge(challengerId, activeStatuses);
+    }
+
+    @Override
+    public User updateAvatar(Long id, AvatarDTO avatarDTO) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found"));
+        checkIfHasAllItems(avatarDTO, user);
+        Avatar avatar = avatarService.updateAvatar(user.getAvatar().getId(), avatarDTO);
+        user.setAvatar(avatar);
+        return userRepository.save(user);
+    }
+
+    @Override
+    public User buyItem(Long itemId, String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
+        ShopItem item = shopService.getItem(itemId);
+        List<ShopItem> userItems = user.getItems();
+        if (userItems.contains(item)) {
+            throw new ItemAlreadyBoughtException("Item " + itemId + " was already bought by " + username);
+        }
+        if (user.getBeeCoins() < item.getPrice()) {
+            throw new NotEnoughBeeCoinsException("User " + username + " has obtain not enough BeeCoins to buy item " + itemId);
+        }
+        userItems.add(item);
+        user.setItems(userItems);
+        return userRepository.save(user);
+    }
+
+
+    // =============== HELPERS ===============
+
+    private void checkIfHasAllItems(AvatarDTO avatarDTO, User user) {
+        ShopItem hair = shopService.getItem(avatarDTO.getHair().getId());
+        ShopItem shirt = shopService.getItem(avatarDTO.getShirt().getId());
+        ShopItem skin = shopService.getItem(avatarDTO.getSkin().getId());
+        ShopItem background = shopService.getItem(avatarDTO.getBackground().getId());
+        List<ShopItem> items = user.getItems();
+        if (!new HashSet<>(items).containsAll(List.of(hair,shirt,skin,background))) {
+            throw new SomeItemsWereNotBought("Some items were not bought");
+        }
     }
 }

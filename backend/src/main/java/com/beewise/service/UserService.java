@@ -15,4 +15,6 @@ public interface UserService {
     LessonCompleteDTO lessonComplete(LessonCompleteRequestDTO requestDTO);
     UserPointsDTO getUserPoints(String username);
     List<User> getUsersToChallenge(Long challengerId, List<ChallengeStatus> activeStatuses);
+    User updateAvatar(Long id, AvatarDTO avatarDTO);
+    User buyItem(Long itemId, String username);
 }

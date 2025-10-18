@@ -40,22 +40,6 @@ class UserTest {
     }
 
     @Test
-    void parameterizedConstructor_setsAllFields() {
-        List<LessonProgress> progresses = new ArrayList<>();
-
-        User user = new User("John", "Doe", "john@example.com", "johndoe", "hashedPassword", 150, progresses);
-
-        assertEquals("John", user.getName());
-        assertEquals("Doe", user.getSurname());
-        assertEquals("john@example.com", user.getEmail());
-        assertEquals("johndoe", user.getUsername());
-        assertEquals("hashedPassword", user.getPasswordHash());
-        assertEquals(150, user.getPoints());
-        assertEquals(progresses, user.getLessonProgresses());
-        assertEquals(1, user.getCurrentLesson());
-    }
-
-    @Test
     void setId_setsValueCorrectly() {
         User user = new User();
 

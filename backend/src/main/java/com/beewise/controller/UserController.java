@@ -26,7 +26,7 @@ public class UserController {
     }
 
     @PostMapping("/auth/register")
-    public ResponseEntity<User> registerUser (@Valid @RequestBody RegisterUserDTO registerUserDTO){
+    public ResponseEntity<User> registerUser(@Valid @RequestBody RegisterUserDTO registerUserDTO) {
         User newUser = userService.registerUser(registerUserDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
@@ -58,7 +58,7 @@ public class UserController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<UserDTO>> getAllUsers (){
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
         List<User> users = userService.getAllUsers();
         List<UserDTO> userDTOS = users.stream().map(UserDTO::new).toList();
         return ResponseEntity.ok(userDTOS);
@@ -75,5 +75,11 @@ public class UserController {
         String username = jwtService.extractUsername(token.substring(7));
         UserPointsDTO userPoints = userService.getUserPoints(username);
         return ResponseEntity.ok(userPoints);
+    }
+
+    @PutMapping("/updateAvatar/{id}")
+    public ResponseEntity<UserDTO> updateAvatar(@PathVariable Long userId, @RequestBody AvatarDTO dto) {
+        User user = userService.updateAvatar(userId, dto);
+        return ResponseEntity.ok(new UserDTO(user));
     }
 }
