@@ -23,7 +23,8 @@ import {
 import type { DragEndEvent } from "@dnd-kit/core";
 import FeedbackMessage from "../Practice/components/FeedbackMessage";
 import DnDOptions from "../Practice/components/DnDOptions";
-import Roulette from "../../components/layout/Roulette"; // Importar Roulette
+import Roulette from "../../components/layout/Roulette"; 
+import CategoryPopup from "../../components/layout/CategoryPopup";
 
 export function ChallengePlayPage() {
   // --- Estados de tu lógica de juego original ---
@@ -43,6 +44,7 @@ export function ChallengePlayPage() {
   const [timeLeft, setTimeLeft] = useState(25);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [isTimeOut, setIsTimeOut] = useState(false);
+  const [showCategoryPopup, setShowCategoryPopup] = useState(false);
 
   // --- Estados nuevos para la ruleta y el flujo de juego ---
   const [gameState, setGameState] = useState<"ROULETTE" | "PLAYING" | "SUMMARY">("ROULETTE");
@@ -177,46 +179,75 @@ export function ChallengePlayPage() {
     fetchCategories();
   }, []);
 
-  const handleStartSpin = async () => {
-    if (isSpinning) return;
-    try {
-      const category = await challengeService.getRandomCategory();
-      setWinningCategory(category);
-      setIsSpinning(true);
-    } catch (error) {
-      console.error("Error al obtener la categoría:", error);
+  const handleStartSpin = () => {
+    if (!isSpinning) {
+      // Obtener categoría aleatoria
+      challengeService.getRandomCategory()
+        .then((category) => {
+          setWinningCategory(category);
+          setIsSpinning(true);
+        })
+        .catch((error) => {
+          console.error("Error obteniendo categoría aleatoria:", error);
+        });
     }
   };
 
-  const handleSpinEnd = async () => {
-    if (!winningCategory) return;
-    setLoading(true); // Ponemos el loading mientras se buscan los ejercicios
-    try {
-      const data = await challengeService.getRandomExercises(Number(questionsPerRound), winningCategory);
-      setExercises(data);
-      setTotalCount(data.length);
-      setCorrectCount(0);
-      setStartTime(Date.now());
-      setGameState("PLAYING"); // Cambiamos a la vista de juego
-    } catch (error) {
-      console.error("Error fetching challenge exercises:", error);
-    } finally {
-      setLoading(false); // Quitamos el loading
-    }
-  };
+  const handleSpinEnd = () => {
+    console.log("🎉 Ruleta detenida en categoría:", winningCategory);
+    setIsSpinning(false);
+    setShowCategoryPopup(true); // Mostrar el popup cuando termine de girar
+};
+
+  const handleStartGame = async () => {
+  if (!winningCategory) return;
+  
+  setShowCategoryPopup(false); // Ocultar el popup
+  setLoading(true); // Ponemos el loading mientras se buscan los ejercicios
+  
+  try {
+    const data = await challengeService.getRandomExercises(Number(questionsPerRound), winningCategory);
+    setExercises(data);
+    setTotalCount(data.length);
+    setCorrectCount(0);
+    setStartTime(Date.now());
+    setGameState("PLAYING");
+  } catch (error) {
+    console.error("Error fetching challenge exercises:", error);
+  } finally {
+    setLoading(false); // Quitamos el loading
+  }
+};
 
   // --- TUS useEffect ORIGINALES PARA EL TIMER ---
-  useEffect(() => {
-    // ... tu código original del timer ...
-  }, [isTimerRunning, timeLeft]);
+useEffect(() => {
+  let interval: NodeJS.Timeout | null = null;
 
-  useEffect(() => {
-    if (gameState === 'PLAYING' && current && !loading) { // Aseguramos que el timer inicie solo en el estado de juego
-      setTimeLeft(25);
-      setIsTimerRunning(true);
-      console.log("🚀 Timer iniciado para nueva pregunta");
-    }
-  }, [currentExercise, current, loading, gameState]);
+  if (isTimerRunning && timeLeft > 0) {
+    interval = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          setIsTimerRunning(false);
+          handleTimeOut();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  }
+
+  return () => {
+    if (interval) clearInterval(interval);
+  };
+}, [isTimerRunning, timeLeft]);
+
+useEffect(() => {
+  if (gameState === 'PLAYING' && current && !loading) {
+    setTimeLeft(25);
+    setIsTimerRunning(true);
+    console.log("🚀 Timer iniciado para nueva pregunta");
+  }
+}, [currentExercise, current, loading, gameState]);
 
 
   // --- RENDERIZADO FINAL ---
@@ -228,25 +259,33 @@ export function ChallengePlayPage() {
         <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <h2 style={{ color: '#fff', fontFamily: 'Recoleta-Bold', fontSize: '2.5rem', marginBottom: '20px' }}>
             ¡Gira para definir la categoría!
-          </h2>
-          <Roulette
-            categories={rouletteCategories}
-            winningCategory={winningCategory}
-            triggerSpin={isSpinning}
-            onSpinningEnd={handleSpinEnd}
-          />
-          <button
-            onClick={handleStartSpin}
-            className="check-btn"
-            disabled={isSpinning}
-            style={{ marginTop: '30px', width: '250px', fontSize: '1.5rem', padding: '15px' }}
-          >
-            {isSpinning ? "Girando..." : "¡GIRAR!"}
-          </button>
-        </div>
-      </MainLayout>
-    );
-  }
+        </h2>
+        <Roulette
+          categories={rouletteCategories}
+          winningCategory={winningCategory}
+          triggerSpin={isSpinning}
+          onSpinningEnd={handleSpinEnd}
+        />
+        <button
+          onClick={handleStartSpin}
+          className="check-btn"
+          disabled={isSpinning}
+          style={{ marginTop: '30px', width: '250px', fontSize: '1.5rem', padding: '15px' }}
+        >
+          {isSpinning ? "Girando..." : "¡GIRAR!"}
+        </button>
+      </div>
+
+      {/* Mostrar el popup cuando showCategoryPopup sea true */}
+      {showCategoryPopup && winningCategory && (
+        <CategoryPopup
+          category={winningCategory}
+          onStart={handleStartGame}
+        />
+      )}
+    </MainLayout>
+  );
+}
 
   if (gameState === "SUMMARY") {
     return (
