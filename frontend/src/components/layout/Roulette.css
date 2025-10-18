@@ -1,0 +1,61 @@
+.roulette-display {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  /* Espacio para la flecha de arriba */
+  padding-top: 40px; 
+}
+
+#wheel {
+  width: 450px;
+  height: 450px;
+  border-radius: 50%;
+  border: 10px solid #2c3e50;
+  position: relative;
+  overflow: hidden;
+  /* La transición se aplica desde el componente JS */
+}
+
+/* La flecha que indica el premio */
+.roulette-pointer {
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-top: 30px solid #e74c3c; /* Flecha roja */
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+}
+
+.segment {
+  /* Crea un triángulo apuntando al centro */
+  height: 0;
+  width: 225px; /* Mitad del ancho de la ruleta */
+  position: absolute;
+  clip-path: polygon(100% 0, 50% 100%, 0 0);
+  transform-origin: bottom;
+  left: 25%; /* (ancho ruleta - ancho segmento) / 2 */
+  top: 0;
+  border-bottom-width: 225px; /* Mitad de la altura de la ruleta */
+  border-bottom-style: solid;
+  /* El color se aplica desde el componente JS */
+}
+
+.segment-text {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -140px; /* Ajustar según tamaño */
+    text-align: center;
+    transform: rotate(-90deg);
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    text-transform: capitalize;
+}

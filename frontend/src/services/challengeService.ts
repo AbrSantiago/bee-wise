@@ -5,6 +5,13 @@ import type { User } from "./userService";
 export type ChallengeStatus = "PENDING" | "ACTIVE" | "EXPIRED" | "COMPLETED";
 export type ChallengeResult = "CHALLENGER_WIN" | "CHALLENGED_WIN" | "DRAW" | null;
 export type RoundStatus = "COMPLETED" | "WAITING_CHALLENGER" | "WAITING_CHALLENGED";
+export type ExerciseCategory =
+  | "MATRICES"
+  | "DETERMINANTS"
+  | "SYSTEM_OF_EQUATIONS"
+  | "GROUP_THEORY"
+  | "VECTOR_SPACES"
+  | "DIVISIBILITY";
 
 export type RoundDTO = {
   roundNumber: number;
@@ -38,12 +45,6 @@ export type AnswerDTO = {
   roundNumber: number;
   rol: ChallengeRol;
   score: number;
-};
-
-export type OpponentDTO = {
-  username: string;
-  avatarUrl: string;
-  ranking: number;
 };
 
 export type ChallengeRol = "CHALLENGER" | "CHALLENGED";
@@ -90,7 +91,7 @@ const challengeService = {
     return response.data;
   },
 
-  async getRandomExercises(limit: number, category: string): Promise<Exercise[]> {
+  async getRandomExercises(limit: number, category: ExerciseCategory): Promise<Exercise[]> {
     try {
       const response = await apiClient.get<Exercise[]>(
         `/challenge/randomExercises?limit=${limit}&category=${category}`
@@ -101,13 +102,27 @@ const challengeService = {
       throw error;
     }
   },
-  
-  async getOpponent(challengeId: number, username: string): Promise<OpponentDTO> {
+
+  async getRandomCategory(): Promise<ExerciseCategory> {
     try {
-      const response = await apiClient.get<OpponentDTO>(`/challenge/${challengeId}/opponent/${username}`);
+      const response = await apiClient.get<ExerciseCategory>(
+        "/challenge/getRandomCategory"
+      );
       return response.data;
     } catch (error) {
-      console.error("❌ Error fetching opponent:", error);
+      console.error("❌ Error fetching random category:", error);
+      throw error;
+    }
+  },
+
+  async getAllCategories(): Promise<ExerciseCategory[]> {
+    try {
+      const response = await apiClient.get<ExerciseCategory[]>(
+        "/challenge/categories"
+      );
+      return response.data;
+    } catch (error) {
+      console.error("❌ Error fetching all categories:", error);
       throw error;
     }
   },
