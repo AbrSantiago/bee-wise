@@ -1,6 +1,8 @@
 package com.beewise.controller;
 
 import com.beewise.controller.dto.*;
+import com.beewise.model.Avatar;
+import com.beewise.model.ShopItem;
 import com.beewise.model.User;
 import com.beewise.model.challenge.*;
 import com.beewise.service.ChallengeService;
@@ -57,7 +59,7 @@ class ChallengeControllerTest {
 
     @Test
     void getAll_withEmptyList_returnsEmptyList() {
-        when(challengeService.getAll()).thenReturn(Arrays.asList());
+        when(challengeService.getAll()).thenReturn(List.of());
 
         ResponseEntity<List<ChallengeDTO>> response = controller.getAll();
 
@@ -77,6 +79,7 @@ class ChallengeControllerTest {
 
         when(challengeService.getUsersToChallenge(5L)).thenReturn(users);
 
+
         ResponseEntity<List<UserDTO>> response = controller.getUsersToChallenge(5L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -90,7 +93,7 @@ class ChallengeControllerTest {
 
     @Test
     void getUsersToChallenge_withEmptyList_returnsEmptyList() {
-        when(challengeService.getUsersToChallenge(10L)).thenReturn(Arrays.asList());
+        when(challengeService.getUsersToChallenge(10L)).thenReturn(List.of());
 
         ResponseEntity<List<UserDTO>> response = controller.getUsersToChallenge(10L);
 
@@ -169,7 +172,7 @@ class ChallengeControllerTest {
         AnswerDTO answerDTO = new AnswerDTO();
         answerDTO.setChallengeId(30L);
         answerDTO.setRoundNumber(1);
-        answerDTO.setRol(ChallengeRol.CHALLENGER); // ✅ Esto ya está importado desde dto.*
+        answerDTO.setRol(ChallengeRol.CHALLENGER); // ✅ Already imported from dto.*
         answerDTO.setScore(85);
 
         User challenger = createUser(1L, "challenger");
@@ -194,7 +197,7 @@ class ChallengeControllerTest {
         AnswerDTO answerDTO = new AnswerDTO();
         answerDTO.setChallengeId(40L);
         answerDTO.setRoundNumber(2);
-        answerDTO.setRol(ChallengeRol.CHALLENGED); // ✅ Esto ya está importado desde dto.*
+        answerDTO.setRol(ChallengeRol.CHALLENGED); // ✅ Already imported from dto.*
         answerDTO.setScore(92);
 
         User challenger = createUser(5L, "challenger5");
@@ -222,8 +225,8 @@ class ChallengeControllerTest {
 
     @Test
     void getUsersToChallenge_withDifferentChallengerId_callsServiceCorrectly() {
-        User user = createUser(10L, "testuser");
-        List<User> users = Arrays.asList(user);
+        User user = createUser(10L, "TestUser");
+        List<User> users = List.of(user);
 
         when(challengeService.getUsersToChallenge(99L)).thenReturn(users);
 
@@ -233,7 +236,7 @@ class ChallengeControllerTest {
         assertNotNull(response.getBody());
         assertEquals(1, response.getBody().size());
         assertEquals(10L, response.getBody().get(0).getId());
-        assertEquals("testuser", response.getBody().get(0).getUsername());
+        assertEquals("TestUser", response.getBody().get(0).getUsername());
         verify(challengeService).getUsersToChallenge(99L);
     }
 
@@ -245,7 +248,7 @@ class ChallengeControllerTest {
         challenge.setMaxRounds(5);
         challenge.setQuestionsPerRound(10);
 
-        List<Challenge> challenges = Arrays.asList(challenge);
+        List<Challenge> challenges = List.of(challenge);
 
         when(challengeService.getAll()).thenReturn(challenges);
 
@@ -273,7 +276,22 @@ class ChallengeControllerTest {
         user.setSurname("Surname" + id);
         user.setPoints(100);
         user.setCurrentLesson(1);
+        user.setAvatar(createAvatar(user));
         return user;
+    }
+
+    private Avatar createAvatar(User user) {
+        Avatar avatar = new Avatar();
+        avatar.setUser(user);
+        avatar.setBackground(createShopItem());
+        avatar.setShirt(createShopItem());
+        avatar.setSkin(createShopItem());
+        avatar.setHair(createShopItem());
+        return avatar;
+    }
+
+    private ShopItem createShopItem() {
+        return new ShopItem();
     }
 
     private Challenge createChallenge(Long id, User challenger, User challenged, ChallengeStatus status) {
@@ -286,7 +304,7 @@ class ChallengeControllerTest {
         challenge.setQuestionsPerRound(5);
         challenge.setCreationDate(LocalDate.now());
         challenge.setExpireDate(LocalDate.now().plusDays(7));
-        challenge.setRounds(Arrays.asList());
+        challenge.setRounds(List.of());
         return challenge;
     }
 }

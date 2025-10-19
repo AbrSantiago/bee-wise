@@ -2,11 +2,13 @@ package com.beewise.service.impl;
 
 import com.beewise.controller.dto.*;
 import com.beewise.exception.UserNotFoundException;
+import com.beewise.model.ItemCategory;
 import com.beewise.model.Lesson;
 import com.beewise.model.User;
 import com.beewise.model.challenge.ChallengeStatus;
 import com.beewise.repository.UserRepository;
 import com.beewise.service.LessonService;
+import com.beewise.service.ShopService;
 import com.beewise.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,13 +37,29 @@ class UserServiceImplTest {
     @Autowired
     private LessonService lessonService;
 
+    @Autowired
+    private ShopService shopService;
+
     private User testUser;
     private Lesson testLesson;
 
     @BeforeEach
     void setUp() {
+        createItem("Default skin", ItemCategory.SKIN);
+        createItem("Default hair", ItemCategory.HAIR);
+        createItem("Default shirt", ItemCategory.SHIRT);
+        createItem("Default background", ItemCategory.BACKGROUND);
         testUser = createTestUser("testUser", "test@example.com");
-        testLesson = createTestLesson("Test Lesson", "Test Description");
+        testLesson = createTestLesson();
+    }
+
+    private void createItem(String name, ItemCategory category) {
+        NewShopItemDTO item = new NewShopItemDTO();
+        item.setName(name);
+        item.setCategory(category);
+        item.setImage("");
+        item.setPrice(0);
+        shopService.createShopItem(item);
     }
 
     private User createTestUser(String username, String email) {
@@ -54,10 +72,10 @@ class UserServiceImplTest {
         return userService.registerUser(dto);
     }
 
-    private Lesson createTestLesson(String title, String description) {
+    private Lesson createTestLesson() {
         SimpleLessonDTO dto = new SimpleLessonDTO();
-        dto.setTitle(title);
-        dto.setDescription(description);
+        dto.setTitle("Test Lesson");
+        dto.setDescription("Test Description");
         return lessonService.createLesson(dto);
     }
 
@@ -85,7 +103,7 @@ class UserServiceImplTest {
     void registerUser_duplicateEmail_throwsException() {
         RegisterUserDTO dto = new RegisterUserDTO();
         dto.setUsername("anotherUser");
-        dto.setEmail(testUser.getEmail()); // Email duplicado
+        dto.setEmail(testUser.getEmail()); // Email duplicated
         dto.setName("Another");
         dto.setSurname("User");
         dto.setPassword("password123");
@@ -101,7 +119,7 @@ class UserServiceImplTest {
     @Test
     void registerUser_duplicateUsername_throwsException() {
         RegisterUserDTO dto = new RegisterUserDTO();
-        dto.setUsername(testUser.getUsername()); // Username duplicado
+        dto.setUsername(testUser.getUsername()); // Username duplicated
         dto.setEmail("different@test.com");
         dto.setName("Different");
         dto.setSurname("User");
@@ -146,7 +164,7 @@ class UserServiceImplTest {
     void authenticateUser_invalidPassword_throwsException() {
         LoginUserDTO dto = new LoginUserDTO();
         dto.setUsername(testUser.getUsername());
-        dto.setPassword("wrongpassword");
+        dto.setPassword("WrongPassword");
 
         BadCredentialsException exception = assertThrows(
                 BadCredentialsException.class,
@@ -203,7 +221,7 @@ class UserServiceImplTest {
         List<User> allUsers = userService.getAllUsers();
 
         assertNotNull(allUsers);
-        assertTrue(allUsers.size() >= 1);
+        assertFalse(allUsers.isEmpty());
         assertTrue(allUsers.stream().anyMatch(u -> u.getId().equals(testUser.getId())));
     }
 
@@ -245,14 +263,10 @@ class UserServiceImplTest {
         assertTrue(result.isSuccess());
         assertEquals("Progress updated", result.getMessage());
 
-        // Remover la línea que causa error - LessonCompleteDTO no tiene getPoints()
-        // assertEquals(initialPoints + 50, result.getPoints());
-
-        // En su lugar, verificar directamente en la base de datos
         User updatedUser = userRepository.findById(testUser.getId()).orElse(null);
         assertNotNull(updatedUser);
-        assertEquals(initialPoints + 50, updatedUser.getPoints()); // 5 ejercicios * 10 puntos
-        assertEquals(1, updatedUser.getCurrentLesson()); // +1 desde el valor inicial
+        assertEquals(initialPoints + 50, updatedUser.getPoints()); // 5 exercises * 10 puntos
+        assertEquals(1, updatedUser.getCurrentLesson()); // +1 from start value
     }
 
     @Test
@@ -285,7 +299,7 @@ class UserServiceImplTest {
         assertTrue(result.isSuccess());
         assertEquals("Progress updated", result.getMessage());
 
-        // Verificar en la BD que los puntos no cambiaron
+        // Verify that points did not change on DB
         User updatedUser = userRepository.findById(testUser.getId()).orElse(null);
         assertNotNull(updatedUser);
         assertEquals(initialPoints, updatedUser.getPoints()); // Sin cambio en puntos
@@ -305,17 +319,16 @@ class UserServiceImplTest {
         assertNotNull(result);
         assertTrue(result.isSuccess());
 
-        // Verificar en la BD que los puntos se calcularon correctamente
+        // Verify on DB that user points are correctly calculated
         User updatedUser = userRepository.findById(testUser.getId()).orElse(null);
         assertNotNull(updatedUser);
-        assertEquals(initialPoints + 100, updatedUser.getPoints()); // 10 * 10 = 100 puntos
+        assertEquals(initialPoints + 100, updatedUser.getPoints()); // 10 * 10 = 100 points
     }
 
     @Test
     void getUsersToChallenge_withActiveStatuses_returnsAvailableUsers() {
-        // Crear usuarios adicionales para el test
-        User user2 = createTestUser("challenger", "challenger@test.com");
-        User user3 = createTestUser("available", "available@test.com");
+        createTestUser("challenger", "challenger@test.com");
+        createTestUser("available", "available@test.com");
 
         List<ChallengeStatus> activeStatuses = Arrays.asList(
                 ChallengeStatus.PENDING,
@@ -327,33 +340,26 @@ class UserServiceImplTest {
         List<User> result = userService.getUsersToChallenge(testUser.getId(), activeStatuses);
 
         assertNotNull(result);
-        // Verificar que no incluye al usuario que está buscando challengers
+        // Verify that no includes user who is searching challengers
         assertFalse(result.stream().anyMatch(u -> u.getId().equals(testUser.getId())));
-
-        // Debería incluir otros usuarios (dependiendo de la lógica de tu repositorio)
-        // Este test depende de la implementación de findAvailableToChallenge
+        // Should include other users
     }
 
     @Test
     void getUsersToChallenge_emptyActiveStatuses_returnsAvailableUsers() {
-        List<ChallengeStatus> emptyStatuses = Arrays.asList();
-
+        List<ChallengeStatus> emptyStatuses = List.of();
         List<User> result = userService.getUsersToChallenge(testUser.getId(), emptyStatuses);
-
         assertNotNull(result);
-        // El comportamiento depende de tu implementación del repositorio
     }
 
     @Test
     void getUsersToChallenge_nonExistentChallenger_returnsResults() {
         Long nonExistentId = 999999L;
-        List<ChallengeStatus> activeStatuses = Arrays.asList(ChallengeStatus.PENDING);
+        List<ChallengeStatus> activeStatuses = List.of(ChallengeStatus.PENDING);
 
-        // Este test no debería fallar, solo retornar una lista (posiblemente vacía)
         List<User> result = userService.getUsersToChallenge(nonExistentId, activeStatuses);
 
         assertNotNull(result);
-        // El comportamiento específico depende de tu implementación
     }
 
     @Test

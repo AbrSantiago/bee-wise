@@ -1,6 +1,8 @@
 package com.beewise.controller;
 
 import com.beewise.controller.dto.*;
+import com.beewise.model.Avatar;
+import com.beewise.model.ShopItem;
 import com.beewise.model.User;
 import com.beewise.service.UserService;
 import com.beewise.service.impl.JwtService;
@@ -26,7 +28,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 
 @WebMvcTest(UserController.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -54,7 +55,7 @@ class UserControllerTest {
         registerDTO.setName("John");
         registerDTO.setSurname("Doe");
         registerDTO.setEmail("john@example.com");
-        registerDTO.setUsername("johndoe");
+        registerDTO.setUsername("JohnDoe");
         registerDTO.setPassword("password123");
 
         User createdUser = new User();
@@ -62,7 +63,7 @@ class UserControllerTest {
         createdUser.setName("John");
         createdUser.setSurname("Doe");
         createdUser.setEmail("john@example.com");
-        createdUser.setUsername("johndoe");
+        createdUser.setUsername("JohnDoe");
 
         when(userService.registerUser(any(RegisterUserDTO.class))).thenReturn(createdUser);
 
@@ -75,7 +76,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.name").value("John"))
                 .andExpect(jsonPath("$.surname").value("Doe"))
                 .andExpect(jsonPath("$.email").value("john@example.com"))
-                .andExpect(jsonPath("$.username").value("johndoe"));
+                .andExpect(jsonPath("$.username").value("JohnDoe"));
     }
 
     @Test
@@ -94,12 +95,12 @@ class UserControllerTest {
     @WithMockUser
     void login_withValidCredentials_returnsLoginResponse() throws Exception {
         LoginUserDTO loginDTO = new LoginUserDTO();
-        loginDTO.setUsername("johndoe");
+        loginDTO.setUsername("JohnDoe");
         loginDTO.setPassword("password123");
 
         User user = new User();
         user.setId(1L);
-        user.setUsername("johndoe");
+        user.setUsername("JohnDoe");
         user.setEmail("john@example.com");
 
         when(userService.authenticateUser(any(LoginUserDTO.class))).thenReturn(user);
@@ -114,7 +115,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.accessToken").value("access-token"))
                 .andExpect(jsonPath("$.refreshToken").value("refresh-token"))
                 .andExpect(jsonPath("$.email").value("john@example.com"))
-                .andExpect(jsonPath("$.username").value("johndoe"));
+                .andExpect(jsonPath("$.username").value("JohnDoe"));
     }
 
     @Test
@@ -158,12 +159,13 @@ class UserControllerTest {
         user.setName("John");
         user.setSurname("Doe");
         user.setEmail("john@example.com");
-        user.setUsername("johndoe");
+        user.setUsername("JohnDoe");
         user.setPoints(100);
         user.setCurrentLesson(5);
+        user.setAvatar(createAvatar(user));
 
-        when(jwtService.extractUsername("valid-token")).thenReturn("johndoe");
-        when(userService.getUserByUsername("johndoe")).thenReturn(user);
+        when(jwtService.extractUsername("valid-token")).thenReturn("JohnDoe");
+        when(userService.getUserByUsername("JohnDoe")).thenReturn(user);
 
         mockMvc.perform(get("/users/me")
                         .header("Authorization", "Bearer valid-token"))
@@ -172,7 +174,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.name").value("John"))
                 .andExpect(jsonPath("$.surname").value("Doe"))
                 .andExpect(jsonPath("$.email").value("john@example.com"))
-                .andExpect(jsonPath("$.username").value("johndoe"))
+                .andExpect(jsonPath("$.username").value("JohnDoe"))
                 .andExpect(jsonPath("$.points").value(100))
                 .andExpect(jsonPath("$.currentLesson").value(5));
     }
@@ -183,12 +185,14 @@ class UserControllerTest {
         User user1 = new User();
         user1.setId(1L);
         user1.setName("John");
-        user1.setUsername("johndoe");
+        user1.setUsername("JohnDoe");
+        user1.setAvatar(createAvatar(user1));
 
         User user2 = new User();
         user2.setId(2L);
         user2.setName("Jane");
-        user2.setUsername("janedoe");
+        user2.setUsername("JaneDoe");
+        user2.setAvatar(createAvatar(user2));
 
         List<User> users = Arrays.asList(user1, user2);
 
@@ -201,10 +205,10 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].id").value(1L))
                 .andExpect(jsonPath("$[0].name").value("John"))
-                .andExpect(jsonPath("$[0].username").value("johndoe"))
+                .andExpect(jsonPath("$[0].username").value("JohnDoe"))
                 .andExpect(jsonPath("$[1].id").value(2L))
                 .andExpect(jsonPath("$[1].name").value("Jane"))
-                .andExpect(jsonPath("$[1].username").value("janedoe"));
+                .andExpect(jsonPath("$[1].username").value("JaneDoe"));
     }
 
     @Test
@@ -255,16 +259,16 @@ class UserControllerTest {
     @WithMockUser
     void getUserPoints_withValidToken_returnsUserPoints() throws Exception {
         UserPointsDTO userPointsDTO = new UserPointsDTO();
-        userPointsDTO.setUsername("johndoe");
+        userPointsDTO.setUsername("JohnDoe");
         userPointsDTO.setPoints(250);
 
-        when(jwtService.extractUsername("valid-token")).thenReturn("johndoe");
-        when(userService.getUserPoints("johndoe")).thenReturn(userPointsDTO);
+        when(jwtService.extractUsername("valid-token")).thenReturn("JohnDoe");
+        when(userService.getUserPoints("JohnDoe")).thenReturn(userPointsDTO);
 
         mockMvc.perform(get("/users/points")
                         .header("Authorization", "Bearer valid-token"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value("johndoe"))
+                .andExpect(jsonPath("$.username").value("JohnDoe"))
                 .andExpect(jsonPath("$.points").value(250));
     }
 
@@ -277,7 +281,7 @@ class UserControllerTest {
     @Test
     @WithMockUser
     void getAllUsers_withEmptyList_returnsEmptyArray() throws Exception {
-        when(userService.getAllUsers()).thenReturn(Arrays.asList());
+        when(userService.getAllUsers()).thenReturn(List.of());
 
         mockMvc.perform(get("/users")
                         .header("Authorization", "Bearer another-token"))
@@ -291,32 +295,45 @@ class UserControllerTest {
     void getCurrentUser_extractsTokenCorrectly() throws Exception {
         User user = new User();
         user.setId(2L);
-        user.setUsername("testuser");
+        user.setUsername("TestUser");
+        user.setAvatar(createAvatar(user));
 
-        when(jwtService.extractUsername("extracted-token")).thenReturn("testuser");
-        when(userService.getUserByUsername("testuser")).thenReturn(user);
+        when(jwtService.extractUsername("extracted-token")).thenReturn("TestUser");
+        when(userService.getUserByUsername("TestUser")).thenReturn(user);
 
         mockMvc.perform(get("/users/me")
                         .header("Authorization", "Bearer extracted-token"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(2L))
-                .andExpect(jsonPath("$.username").value("testuser"));
+                .andExpect(jsonPath("$.username").value("TestUser"));
     }
 
     @Test
     @WithMockUser
     void getUserPoints_extractsTokenCorrectly() throws Exception {
         UserPointsDTO userPointsDTO = new UserPointsDTO();
-        userPointsDTO.setUsername("anotheruser");
+        userPointsDTO.setUsername("AnotherUser");
         userPointsDTO.setPoints(500);
 
-        when(jwtService.extractUsername("another-token")).thenReturn("anotheruser");
-        when(userService.getUserPoints("anotheruser")).thenReturn(userPointsDTO);
+        when(jwtService.extractUsername("another-token")).thenReturn("AnotherUser");
+        when(userService.getUserPoints("AnotherUser")).thenReturn(userPointsDTO);
 
         mockMvc.perform(get("/users/points")
                         .header("Authorization", "Bearer another-token"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value("anotheruser"))
+                .andExpect(jsonPath("$.username").value("AnotherUser"))
                 .andExpect(jsonPath("$.points").value(500));
+    }
+
+    // ============ HELPERS ============
+
+    private Avatar createAvatar(User user) {
+        Avatar avatar = new Avatar();
+        avatar.setUser(user);
+        avatar.setBackground(new ShopItem());
+        avatar.setShirt(new ShopItem());
+        avatar.setSkin(new ShopItem());
+        avatar.setHair(new ShopItem());
+        return avatar;
     }
 }

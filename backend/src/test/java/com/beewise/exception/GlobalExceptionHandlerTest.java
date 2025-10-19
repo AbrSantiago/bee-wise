@@ -4,9 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.Map;
 
@@ -33,10 +30,12 @@ class GlobalExceptionHandlerTest {
     @Test
     void handleInvalidIdException_returnsBadRequest() {
         InvalidIdException ex = new InvalidIdException("Invalid ID");
-        ResponseEntity<String> response = handler.handleInvalidIdException(ex);
+        ResponseEntity<Map<String, String>> response = handler.handleBadRequestExceptions(ex);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Invalid ID", response.getBody());
+        Map<String, String> body = response.getBody();
+        assertNotNull(body);
+        assertEquals("Invalid ID", body.get("error"));
     }
 
     @Test
@@ -58,26 +57,9 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    void handleMethodArgumentNotValidException_returnsBadRequestWithErrors() {
-        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(new Object(), "obj");
-        bindingResult.addError(new FieldError("obj", "field1", "cannot be blank"));
-        bindingResult.addError(new FieldError("obj", "field2", "must be positive"));
-
-        MethodArgumentNotValidException ex = new MethodArgumentNotValidException(null, bindingResult);
-
-        ResponseEntity<Map<String, String>> response = handler.handleValidationExceptions(ex);
-
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        Map<String, String> body = response.getBody();
-        assertNotNull(body);
-        assertEquals("cannot be blank", body.get("field1"));
-        assertEquals("must be positive", body.get("field2"));
-    }
-
-    @Test
     void handleIllegalArgument_returnsBadRequestWithError() {
         IllegalArgumentException ex = new IllegalArgumentException("Bad arg");
-        ResponseEntity<Map<String, String>> response = handler.handleIllegalArgument(ex);
+        ResponseEntity<Map<String, String>> response = handler.handleBadRequestExceptions(ex);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         Map<String, String> body = response.getBody();
