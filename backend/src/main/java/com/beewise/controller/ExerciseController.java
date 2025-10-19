@@ -9,6 +9,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/exercise")
 public class ExerciseController {
@@ -37,6 +39,13 @@ public class ExerciseController {
         Exercise exercise = exerciseService.createMultipleChoiceExercise(dto);
         ExerciseDTO exerciseDTO = ExerciseDTO.fromExercise(exercise);
         return ResponseEntity.ok(exerciseDTO);
+    }
+
+    @PostMapping("/open/createAll")
+    public ResponseEntity<List<ExerciseDTO>> createAll(@Valid @RequestBody List<SimpleOpenExerciseDTO> dto) {
+        List<Exercise> exercises = exerciseService.createOpenExercises(dto);
+        List<ExerciseDTO> exerciseDTOS = exercises.stream().map(ExerciseDTO::fromExercise).toList();
+        return ResponseEntity.ok(exerciseDTOS);
     }
 
     @PutMapping("/open/{id}")

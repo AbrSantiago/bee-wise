@@ -20,7 +20,7 @@ public class LessonTest {
 
     @Test
     void lesson_constructorWithExercises_setsAllFields() {
-        OpenExercise ex1 = new OpenExercise("Q1?", "A1");
+        OpenExercise ex1 = new OpenExercise("Q1?", "A1", ExerciseCategory.MATRICES);
         MultipleChoiceExercise ex2 = new MultipleChoiceExercise("Q2?", Arrays.asList("X","Y"), "X");
 
         Lesson lesson = new Lesson("Science", "Physics", new ArrayList<>(Arrays.asList(ex1, ex2)));
@@ -33,7 +33,7 @@ public class LessonTest {
     @Test
     void lesson_addExercise_toList() {
         Lesson lesson = new Lesson("Chemistry", "Basics");
-        OpenExercise ex = new OpenExercise("Q?", "A");
+        OpenExercise ex = new OpenExercise("Q?", "A", ExerciseCategory.MATRICES);
 
         lesson.getExercises().add(ex);
 

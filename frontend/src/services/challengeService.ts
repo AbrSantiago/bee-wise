@@ -5,6 +5,13 @@ import type { User } from "./userService";
 export type ChallengeStatus = "PENDING" | "ACTIVE" | "EXPIRED" | "COMPLETED";
 export type ChallengeResult = "CHALLENGER_WIN" | "CHALLENGED_WIN" | "DRAW" | null;
 export type RoundStatus = "COMPLETED" | "WAITING_CHALLENGER" | "WAITING_CHALLENGED";
+export type ExerciseCategory =
+  | "MATRICES"
+  | "DETERMINANTS"
+  | "SYSTEM_OF_EQUATIONS"
+  | "GROUP_THEORY"
+  | "VECTOR_SPACES"
+  | "DIVISIBILITY";
 
 export type RoundDTO = {
   roundNumber: number;
@@ -84,14 +91,38 @@ const challengeService = {
     return response.data;
   },
 
-  async getRandomExercises(limit: number): Promise<Exercise[]> {
+  async getRandomExercises(limit: number, category: ExerciseCategory): Promise<Exercise[]> {
     try {
       const response = await apiClient.get<Exercise[]>(
-        `/challenge/randomExercises?limit=${limit}`
+        `/challenge/randomExercises?limit=${limit}&category=${category}`
       );
       return response.data;
     } catch (error) {
       console.error("❌ Error fetching random exercises:", error);
+      throw error;
+    }
+  },
+
+  async getRandomCategory(): Promise<ExerciseCategory> {
+    try {
+      const response = await apiClient.get<ExerciseCategory>(
+        "/challenge/getRandomCategory"
+      );
+      return response.data;
+    } catch (error) {
+      console.error("❌ Error fetching random category:", error);
+      throw error;
+    }
+  },
+
+  async getAllCategories(): Promise<ExerciseCategory[]> {
+    try {
+      const response = await apiClient.get<ExerciseCategory[]>(
+        "/challenge/categories"
+      );
+      return response.data;
+    } catch (error) {
+      console.error("❌ Error fetching all categories:", error);
       throw error;
     }
   },

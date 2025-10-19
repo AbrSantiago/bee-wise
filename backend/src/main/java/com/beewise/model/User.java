@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "users")
+@NoArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +41,7 @@ public class User {
     @Column(unique = true, length = 30)
     private String username;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String passwordHash; // Store the hash, not the plain password
 
     @Min(value = 0, message = "Points cannot be negative")
@@ -51,15 +53,17 @@ public class User {
     @Min(value = 1, message = "Current lesson cannot be negative")
     private int currentLesson = 1;
 
-    public User(){}
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Avatar avatar;
 
-    public User(String name, String surname, String email, String username, String passwordHash, Integer points, List<LessonProgress> lessonProgresses) {
-        this.name = name;
-        this.surname = surname;
-        this.email = email;
-        this.username = username;
-        this.passwordHash = passwordHash;
-        this.points = points;
-        this.lessonProgresses = lessonProgresses;
-    }
+    @ManyToMany
+    @JoinTable(
+            name = "user_items",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "item_id")
+    )
+    private List<ShopItem> items = new ArrayList<>();
+
+    @Min(value = 0, message = "BeeCoins cannot be negative")
+    private int beeCoins = 100;
 }

@@ -111,4 +111,40 @@ public class GlobalExceptionHandler {
         Map<String, String> error = Map.of("error", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(ChallengeAlreadyCompletedException.class)
+    public ResponseEntity<Map<String, String>> handleChallengeAlreadyCompleted(ChallengeAlreadyCompletedException ex) {
+        Map<String, String> error = Map.of("error", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AvatarDoesNotExistsException.class)
+    public ResponseEntity<Map<String, String>> handleAvatarDoesNotExists(AvatarDoesNotExistsException ex) {
+        Map<String, String> error = Map.of("error", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ShopItemDoesNotExistsException.class)
+    public ResponseEntity<Map<String, String>> handleShopItemDoesNotExists(ShopItemDoesNotExistsException ex) {
+        Map<String, String> error = Map.of("error", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(SomeItemsWereNotBought.class)
+    public ResponseEntity<Map<String, String>> handleSomeItemsWereNotBought(SomeItemsWereNotBought ex) {
+        Map<String, String> error = Map.of("error", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ItemAlreadyBoughtException.class)
+    public ResponseEntity<Map<String, String>> handleItemAlreadyBought(ItemAlreadyBoughtException ex) {
+        Map<String, String> error = Map.of("error", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NotEnoughBeeCoinsException.class)
+    public ResponseEntity<Map<String, String>> handleNotEnoughBeeCoins(NotEnoughBeeCoinsException ex) {
+        Map<String, String> error = Map.of("error", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
 }

@@ -2,6 +2,7 @@ package com.beewise.service.impl;
 
 import com.beewise.controller.dto.AnswerDTO;
 import com.beewise.controller.dto.SendChallengeDTO;
+import com.beewise.controller.dto.UserDTO;
 import com.beewise.exception.*;
 import com.beewise.model.*;
 import com.beewise.model.challenge.*;
@@ -114,5 +115,12 @@ public class ChallengeServiceImpl implements ChallengeService {
         ExerciseCategory[] categories = ExerciseCategory.values();
         int randomIndex = new Random().nextInt(categories.length);
         return categories[randomIndex];
+    }
+
+    @Override
+    public User getOpponent(Long challengeId, String username) {
+        Challenge challenge = repository.findById(challengeId)
+                .orElseThrow(() -> new ChallengeNotFoundException("Challenge with id " + challengeId + " does not exists"));
+        return challenge.getNextUserToPlay();
     }
 }

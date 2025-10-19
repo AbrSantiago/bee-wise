@@ -19,6 +19,9 @@ public class UserDTO {
     private int points;
     private List<Long> completedLessons;
     private int currentLesson;
+    private AvatarDTO avatar;
+    private List<ShopItemDTO> items;
+    private int beeCoins;
 
     public UserDTO(User user) {
         this.id = user.getId();
@@ -32,5 +35,11 @@ public class UserDTO {
                 .map(p -> p.getLesson().getId())
                 .toList();
         this.currentLesson = user.getCurrentLesson();
+        this.avatar = new AvatarDTO(user.getAvatar());
+        this.items = user.getItems()
+                .stream()
+                .map(ShopItemDTO::new)
+                .toList();
+        this.beeCoins = user.getBeeCoins();
     }
 }

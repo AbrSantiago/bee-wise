@@ -1,5 +1,7 @@
 package com.beewise.model.challenge;
 
+import com.beewise.controller.dto.ChallengeRol;
+import com.beewise.exception.ChallengeAlreadyCompletedException;
 import com.beewise.model.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
@@ -9,6 +11,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Getter
@@ -55,5 +58,15 @@ public class Challenge {
         this.questionsPerRound = questionsPerRound;
         this.creationDate = LocalDate.now();
         this.expireDate = LocalDate.now().plusDays(3);
+    }
+
+    public User getNextUserToPlay() {
+        Round round = rounds.stream().max(Comparator.comparing(Round::getRoundNumber))
+                .orElseThrow();
+        return switch (round.getStatus()) {
+            case WAITING_CHALLENGED -> challenger;
+            case WAITING_CHALLENGER -> challenged;
+            case COMPLETED -> throw new ChallengeAlreadyCompletedException("Challenge " + id + " was already completed");
+        };
     }
 }

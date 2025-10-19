@@ -2,6 +2,7 @@ package com.beewise.controller.dto;
 
 import com.beewise.controller.dto.LessonDTO;
 import com.beewise.controller.dto.OpenExerciseDTO;
+import com.beewise.model.ExerciseCategory;
 import com.beewise.model.Lesson;
 import com.beewise.model.OpenExercise;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,7 @@ public class LessonDTOTest {
     void lessonDTO_constructor_setsFields() {
         Lesson lesson = new Lesson("Math", "Algebra");
         lesson.setId(1L);
-        OpenExercise ex = new OpenExercise("Q1?", "A1");
+        OpenExercise ex = new OpenExercise("Q1?", "A1", ExerciseCategory.MATRICES);
         ex.setId(10L);
         lesson.getExercises().add(ex);
 

@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -36,8 +37,17 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     @Override
     public Exercise createOpenExercise(SimpleOpenExerciseDTO dto) {
-        Exercise exercise = new OpenExercise(dto.getQuestion(), dto.getAnswer());
+        Exercise exercise = new OpenExercise(dto.getQuestion(), dto.getAnswer(),dto.getCategory());
         return repository.save(exercise);
+    }
+
+    @Override
+    public List<Exercise> createOpenExercises(List<SimpleOpenExerciseDTO> dto) {
+        List<OpenExercise> exercises = dto.stream().map(e -> new OpenExercise(
+                e.getQuestion(),
+                e.getAnswer(),
+                e.getCategory())).toList();
+        return repository.saveAll(new ArrayList<Exercise>(exercises));
     }
 
     @Override
