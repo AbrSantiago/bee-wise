@@ -77,7 +77,7 @@ public class UserController {
         return ResponseEntity.ok(userPoints);
     }
 
-    @PutMapping("/updateAvatar/{id}")
+    @PutMapping("/updateAvatar/{userId}")
     public ResponseEntity<UserDTO> updateAvatar(@PathVariable Long userId, @RequestBody AvatarDTO dto) {
         User user = userService.updateAvatar(userId, dto);
         return ResponseEntity.ok(new UserDTO(user));
