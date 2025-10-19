@@ -11,6 +11,8 @@ import com.beewise.service.impl.JwtService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/shop")
 public class ShopController {
@@ -28,6 +30,12 @@ public class ShopController {
     public ResponseEntity<ShopItemDTO> createItem(@RequestBody NewShopItemDTO dto) {
         ShopItem item = service.createShopItem(dto);
         return ResponseEntity.ok(new ShopItemDTO(item));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ShopItemDTO>> getAllItems() {
+        List<ShopItem> items = service.getAll();
+        return ResponseEntity.ok(items.stream().map(ShopItemDTO::new).toList());
     }
 
     @PutMapping("/buy/{itemId}")

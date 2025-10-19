@@ -8,6 +8,8 @@ import com.beewise.service.ShopService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class ShopServiceImpl implements ShopService {
@@ -38,5 +40,10 @@ public class ShopServiceImpl implements ShopService {
     public ShopItem getItem(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new ShopItemDoesNotExistsException("Item with " + id + " does not exists"));
+    }
+
+    @Override
+    public List<ShopItem> getAll() {
+        return repository.findAll();
     }
 }
