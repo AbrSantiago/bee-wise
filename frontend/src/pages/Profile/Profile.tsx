@@ -1,22 +1,70 @@
 import MainLayout from "../../components/layout/MainLayout";
-import { motion } from "framer-motion";
+import { useUser } from "../../context/UserContext";
+import "./Profile.css";
 
 export function ProfilePage() {
+  const { user } = useUser();
+
+  if (!user) {
+    return (
+      <MainLayout title="Perfil">
+        <div className="profile-container">
+          <p>Cargando perfil...</p>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  const { name, surname, username, email, points, beeCoins, avatar } = user;
+
   return (
     <MainLayout title="Perfil">
-      <div className="flex flex-col items-center justify-center h-[70vh] text-center">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-          className="flex flex-col items-center gap-4"
-        >
-          <h1 className="text-4xl font-bold text-gray-800">¡Muy Pronto!</h1>
-          <p className="text-lg text-gray-500 max-w-md">
-            Estamos preparando algo genial.
-            Volvé más tarde para descubrir los nuevos desafíos.
+      <div className="profile-container">
+        {/* Datos del usuario */}
+        <section className="profile-info">
+          <h2>{username}</h2>
+          <p>
+            {name} {surname}
           </p>
-        </motion.div>
+          <p>{email}</p>
+          <div className="profile-stats">
+            <div>
+              <strong>Puntos:</strong> {points}
+            </div>
+            <div>
+              <strong>BeeCoins:</strong> 🪙 {beeCoins}
+            </div>
+          </div>
+        </section>
+
+        {/* Avatar */}
+        <section className="profile-avatar">
+          <h3>Tu avatar</h3>
+          <div className="avatar-preview">
+            <img
+              src={`src/assets/avatars/bg/${avatar.background.image}`}
+              alt="background"
+              className="avatar-layer background"
+            />
+            <img
+              src={`src/assets/avatars/shirt/${avatar.shirt.image}`}
+              alt="shirt"
+              className="avatar-layer"
+            />
+            <img
+              src={`src/assets/avatars/skin/${avatar.skin.image}`}
+              alt="skin"
+              className="avatar-layer"
+            />
+            <img
+              src={`src/assets/avatars/hair/${avatar.hair.image}`}
+              alt="hair"
+              className="avatar-layer"
+            />
+          </div>
+
+          <button className="edit-avatar-btn">Editar avatar</button>
+        </section>
       </div>
     </MainLayout>
   );

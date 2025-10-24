@@ -20,16 +20,24 @@ const Sidebar = () => {
       {/* Navigation Menu */}
       <nav className="sidebar-nav">
         <Link to="/" className="nav-item">
-            <span className="nav-icon">🏠</span>
-            <span className="nav-label">HOME</span>
+          <span className="nav-icon">🏠</span>
+          <span className="nav-label">HOME</span>
         </Link>
         <Link to="/challenges" className="nav-item">
-            <span className="nav-icon">🎯</span>
-            <span className="nav-label">DESAFÍOS</span>
+          <span className="nav-icon">🎯</span>
+          <span className="nav-label">DESAFÍOS</span>
         </Link>
         <Link to="/ranking" className="nav-item">
-            <span className="nav-icon">🏆</span>
-            <span className="nav-label">RANKING</span>
+          <span className="nav-icon">🏆</span>
+          <span className="nav-label">RANKING</span>
+        </Link>
+        <Link to="/ranking" className="nav-item">
+          <span className="nav-icon">🏪</span>
+          <span className="nav-label">SHOP</span>
+        </Link>
+        <Link to="/profile" className="nav-item">
+          <span className="nav-icon">🧑‍💼</span>
+          <span className="nav-label">PROFILE</span>
         </Link>
         <button className="nav-item logout-btn" onClick={handleLogout}>
           <span className="nav-icon">🚪</span>

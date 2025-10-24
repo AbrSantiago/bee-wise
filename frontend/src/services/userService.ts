@@ -7,7 +7,25 @@ export type User = {
   email: string;
   username: string;
   points: number;
+  avatar: Avatar;
+  items: ShopItem[];
+  beeCoins: number;
 };
+
+export type Avatar = {
+  id: number;
+  skin: ShopItem;
+  hair: ShopItem;
+  shirt: ShopItem;
+  background: ShopItem;
+}
+
+export type ShopItem = {
+  id: number;
+  name: string;
+  image: string;
+  price: number;
+}
 
 export type AuthResponse = {
   accessToken: string;
