@@ -20,13 +20,13 @@ export function Avatar({ avatar, size = 220 }: AvatarProps) {
         className="avatar-layer background"
       />
       <img
-        src={`src/assets/avatars/skin/${avatar.skin.image}`}
-        alt="skin"
+        src={`src/assets/avatars/shirt/${avatar.shirt.image}`}
+        alt="shirt"
         className="avatar-layer"
       />
       <img
-        src={`src/assets/avatars/shirt/${avatar.shirt.image}`}
-        alt="shirt"
+        src={`src/assets/avatars/skin/${avatar.skin.image}`}
+        alt="skin"
         className="avatar-layer"
       />
       <img
