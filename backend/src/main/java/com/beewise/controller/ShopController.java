@@ -3,6 +3,7 @@ package com.beewise.controller;
 import com.beewise.controller.dto.NewShopItemDTO;
 import com.beewise.controller.dto.ShopItemDTO;
 import com.beewise.controller.dto.UserDTO;
+import com.beewise.model.ItemCategory;
 import com.beewise.model.ShopItem;
 import com.beewise.model.User;
 import com.beewise.service.ShopService;
@@ -12,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/shop")
@@ -36,6 +39,19 @@ public class ShopController {
     public ResponseEntity<List<ShopItemDTO>> getAllItems() {
         List<ShopItem> items = service.getAll();
         return ResponseEntity.ok(items.stream().map(ShopItemDTO::new).toList());
+    }
+
+    @GetMapping("/allByCategory")
+    public ResponseEntity<Map<ItemCategory, List<ShopItemDTO>>> getItemsByCategory() {
+        Map<ItemCategory, List<ShopItem>> groupedItems = service.getAllByCategory();
+
+        Map<ItemCategory, List<ShopItemDTO>> groupedDTOs = groupedItems.entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        e -> e.getValue().stream().map(ShopItemDTO::new).toList()
+                ));
+
+        return ResponseEntity.ok(groupedDTOs);
     }
 
     @PutMapping("/buy/{itemId}")

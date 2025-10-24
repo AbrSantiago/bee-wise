@@ -2,6 +2,7 @@ package com.beewise.service.impl;
 
 import com.beewise.controller.dto.NewShopItemDTO;
 import com.beewise.exception.ShopItemDoesNotExistsException;
+import com.beewise.model.ItemCategory;
 import com.beewise.model.ShopItem;
 import com.beewise.repository.ShopItemRepository;
 import com.beewise.service.ShopService;
@@ -9,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -45,5 +48,12 @@ public class ShopServiceImpl implements ShopService {
     @Override
     public List<ShopItem> getAll() {
         return repository.findAll();
+    }
+
+    public Map<ItemCategory, List<ShopItem>> getAllByCategory() {
+        List<ShopItem> items = repository.findAll();
+
+        return items.stream()
+                .collect(Collectors.groupingBy(ShopItem::getCategory));
     }
 }
