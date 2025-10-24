@@ -23,9 +23,12 @@ export type Avatar = {
 export type ShopItem = {
   id: number;
   name: string;
+  category: ItemCategory;
   image: string;
   price: number;
 }
+
+export type ItemCategory = "SHIRT" | "SKIN" | "HAIR" | "BACKGROUND"
 
 export type AuthResponse = {
   accessToken: string;

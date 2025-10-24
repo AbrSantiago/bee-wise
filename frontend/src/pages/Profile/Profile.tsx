@@ -1,5 +1,7 @@
+import { Avatar } from "../../components/layout/Avatar";
 import MainLayout from "../../components/layout/MainLayout";
 import { useUser } from "../../context/UserContext";
+import { OwnedItemCard } from "./OwnedItemCard";
 import "./Profile.css";
 
 export function ProfilePage() {
@@ -15,56 +17,48 @@ export function ProfilePage() {
     );
   }
 
-  const { name, surname, username, email, points, beeCoins, avatar } = user;
+  const { name, surname, username, email, beeCoins, avatar, items } = user;
 
   return (
     <MainLayout title="Perfil">
-      <div className="profile-container">
-        {/* Datos del usuario */}
-        <section className="profile-info">
-          <h2>{username}</h2>
-          <p>
-            {name} {surname}
-          </p>
-          <p>{email}</p>
-          <div className="profile-stats">
-            <div>
-              <strong>Puntos:</strong> {points}
-            </div>
-            <div>
-              <strong>BeeCoins:</strong> 🪙 {beeCoins}
-            </div>
-          </div>
-        </section>
+      <div className="container-for-scroll">
+        <div className="profile-page-container">
+          <div className="profile-container">
+            {/* Avatar */}
+            <section className="profile-avatar">
+              <Avatar avatar={avatar} size={250} />
+              <button className="edit-avatar-btn">Editar avatar</button>
+            </section>
 
-        {/* Avatar */}
-        <section className="profile-avatar">
-          <h3>Tu avatar</h3>
-          <div className="avatar-preview">
-            <img
-              src={`src/assets/avatars/bg/${avatar.background.image}`}
-              alt="background"
-              className="avatar-layer background"
-            />
-            <img
-              src={`src/assets/avatars/shirt/${avatar.shirt.image}`}
-              alt="shirt"
-              className="avatar-layer"
-            />
-            <img
-              src={`src/assets/avatars/skin/${avatar.skin.image}`}
-              alt="skin"
-              className="avatar-layer"
-            />
-            <img
-              src={`src/assets/avatars/hair/${avatar.hair.image}`}
-              alt="hair"
-              className="avatar-layer"
-            />
+            {/* Datos del usuario */}
+            <section className="profile-info">
+              <h2>{username}</h2>
+              <p>
+                {name} {surname}
+              </p>
+              <p>{email}</p>
+              <div className="profile-stats">
+                <div>
+                  <strong>BeeCoins:</strong> 🪙 {beeCoins}
+                </div>
+              </div>
+            </section>
           </div>
 
-          <button className="edit-avatar-btn">Editar avatar</button>
-        </section>
+          {/* Items del usuario */}
+          <section className="user-items-container">
+            <h3>Tus ítems</h3>
+            {items.length === 0 ? (
+              <p className="no-items">Todavía no compraste ningún ítem</p>
+            ) : (
+              <div className="items-grid">
+                {items.map((item) => (
+                  <OwnedItemCard key={item.id} item={item} />
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
       </div>
     </MainLayout>
   );
