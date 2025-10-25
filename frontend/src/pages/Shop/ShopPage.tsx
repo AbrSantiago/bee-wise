@@ -4,6 +4,7 @@ import "./ShopPage.css";
 import { useEffect, useState } from "react";
 import MainLayout from "../../components/layout/MainLayout";
 import userService from "../../services/userService";
+import { useUser } from "../../context/UserContext";
 
 export function ShopPage() {
   const [shopItems, setShopItems] = useState<ShopItem[]>([]);
@@ -18,7 +19,8 @@ export function ShopPage() {
   > | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [itemToConfirm, setItemToConfirm] = useState<ShopItem | null>(null);
-  const [userItems, setUserItems] = useState<ShopItem[]>([]); // 👈 NUEVO: Items del usuario
+  const [userItems, setUserItems] = useState<ShopItem[]>([]);
+  const { user, setUser } = useUser();
 
   const openConfirmModal = (item: ShopItem) => {
     setItemToConfirm(item);
@@ -50,28 +52,16 @@ export function ShopPage() {
     }
   };
 
-  const fetchUserItems = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) return;
-
-      const userData = await userService.getCurrentUser(token);
-      setUserItems(userData.items || []);
-      console.log("Items del usuario:", userData.items);
-    } catch (error) {
-      console.error("Error al traer items del usuario:", error);
-    }
-  };
-
   const userOwnsItem = (itemId: number): boolean => {
     return userItems.some((userItem) => userItem.id === itemId);
   };
 
   useEffect(() => {
+    if (!user) return;
     fetchShopItems();
     fetchItemsByCategory();
-    fetchUserItems();
-  }, []);
+    setUserItems(user.items || []);
+  }, [user]);
 
   const confirmPurchase = async () => {
     if (!itemToConfirm) return;
@@ -79,11 +69,11 @@ export function ShopPage() {
     try {
       setPurchasingItemId(itemToConfirm.id);
       setLoading(true);
-      closeModal(); // Cerrar modal antes de comprar
+      closeModal();
 
       const token = localStorage.getItem("token");
 
-      if (!token) {
+      if (!token || !user) {
         alert("Debes iniciar sesión para comprar items");
         return;
       }
@@ -96,9 +86,11 @@ export function ShopPage() {
 
       alert("¡Compra realizada con éxito!");
 
+      setUser(response);
+
       await fetchShopItems();
       await fetchItemsByCategory();
-      await fetchUserItems();
+      // setUserItems(user.items);
     } catch (error: any) {
       console.error("Error al comprar el item:", error);
 
