@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 
 export function AvatarEditPage() {
   const navigate = useNavigate();
-  const { user } = useUser();
+  const { user, setUser } = useUser();
   const [userItems, setUserItems] = useState<ShopItem[]>([]);
   const [selectedAvatar, setSelectedAvatar] = useState<AvatarType | null>(null);
   const [loading, setLoading] = useState(true);
@@ -65,6 +65,7 @@ export function AvatarEditPage() {
         user.id,
         selectedAvatar
       );
+      setUser(updatedUser);
       alert("Avatar actualizado con éxito!");
       navigate("/profile");
     } catch (err) {

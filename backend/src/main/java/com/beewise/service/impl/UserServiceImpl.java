@@ -146,9 +146,7 @@ public class UserServiceImpl implements UserService {
     public List<ShopItem> getUserItems(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
-        List<ShopItem> items = shopService.getFreeItems();
-        items.addAll(user.getItems());
-        return items;
+        return user.getItems();
     }
 
     @Override

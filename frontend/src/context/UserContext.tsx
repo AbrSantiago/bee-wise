@@ -1,4 +1,10 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  type ReactNode,
+} from "react";
 import { useAuth } from "./AuthContext";
 import userService, { type User } from "../services/userService";
 
@@ -6,6 +12,7 @@ export type UserContextType = {
   user: User | null;
   loading: boolean;
   refreshUser: () => Promise<void>;
+  setUser: (user: User | null) => void;
 };
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -49,7 +56,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, [accessToken]);
 
   return (
-    <UserContext.Provider value={{ user, loading, refreshUser }}>
+    <UserContext.Provider value={{ user, loading, refreshUser, setUser }}>
       {children}
     </UserContext.Provider>
   );
