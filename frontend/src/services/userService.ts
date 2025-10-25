@@ -97,7 +97,26 @@ const userService = {
       { refreshToken }
     );
     return response.data;
-  }
+  },
+
+  async getUserItems(token: string): Promise<ShopItem[]> {
+    const response = await apiClient.get<ShopItem[]>("/users/items", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
+
+  async updateAvatar(userId: number, avatar: Avatar): Promise<User> {
+    const response = await apiClient.put<User>(`/users/updateAvatar/${userId}`, avatar);
+    return response.data;
+  },
+
+  async getUserItemsByCategory(token: string): Promise<Record<ItemCategory, ShopItem[]>> {
+    const response = await apiClient.get<Record<ItemCategory, ShopItem[]>>("/users/items", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },  
 };
 
 export default userService;

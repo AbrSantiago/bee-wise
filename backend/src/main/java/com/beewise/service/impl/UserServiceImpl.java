@@ -2,10 +2,7 @@ package com.beewise.service.impl;
 
 import com.beewise.controller.dto.*;
 import com.beewise.exception.*;
-import com.beewise.model.Avatar;
-import com.beewise.model.Lesson;
-import com.beewise.model.ShopItem;
-import com.beewise.model.User;
+import com.beewise.model.*;
 import com.beewise.model.challenge.ChallengeStatus;
 import com.beewise.repository.UserRepository;
 import com.beewise.service.*;
@@ -16,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -152,6 +151,15 @@ public class UserServiceImpl implements UserService {
         return items;
     }
 
+    @Override
+    public Map<ItemCategory, List<ShopItem>> getAllByCategory(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
+        List<ShopItem> items = user.getItems();
+        items.addAll(shopService.getFreeItems());
+        return items.stream().collect(Collectors.groupingBy(ShopItem::getCategory));
+    }
+
 
     // =============== HELPERS ===============
 
@@ -160,9 +168,15 @@ public class UserServiceImpl implements UserService {
         ShopItem shirt = shopService.getItem(avatarDTO.getShirt().getId());
         ShopItem skin = shopService.getItem(avatarDTO.getSkin().getId());
         ShopItem background = shopService.getItem(avatarDTO.getBackground().getId());
-        List<ShopItem> items = user.getItems();
-        if (!new HashSet<>(items).containsAll(List.of(hair,shirt,skin,background))) {
-            throw new SomeItemsWereNotBought("Some items were not bought");
+        List<ShopItem> itemsToCheck = List.of(hair,shirt,skin,background);
+        for (ShopItem item : itemsToCheck) {
+            checkIfHasItem(item, user);
+        }
+    }
+
+    private void checkIfHasItem(ShopItem item, User user) {
+        if (!user.getItems().contains(item) && item.getPrice() != 0) {
+            throw new SomeItemsWereNotBought("Items " + item.getId() + " were not bought");
         }
     }
 }

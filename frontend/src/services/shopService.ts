@@ -1,11 +1,5 @@
 import apiClient from "./api";
-
-export type ShopItemDTO = {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-};
+import type { ItemCategory, ShopItem } from "./userService";
 
 export type NewShopItemDTO = {
   name: string;
@@ -14,13 +8,13 @@ export type NewShopItemDTO = {
 };
 
 const shopService = {
-  async getAllItems(): Promise<ShopItemDTO[]> {
-    const response = await apiClient.get<ShopItemDTO[]>("/shop");
+  async getAllItems(): Promise<ShopItem[]> {
+    const response = await apiClient.get<ShopItem[]>("/shop");
     return response.data;
   },
 
-  async createItem(item: NewShopItemDTO): Promise<ShopItemDTO> {
-    const response = await apiClient.post<ShopItemDTO>("/shop", item);
+  async createItem(item: NewShopItemDTO): Promise<ShopItem> {
+    const response = await apiClient.post<ShopItem>("/shop", item);
     return response.data;
   },
 
@@ -28,6 +22,11 @@ const shopService = {
     const response = await apiClient.put(`/shop/buy/${itemId}`, null, {
       headers: { Authorization: `Bearer ${token}` },
     });
+    return response.data;
+  },
+
+  async getItemsByCategory(): Promise<Record<ItemCategory, ShopItem[]>> {
+    const response = await apiClient.get<Record<ItemCategory, ShopItem[]>>("/shop/allByCategory");
     return response.data;
   }
 };

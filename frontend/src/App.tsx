@@ -15,6 +15,7 @@ import RegisterPage from "./pages/Register/RegisterPage";
 import RootRedirect from "./components/layout/RootRedirect";
 import { UserProvider } from "./context/UserContext";
 import { ChallengePlayPage } from "./pages/Challenges/ChallengePlay";
+import { AvatarEditPage } from "./pages/AvatarPage/AvatarEditPage";
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
               <Route path="/home" element={<Home />} />
               <Route path="/practice/:id" element={<PracticePage />} />
               <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/avatar" element={<AvatarEditPage />} />
               <Route path="/challenges" element={<ChallengesPage />} />
               <Route path="/ranking" element={<RankingPage />} />
               <Route path="/test" element={<Test />} />

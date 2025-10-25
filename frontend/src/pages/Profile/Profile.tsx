@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Avatar } from "../../components/layout/Avatar";
 import MainLayout from "../../components/layout/MainLayout";
 import { useUser } from "../../context/UserContext";
@@ -27,7 +28,9 @@ export function ProfilePage() {
             {/* Avatar */}
             <section className="profile-avatar">
               <Avatar avatar={avatar} size={250} />
-              <button className="edit-avatar-btn">Editar avatar</button>
+              <Link to={"/avatar"}>
+                <button className="edit-avatar-btn">Editar avatar</button>
+              </Link>
             </section>
 
             {/* Datos del usuario */}
