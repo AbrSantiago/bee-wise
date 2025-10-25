@@ -13,4 +13,5 @@ public interface ShopService {
     ShopItem getItem(Long id);
     List<ShopItem> getAll();
     Map<ItemCategory, List<ShopItem>> getAllByCategory();
+    List<ShopItem> getFreeItems();
 }

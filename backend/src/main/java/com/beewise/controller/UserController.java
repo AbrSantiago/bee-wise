@@ -1,6 +1,7 @@
 package com.beewise.controller;
 
 import com.beewise.controller.dto.*;
+import com.beewise.model.ShopItem;
 import com.beewise.model.User;
 import com.beewise.service.UserService;
 import com.beewise.service.impl.JwtService;
@@ -81,5 +82,14 @@ public class UserController {
     public ResponseEntity<UserDTO> updateAvatar(@PathVariable Long userId, @RequestBody AvatarDTO dto) {
         User user = userService.updateAvatar(userId, dto);
         return ResponseEntity.ok(new UserDTO(user));
+    }
+
+    @GetMapping("/items")
+    public ResponseEntity<List<ShopItemDTO>> getUserItems(
+            @RequestHeader("Authorization") String token
+    ) {
+        String username = jwtService.extractUsername(token.substring(7));
+        List<ShopItem> userItems = userService.getUserItems(username);
+        return ResponseEntity.ok(userItems.stream().map(ShopItemDTO::new).toList());
     }
 }

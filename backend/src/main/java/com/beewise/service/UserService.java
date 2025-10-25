@@ -1,6 +1,7 @@
 package com.beewise.service;
 
 import com.beewise.controller.dto.*;
+import com.beewise.model.ShopItem;
 import com.beewise.model.User;
 import com.beewise.model.challenge.ChallengeStatus;
 
@@ -17,4 +18,5 @@ public interface UserService {
     List<User> getUsersToChallenge(Long challengerId, List<ChallengeStatus> activeStatuses);
     User updateAvatar(Long id, AvatarDTO avatarDTO);
     User buyItem(Long itemId, String username);
+    List<ShopItem> getUserItems(String username);
 }

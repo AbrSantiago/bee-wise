@@ -54,6 +54,12 @@ public class ShopController {
         return ResponseEntity.ok(groupedDTOs);
     }
 
+    @GetMapping("/free")
+    public ResponseEntity<List<ShopItemDTO>> getFreeItems() {
+        List<ShopItem> items = service.getFreeItems();
+        return ResponseEntity.ok(items.stream().map(ShopItemDTO::new).toList());
+    }
+
     @PutMapping("/buy/{itemId}")
     public ResponseEntity<UserDTO> buyItem(
             @PathVariable Long itemId,

@@ -56,4 +56,9 @@ public class ShopServiceImpl implements ShopService {
         return items.stream()
                 .collect(Collectors.groupingBy(ShopItem::getCategory));
     }
+
+    @Override
+    public List<ShopItem> getFreeItems() {
+        return repository.findAllFreeItems();
+    }
 }
