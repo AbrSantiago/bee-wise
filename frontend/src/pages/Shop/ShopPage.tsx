@@ -1,11 +1,11 @@
 import type { ShopItem, ItemCategory } from "../../services/userService";
 import shopService from "../../services/shopService";
-import "./OwnedShop.css";
+import "./ShopPage.css";
 import { useEffect, useState } from "react";
 import MainLayout from "../../components/layout/MainLayout";
 import userService from "../../services/userService";
 
-export function OwnedShop() {
+export function ShopPage() {
   const [shopItems, setShopItems] = useState<ShopItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [purchasingItemId, setPurchasingItemId] = useState<number | null>(null);
@@ -271,7 +271,7 @@ export function OwnedShop() {
                     <button
                       className="buy-button"
                       onClick={() => openConfirmModal(item)}
-                      disabled={isOwned || (loading && isPurchasing)} // 👈 MODIFICADO
+                      disabled={isOwned || (loading && isPurchasing)}
                     >
                       {isPurchasing
                         ? "Comprando..."

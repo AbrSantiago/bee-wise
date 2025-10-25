@@ -16,7 +16,7 @@ import RootRedirect from "./components/layout/RootRedirect";
 import { UserProvider } from "./context/UserContext";
 import { ChallengePlayPage } from "./pages/Challenges/ChallengePlay";
 import { AvatarEditPage } from "./pages/AvatarPage/AvatarEditPage";
-import { OwnedShop } from "./pages/Shop/OwnedShop";
+import { ShopPage } from "./pages/Shop/ShopPage";
 
 function App() {
   return (
@@ -39,7 +39,7 @@ function App() {
               <Route path="/avatar" element={<AvatarEditPage />} />
               <Route path="/challenges" element={<ChallengesPage />} />
               <Route path="/ranking" element={<RankingPage />} />
-              <Route path="/shop" element={<OwnedShop />} />
+              <Route path="/shop" element={<ShopPage />} />
               <Route path="/test" element={<Test />} />
               <Route
                 path="/challenge/:challengeId/round/:roundNumber/:questionsPerRound/:rol"
