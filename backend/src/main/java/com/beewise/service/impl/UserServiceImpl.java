@@ -138,6 +138,7 @@ public class UserServiceImpl implements UserService {
         if (user.getBeeCoins() < item.getPrice()) {
             throw new NotEnoughBeeCoinsException("User " + username + " has obtain not enough BeeCoins to buy item " + itemId);
         }
+        user.setBeeCoins(user.getBeeCoins() - item.getPrice());
         userItems.add(item);
         user.setItems(userItems);
         return userRepository.save(user);
