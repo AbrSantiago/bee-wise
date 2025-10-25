@@ -31,7 +31,7 @@ const Sidebar = () => {
           <span className="nav-icon">🏆</span>
           <span className="nav-label">RANKING</span>
         </Link>
-        <Link to="/ranking" className="nav-item">
+        <Link to="/shop" className="nav-item">
           <span className="nav-icon">🏪</span>
           <span className="nav-label">SHOP</span>
         </Link>

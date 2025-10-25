@@ -1,11 +1,12 @@
 import apiClient from "./api";
 import type { ItemCategory, ShopItem } from "./userService";
 
-export type NewShopItemDTO = {
+export type NewShopItem = {
   name: string;
   description: string;
   price: number;
 };
+
 
 const shopService = {
   async getAllItems(): Promise<ShopItem[]> {
@@ -13,7 +14,7 @@ const shopService = {
     return response.data;
   },
 
-  async createItem(item: NewShopItemDTO): Promise<ShopItem> {
+  async createItem(item: NewShopItem): Promise<ShopItem> {
     const response = await apiClient.post<ShopItem>("/shop", item);
     return response.data;
   },
@@ -28,7 +29,9 @@ const shopService = {
   async getItemsByCategory(): Promise<Record<ItemCategory, ShopItem[]>> {
     const response = await apiClient.get<Record<ItemCategory, ShopItem[]>>("/shop/allByCategory");
     return response.data;
-  }
+  },
+
+
 };
 
 export default shopService;
