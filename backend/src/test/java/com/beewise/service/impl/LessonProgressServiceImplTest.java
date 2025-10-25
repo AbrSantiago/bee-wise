@@ -1,13 +1,16 @@
 package com.beewise.service.impl;
 
+import com.beewise.controller.dto.NewShopItemDTO;
 import com.beewise.controller.dto.RegisterUserDTO;
 import com.beewise.controller.dto.SimpleLessonDTO;
+import com.beewise.model.ItemCategory;
 import com.beewise.model.Lesson;
 import com.beewise.model.LessonProgress;
 import com.beewise.model.User;
 import com.beewise.repository.LessonProgressRepository;
 import com.beewise.service.LessonProgressService;
 import com.beewise.service.LessonService;
+import com.beewise.service.ShopService;
 import com.beewise.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,29 +40,45 @@ class LessonProgressServiceImplTest {
     @Autowired
     private LessonService lessonService;
 
+    @Autowired
+    private ShopService shopService;
+
     private User testUser;
     private Lesson testLesson;
 
     @BeforeEach
     void setUp() {
-        testUser = createTestUser("progressUser", "progress@test.com");
-        testLesson = createTestLesson("Progress Lesson", "Progress Description");
+        createItem("Default skin", ItemCategory.SKIN);
+        createItem("Default hair", ItemCategory.HAIR);
+        createItem("Default shirt", ItemCategory.SHIRT);
+        createItem("Default background", ItemCategory.BACKGROUND);
+        testUser = createTestUser();
+        testLesson = createTestLesson();
     }
 
-    private User createTestUser(String username, String email) {
+    private void createItem(String name, ItemCategory category) {
+        NewShopItemDTO item = new NewShopItemDTO();
+        item.setName(name);
+        item.setCategory(category);
+        item.setImage("");
+        item.setPrice(0);
+        shopService.createShopItem(item);
+    }
+
+    private User createTestUser() {
         RegisterUserDTO dto = new RegisterUserDTO();
-        dto.setUsername(username);
-        dto.setEmail(email);
+        dto.setUsername("progressUser");
+        dto.setEmail("progress@test.com");
         dto.setName("Test");
         dto.setSurname("User");
         dto.setPassword("password123");
         return userService.registerUser(dto);
     }
 
-    private Lesson createTestLesson(String title, String description) {
+    private Lesson createTestLesson() {
         SimpleLessonDTO dto = new SimpleLessonDTO();
-        dto.setTitle(title);
-        dto.setDescription(description);
+        dto.setTitle("Progress Lesson");
+        dto.setDescription("Progress Description");
         return lessonService.createLesson(dto);
     }
 
@@ -94,7 +113,7 @@ class LessonProgressServiceImplTest {
         Optional<LessonProgress> updatedProgress = progressRepository
                 .findByUser_IdAndLesson_Id(testUser.getId(), testLesson.getId());
         assertTrue(updatedProgress.isPresent());
-        assertEquals(progressId, updatedProgress.get().getId(), "Debería ser el mismo registro de progreso");
+        assertEquals(progressId, updatedProgress.get().getId(), "Should be same progress register");
     }
 
     @Test

@@ -1,10 +1,8 @@
 package com.beewise.service.impl;
 
-import com.beewise.controller.dto.AnswerDTO;
-import com.beewise.controller.dto.ChallengeRol;
-import com.beewise.controller.dto.RegisterUserDTO;
-import com.beewise.controller.dto.SendChallengeDTO;
+import com.beewise.controller.dto.*;
 import com.beewise.exception.*;
+import com.beewise.model.ItemCategory;
 import com.beewise.model.User;
 import com.beewise.model.challenge.Challenge;
 import com.beewise.model.challenge.Round;
@@ -13,6 +11,7 @@ import com.beewise.model.challenge.ChallengeStatus;
 import com.beewise.model.challenge.RoundStatus;
 import com.beewise.repository.ChallengeRepository;
 import com.beewise.service.ChallengeService;
+import com.beewise.service.ShopService;
 import com.beewise.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,15 +38,31 @@ class ChallengeServiceImplTest {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private ShopService shopService;
+
     private User challenger;
     private User challenged;
     private Challenge activeChallengeWithRounds;
 
     @BeforeEach
     void setUp() {
+        createItem("Default skin", ItemCategory.SKIN);
+        createItem("Default hair", ItemCategory.HAIR);
+        createItem("Default shirt", ItemCategory.SHIRT);
+        createItem("Default background", ItemCategory.BACKGROUND);
         challenger = createTestUser("challenger", "challenger@test.com");
         challenged = createTestUser("challenged", "challenged@test.com");
         activeChallengeWithRounds = createActiveChallengeWithRounds();
+    }
+
+    private void createItem(String name, ItemCategory category) {
+        NewShopItemDTO item = new NewShopItemDTO();
+        item.setName(name);
+        item.setCategory(category);
+        item.setImage("");
+        item.setPrice(0);
+        shopService.createShopItem(item);
     }
 
     private User createTestUser(String username, String email) {
@@ -65,7 +80,7 @@ class ChallengeServiceImplTest {
         dto.setChallengerId(challenger.getId());
         dto.setChallengedId(challenged.getId());
         dto.setMaxRounds(3);
-        dto.setQuestionsPerRound(5); // Mínimo 5 según la validación
+        dto.setQuestionsPerRound(5);
 
         Challenge challenge = challengeService.sendChallenge(dto);
 
@@ -85,7 +100,7 @@ class ChallengeServiceImplTest {
         dto.setChallengerId(newChallenger.getId());
         dto.setChallengedId(newChallenged.getId());
         dto.setMaxRounds(2);
-        dto.setQuestionsPerRound(5); // Cambiar a 5 mínimo
+        dto.setQuestionsPerRound(5);
 
         Challenge result = challengeService.sendChallenge(dto);
 
@@ -106,7 +121,7 @@ class ChallengeServiceImplTest {
         dto.setChallengerId(challenger.getId());
         dto.setChallengedId(challenger.getId());
         dto.setMaxRounds(2);
-        dto.setQuestionsPerRound(5); // Agregar validación correcta
+        dto.setQuestionsPerRound(5);
 
         UserChallengesHimselfException exception = assertThrows(
                 UserChallengesHimselfException.class,
@@ -122,7 +137,7 @@ class ChallengeServiceImplTest {
         dto.setChallengerId(challenger.getId());
         dto.setChallengedId(challenged.getId());
         dto.setMaxRounds(2);
-        dto.setQuestionsPerRound(5); // Cambiar a 5
+        dto.setQuestionsPerRound(5);
 
         ChallengeAlreadyExistsException exception = assertThrows(
                 ChallengeAlreadyExistsException.class,
@@ -142,14 +157,14 @@ class ChallengeServiceImplTest {
         dto1.setChallengerId(user1.getId());
         dto1.setChallengedId(user2.getId());
         dto1.setMaxRounds(2);
-        dto1.setQuestionsPerRound(5); // Cambiar a 5
+        dto1.setQuestionsPerRound(5);
         challengeService.sendChallenge(dto1);
 
         SendChallengeDTO dto2 = new SendChallengeDTO();
         dto2.setChallengerId(user2.getId());
         dto2.setChallengedId(user1.getId());
         dto2.setMaxRounds(2);
-        dto2.setQuestionsPerRound(5); // Cambiar a 5
+        dto2.setQuestionsPerRound(5);
 
         ChallengeAlreadyExistsException exception = assertThrows(
                 ChallengeAlreadyExistsException.class,
@@ -165,7 +180,7 @@ class ChallengeServiceImplTest {
         dto.setChallengerId(999999L);
         dto.setChallengedId(challenged.getId());
         dto.setMaxRounds(2);
-        dto.setQuestionsPerRound(5); // Cambiar a 5
+        dto.setQuestionsPerRound(5);
 
         assertThrows(RuntimeException.class, () -> challengeService.sendChallenge(dto));
     }
@@ -176,7 +191,7 @@ class ChallengeServiceImplTest {
         dto.setChallengerId(challenger.getId());
         dto.setChallengedId(999999L);
         dto.setMaxRounds(2);
-        dto.setQuestionsPerRound(5); // Cambiar a 5
+        dto.setQuestionsPerRound(5);
 
         assertThrows(RuntimeException.class, () -> challengeService.sendChallenge(dto));
     }
@@ -190,7 +205,7 @@ class ChallengeServiceImplTest {
         dto.setChallengerId(newChallenger.getId());
         dto.setChallengedId(newChallenged.getId());
         dto.setMaxRounds(2);
-        dto.setQuestionsPerRound(5); // Cambiar a 5
+        dto.setQuestionsPerRound(5);
 
         Challenge pendingChallenge = challengeService.sendChallenge(dto);
 
@@ -236,7 +251,7 @@ class ChallengeServiceImplTest {
         dto.setChallengerId(newChallenger.getId());
         dto.setChallengedId(newChallenged.getId());
         dto.setMaxRounds(2);
-        dto.setQuestionsPerRound(5); // Cambiar a 5
+        dto.setQuestionsPerRound(5);
 
         Challenge pendingChallenge = challengeService.sendChallenge(dto);
 
@@ -254,7 +269,7 @@ class ChallengeServiceImplTest {
         answer.setChallengeId(activeChallengeWithRounds.getId());
         answer.setRoundNumber(1);
         answer.setScore(80);
-        answer.setRol(ChallengeRol.CHALLENGED); // Agregar el userId del challenged
+        answer.setRol(ChallengeRol.CHALLENGED);
 
         Challenge result = challengeService.answerRound(answer);
 
@@ -286,7 +301,7 @@ class ChallengeServiceImplTest {
         answer.setChallengeId(challenge.getId());
         answer.setRoundNumber(1);
         answer.setScore(70);
-        answer.setRol(ChallengeRol.CHALLENGED); // El challenged responde
+        answer.setRol(ChallengeRol.CHALLENGED); // challenged reply
 
         Challenge result = challengeService.answerRound(answer);
 
@@ -318,7 +333,7 @@ class ChallengeServiceImplTest {
         answer.setChallengeId(challenge.getId());
         answer.setRoundNumber(1);
         answer.setScore(90);
-        answer.setRol(ChallengeRol.CHALLENGED); // El challenged responde
+        answer.setRol(ChallengeRol.CHALLENGED); // challenged reply
 
         Challenge result = challengeService.answerRound(answer);
 
@@ -339,7 +354,7 @@ class ChallengeServiceImplTest {
 
         Challenge challenge = challengeService.sendChallenge(dto);
 
-        // EL CHALLENGER JUEGA PRIMERO
+        // CHALLENGER PLAYS FIRST
         AnswerDTO challengerAnswer = new AnswerDTO();
         challengerAnswer.setChallengeId(challenge.getId());
         challengerAnswer.setRoundNumber(1);
@@ -348,10 +363,10 @@ class ChallengeServiceImplTest {
 
         challenge = challengeService.answerRound(challengerAnswer);
 
-        // AHORA SÍ SE PUEDE ACEPTAR EL CHALLENGE
+        // NOW CAN ACCEPT CHALLENGE
         challenge = challengeService.acceptChallenge(challenge.getId());
 
-        // EL CHALLENGED RESPONDE CON EL MISMO SCORE
+        // CHALLENGED REPLY WITH SAME SCORE
         AnswerDTO challengedAnswer = new AnswerDTO();
         challengedAnswer.setChallengeId(challenge.getId());
         challengedAnswer.setRoundNumber(1);
@@ -364,7 +379,7 @@ class ChallengeServiceImplTest {
         assertEquals(ChallengeResult.CHALLENGED_WIN, result.getResult());
     }
 
-    // Test para cubrir cuando el challenger intenta responder en estado WAITING_CHALLENGED
+    // challenger reply in state WAITING_CHALLENGED
     @Test
     void answerRound_challengerTriesToAnswerWhenWaitingChallenged_throwsException() {
         User newChallenger = createTestUser("wrongRoleChallenger", "wrongrolechallenger@test.com");
@@ -379,7 +394,7 @@ class ChallengeServiceImplTest {
         Challenge challenge = challengeService.sendChallenge(dto);
 
         Round round = challenge.getRounds().get(0);
-        round.setStatus(RoundStatus.WAITING_CHALLENGED); // Estado donde solo el challenged puede jugar
+        round.setStatus(RoundStatus.WAITING_CHALLENGED); // Only challenged can play
         challengeRepository.save(challenge);
 
         challenge = challengeService.acceptChallenge(challenge.getId());
@@ -388,7 +403,7 @@ class ChallengeServiceImplTest {
         answer.setChallengeId(challenge.getId());
         answer.setRoundNumber(1);
         answer.setScore(80);
-        answer.setRol(ChallengeRol.CHALLENGER); // El CHALLENGER intenta responder (incorrecto)
+        answer.setRol(ChallengeRol.CHALLENGER);
 
         AnswerWrongRolException exception = assertThrows(
                 AnswerWrongRolException.class,
@@ -398,7 +413,6 @@ class ChallengeServiceImplTest {
         assertEquals("Rol should be CHALLENGED", exception.getMessage());
     }
 
-    // Test para cubrir cuando el challenged intenta responder en estado WAITING_CHALLENGER
     @Test
     void answerRound_challengedTriesToAnswerWhenWaitingChallenger_throwsException() {
         User newChallenger = createTestUser("waitingChallenger2", "waitingchallenger2@test.com");
@@ -431,7 +445,7 @@ class ChallengeServiceImplTest {
         answer.setChallengeId(activeChallengeWithRounds.getId());
         answer.setRoundNumber(10);
         answer.setScore(80);
-        answer.setRol(ChallengeRol.CHALLENGED); // Agregar userId
+        answer.setRol(ChallengeRol.CHALLENGED); // Add userId
 
         RoundNumberException exception = assertThrows(
                 RoundNumberException.class,
@@ -447,7 +461,7 @@ class ChallengeServiceImplTest {
         answer.setChallengeId(activeChallengeWithRounds.getId());
         answer.setRoundNumber(2);
         answer.setScore(80);
-        answer.setRol(ChallengeRol.CHALLENGED); // Agregar userId
+        answer.setRol(ChallengeRol.CHALLENGED); // Add userId
 
         RoundNumberException exception = assertThrows(
                 RoundNumberException.class,
@@ -474,7 +488,7 @@ class ChallengeServiceImplTest {
         answer.setChallengeId(pendingChallenge.getId());
         answer.setRoundNumber(1);
         answer.setScore(80);
-        answer.setRol(ChallengeRol.CHALLENGED); // Agregar userId
+        answer.setRol(ChallengeRol.CHALLENGED); // Add userId
 
         AnswerWrongRolException exception = assertThrows(
                 AnswerWrongRolException.class,
@@ -484,10 +498,9 @@ class ChallengeServiceImplTest {
         assertEquals("Rol should be CHALLENGER", exception.getMessage());
     }
 
-    // Agregar test para cubrir la excepción RoundCompletedException
     @Test
     void answerRound_roundAlreadyCompleted_throwsException() {
-        // Crear un challenge donde el round ya esté completado
+        // Challenge with round already completed
         User newChallenger = createTestUser("completedChallenger", "completedchallenger@test.com");
         User newChallenged = createTestUser("completedChallenged", "completedchallenged@test.com");
 
@@ -499,16 +512,16 @@ class ChallengeServiceImplTest {
 
         Challenge challenge = challengeService.sendChallenge(dto);
 
-        // Simular que ambos jugadores ya jugaron y el round está completo
+        // Simulate both players already played and the round is completed
         Round round = challenge.getRounds().get(0);
         round.setChallengerScore(80);
         round.setChallengedScore(75);
-        round.setStatus(RoundStatus.COMPLETED); // AQUÍ está completo
+        round.setStatus(RoundStatus.COMPLETED); // Here is complete
         challengeRepository.save(challenge);
 
         challenge = challengeService.acceptChallenge(challenge.getId());
 
-        // Intentar responder un round que ya está completado
+        // Attempt reply completed round
         AnswerDTO answer = new AnswerDTO();
         answer.setChallengeId(challenge.getId());
         answer.setRoundNumber(1);
@@ -542,13 +555,13 @@ class ChallengeServiceImplTest {
         List<Challenge> challenges = challengeService.getAll();
 
         assertNotNull(challenges);
-        assertTrue(challenges.size() >= 1);
+        assertFalse(challenges.isEmpty());
         assertTrue(challenges.stream().anyMatch(c -> c.getId().equals(activeChallengeWithRounds.getId())));
     }
 
     @Test
     void getUsersToChallenge_returnsAvailableUsers() {
-        User additionalUser = createTestUser("available", "available@test.com");
+        createTestUser("available", "available@test.com");
 
         List<User> users = challengeService.getUsersToChallenge(challenger.getId());
 

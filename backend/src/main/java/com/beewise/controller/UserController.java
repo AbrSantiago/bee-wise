@@ -1,6 +1,8 @@
 package com.beewise.controller;
 
 import com.beewise.controller.dto.*;
+import com.beewise.model.ItemCategory;
+import com.beewise.model.ShopItem;
 import com.beewise.model.User;
 import com.beewise.service.UserService;
 import com.beewise.service.impl.JwtService;
@@ -11,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
@@ -77,9 +81,32 @@ public class UserController {
         return ResponseEntity.ok(userPoints);
     }
 
-    @PutMapping("/updateAvatar/{id}")
+    @PutMapping("/updateAvatar/{userId}")
     public ResponseEntity<UserDTO> updateAvatar(@PathVariable Long userId, @RequestBody AvatarDTO dto) {
         User user = userService.updateAvatar(userId, dto);
         return ResponseEntity.ok(new UserDTO(user));
+    }
+
+    @GetMapping("/items")
+    public ResponseEntity<List<ShopItemDTO>> getUserItems(
+            @RequestHeader("Authorization") String token
+    ) {
+        String username = jwtService.extractUsername(token.substring(7));
+        List<ShopItem> userItems = userService.getUserItems(username);
+        return ResponseEntity.ok(userItems.stream().map(ShopItemDTO::new).toList());
+    }
+
+    @GetMapping("/allItemsByCategory")
+    public ResponseEntity<Map<ItemCategory, List<ShopItemDTO>>> getUserItemsByCategory(
+            @RequestHeader("Authorization") String token
+    ) {
+        String username = jwtService.extractUsername(token.substring(7));
+        Map<ItemCategory, List<ShopItem>> groupedItems = userService.getAllByCategory(username);
+        Map<ItemCategory, List<ShopItemDTO>> groupedDTOs = groupedItems.entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        e -> e.getValue().stream().map(ShopItemDTO::new).toList()
+                ));
+        return ResponseEntity.ok(groupedDTOs);
     }
 }

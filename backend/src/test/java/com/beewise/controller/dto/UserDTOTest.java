@@ -1,8 +1,6 @@
 package com.beewise.controller.dto;
 
-import com.beewise.model.Lesson;
-import com.beewise.model.LessonProgress;
-import com.beewise.model.User;
+import com.beewise.model.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -33,9 +31,10 @@ class UserDTOTest {
         user.setName("John");
         user.setSurname("Doe");
         user.setEmail("john.doe@example.com");
-        user.setUsername("johndoe");
+        user.setUsername("JohnDoe");
         user.setPoints(150);
         user.setCurrentLesson(5);
+        user.setAvatar(createAvatar(user));
 
         Lesson lesson1 = new Lesson();
         lesson1.setId(10L);
@@ -55,7 +54,7 @@ class UserDTOTest {
         assertEquals("John", dto.getName());
         assertEquals("Doe", dto.getSurname());
         assertEquals("john.doe@example.com", dto.getEmail());
-        assertEquals("johndoe", dto.getUsername());
+        assertEquals("JohnDoe", dto.getUsername());
         assertEquals(150, dto.getPoints());
         assertEquals(5, dto.getCurrentLesson());
         assertEquals(2, dto.getCompletedLessons().size());
@@ -74,6 +73,7 @@ class UserDTOTest {
         user.setPoints(0);
         user.setCurrentLesson(0);
         user.setLessonProgresses(new ArrayList<>());
+        user.setAvatar(createAvatar(user));
 
         UserDTO dto = new UserDTO(user);
 
@@ -94,10 +94,11 @@ class UserDTOTest {
         user.setName("Jane");
         user.setSurname("Smith");
         user.setEmail("jane.smith@example.com");
-        user.setUsername("janesmith");
+        user.setUsername("JaneSmith");
         user.setPoints(75);
         user.setCurrentLesson(3);
         user.setLessonProgresses(new ArrayList<>());
+        user.setAvatar(createAvatar(user));
 
         UserDTO dto = new UserDTO(user);
 
@@ -105,7 +106,7 @@ class UserDTOTest {
         assertEquals("Jane", dto.getName());
         assertEquals("Smith", dto.getSurname());
         assertEquals("jane.smith@example.com", dto.getEmail());
-        assertEquals("janesmith", dto.getUsername());
+        assertEquals("JaneSmith", dto.getUsername());
         assertEquals(75, dto.getPoints());
         assertEquals(3, dto.getCurrentLesson());
         assertTrue(dto.getCompletedLessons().isEmpty());
@@ -118,9 +119,10 @@ class UserDTOTest {
         user.setName("Bob");
         user.setSurname("Wilson");
         user.setEmail("bob.wilson@example.com");
-        user.setUsername("bobwilson");
+        user.setUsername("BobWilson");
         user.setPoints(200);
         user.setCurrentLesson(8);
+        user.setAvatar(createAvatar(user));
 
         Lesson lesson1 = new Lesson();
         lesson1.setId(1L);
@@ -162,8 +164,8 @@ class UserDTOTest {
         dto.setEmail("alice@example.com");
         assertEquals("alice@example.com", dto.getEmail());
 
-        dto.setUsername("alicej");
-        assertEquals("alicej", dto.getUsername());
+        dto.setUsername("AliceJ");
+        assertEquals("AliceJ", dto.getUsername());
 
         dto.setPoints(300);
         assertEquals(300, dto.getPoints());
@@ -183,7 +185,7 @@ class UserDTOTest {
         dto.setName("Charlie");
         dto.setSurname("Brown");
         dto.setEmail("charlie@example.com");
-        dto.setUsername("charlieb");
+        dto.setUsername("CharlieB");
         dto.setPoints(125);
         dto.setCurrentLesson(7);
         dto.setCompletedLessons(List.of(5L, 6L));
@@ -192,7 +194,7 @@ class UserDTOTest {
         assertEquals("Charlie", dto.getName());
         assertEquals("Brown", dto.getSurname());
         assertEquals("charlie@example.com", dto.getEmail());
-        assertEquals("charlieb", dto.getUsername());
+        assertEquals("CharlieB", dto.getUsername());
         assertEquals(125, dto.getPoints());
         assertEquals(7, dto.getCurrentLesson());
         assertEquals(2, dto.getCompletedLessons().size());
@@ -205,10 +207,11 @@ class UserDTOTest {
         user.setName("David");
         user.setSurname("Lee");
         user.setEmail("david.lee@example.com");
-        user.setUsername("davidlee");
+        user.setUsername("DavidLee");
         user.setPoints(0);
         user.setCurrentLesson(1);
         user.setLessonProgresses(new ArrayList<>());
+        user.setAvatar(createAvatar(user));
 
         UserDTO dto = new UserDTO(user);
 
@@ -223,14 +226,30 @@ class UserDTOTest {
         user.setName("Eva");
         user.setSurname("Martinez");
         user.setEmail("eva.martinez@example.com");
-        user.setUsername("evam");
+        user.setUsername("EvaM");
         user.setPoints(-10);
         user.setCurrentLesson(0);
         user.setLessonProgresses(new ArrayList<>());
+        user.setAvatar(createAvatar(user));
 
         UserDTO dto = new UserDTO(user);
 
         assertEquals(-10, dto.getPoints());
         assertEquals(0, dto.getCurrentLesson());
+    }
+
+    // ============== HELPERS ==============
+    private Avatar createAvatar(User user) {
+        Avatar avatar = new Avatar();
+        avatar.setUser(user);
+        avatar.setBackground(createShopItem());
+        avatar.setShirt(createShopItem());
+        avatar.setSkin(createShopItem());
+        avatar.setHair(createShopItem());
+        return avatar;
+    }
+
+    private ShopItem createShopItem() {
+        return new ShopItem();
     }
 }

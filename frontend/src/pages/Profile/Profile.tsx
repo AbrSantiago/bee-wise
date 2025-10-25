@@ -1,22 +1,67 @@
+import { Link } from "react-router-dom";
+import { Avatar } from "../../components/layout/Avatar";
 import MainLayout from "../../components/layout/MainLayout";
-import { motion } from "framer-motion";
+import { useUser } from "../../context/UserContext";
+import { OwnedItemCard } from "./OwnedItemCard";
+import "./Profile.css";
 
 export function ProfilePage() {
+  const { user } = useUser();
+
+  if (!user) {
+    return (
+      <MainLayout title="Perfil">
+        <div className="profile-container">
+          <p>Cargando perfil...</p>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  const { name, surname, username, email, beeCoins, avatar, items } = user;
+
   return (
     <MainLayout title="Perfil">
-      <div className="flex flex-col items-center justify-center h-[70vh] text-center">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-          className="flex flex-col items-center gap-4"
-        >
-          <h1 className="text-4xl font-bold text-gray-800">¡Muy Pronto!</h1>
-          <p className="text-lg text-gray-500 max-w-md">
-            Estamos preparando algo genial.
-            Volvé más tarde para descubrir los nuevos desafíos.
-          </p>
-        </motion.div>
+      <div className="container-for-scroll">
+        <div className="profile-page-container">
+          <div className="profile-container">
+            {/* Avatar */}
+            <section className="profile-avatar">
+              <Avatar avatar={avatar} size={250} />
+              <Link to={"/avatar"}>
+                <button className="edit-avatar-btn">Editar avatar</button>
+              </Link>
+            </section>
+
+            {/* Datos del usuario */}
+            <section className="profile-info">
+              <h2>{username}</h2>
+              <p>
+                {name} {surname}
+              </p>
+              <p>{email}</p>
+              <div className="profile-stats">
+                <div>
+                  <strong>BeeCoins:</strong> 🪙 {beeCoins}
+                </div>
+              </div>
+            </section>
+          </div>
+
+          {/* Items del usuario */}
+          <section className="user-items-container">
+            <h3>Tus ítems</h3>
+            {items.length === 0 ? (
+              <p className="no-items">Todavía no compraste ningún ítem</p>
+            ) : (
+              <div className="items-grid">
+                {items.map((item) => (
+                  <OwnedItemCard key={item.id} item={item} />
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
       </div>
     </MainLayout>
   );

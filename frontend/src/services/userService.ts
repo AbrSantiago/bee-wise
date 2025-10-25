@@ -7,7 +7,28 @@ export type User = {
   email: string;
   username: string;
   points: number;
+  avatar: Avatar;
+  items: ShopItem[];
+  beeCoins: number;
 };
+
+export type Avatar = {
+  id: number;
+  skin: ShopItem;
+  hair: ShopItem;
+  shirt: ShopItem;
+  background: ShopItem;
+}
+
+export type ShopItem = {
+  id: number;
+  name: string;
+  category: ItemCategory;
+  image: string;
+  price: number;
+}
+
+export type ItemCategory = "SHIRT" | "SKIN" | "HAIR" | "BACKGROUND"
 
 export type AuthResponse = {
   accessToken: string;
@@ -76,7 +97,26 @@ const userService = {
       { refreshToken }
     );
     return response.data;
-  }
+  },
+
+  async getUserItems(token: string): Promise<ShopItem[]> {
+    const response = await apiClient.get<ShopItem[]>("/users/items", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
+
+  async updateAvatar(userId: number, avatar: Avatar): Promise<User> {
+    const response = await apiClient.put<User>(`/users/updateAvatar/${userId}`, avatar);
+    return response.data;
+  },
+
+  async getUserItemsByCategory(token: string): Promise<Record<ItemCategory, ShopItem[]>> {
+    const response = await apiClient.get<Record<ItemCategory, ShopItem[]>>("/users/items", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },  
 };
 
 export default userService;
