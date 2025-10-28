@@ -12,14 +12,14 @@ const ChallengeUserCard: React.FC<ChallengeUserCardProps> = ({
   user,
   isCurrentUser = false,
 }) => {
+  const userClass = isCurrentUser ? "current" : "opponent";
+  
   return (
-    <div
-      className={`challenge-user-card ${
-        isCurrentUser ? "current" : "opponent"
-      }`}
-    >
+    <div className={`challenge-user-card ${userClass}`}>
       <p className="username">{user.username}</p>
-      <Avatar avatar={user.avatar} size={250} />
+      <div className={`avatar-wrapper ${userClass}`}>
+        <Avatar avatar={user.avatar} size={100} />
+      </div>
       <p className="ranking">🏆 Ranking #{user.ranking}</p>
     </div>
   );
