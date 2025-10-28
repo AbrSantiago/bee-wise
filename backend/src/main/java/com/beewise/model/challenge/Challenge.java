@@ -1,7 +1,8 @@
 package com.beewise.model.challenge;
 
-import com.beewise.controller.dto.ChallengeRol;
+import com.beewise.controller.dto.ChallengeStatsDTO;
 import com.beewise.exception.ChallengeAlreadyCompletedException;
+import com.beewise.exception.UserNotPlayingChallengeException;
 import com.beewise.model.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -68,5 +70,31 @@ public class Challenge {
             case WAITING_CHALLENGER -> challenged;
             case COMPLETED -> throw new ChallengeAlreadyCompletedException("Challenge " + id + " was already completed");
         };
+    }
+
+    public ChallengeStatsDTO getStats(String username) {
+        User user = getNextUserToPlay();
+        if (!Objects.equals(user.getUsername(), username)) {
+            throw new UserNotPlayingChallengeException("User " + username + " is not playing challenge " + id);
+        }
+        Round currentRound = rounds.stream().max(Comparator.comparing(Round::getRoundNumber))
+                .orElseThrow();
+        ChallengeStatsDTO statsDTO = new ChallengeStatsDTO();
+        if (user == challenger) {
+            statsDTO.setUserScore(currentRound.getChallengerScore());
+            statsDTO.setOpponentScore(currentRound.getChallengedScore());
+            statsDTO.setUserRoundsWon(getUserRoundsWon(challenger));
+            statsDTO.setOpponentRoundsWon(getUserRoundsWon(challenger));
+        } else {
+            statsDTO.setUserScore(currentRound.getChallengedScore());
+            statsDTO.setOpponentScore(currentRound.getChallengerScore());
+            statsDTO.setUserRoundsWon(getUserRoundsWon(challenged));
+            statsDTO.setOpponentRoundsWon(getUserRoundsWon(challenged));
+        }
+        return statsDTO;
+    }
+
+    private int getUserRoundsWon(User user) {
+        return (int) rounds.stream().filter(r -> r.winner() == user).count();
     }
 }

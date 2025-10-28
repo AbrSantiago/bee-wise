@@ -45,7 +45,8 @@ public class GlobalExceptionHandler {
             ShopItemDoesNotExistsException.class,
             SomeItemsWereNotBought.class,
             ItemAlreadyBoughtException.class,
-            NotEnoughBeeCoinsException.class
+            NotEnoughBeeCoinsException.class,
+            UserNotPlayingChallengeException.class
     })
     public ResponseEntity<Map<String, String>> handleBadRequestExceptions(RuntimeException ex) {
         Map<String, String> error = Map.of("error", ex.getMessage());

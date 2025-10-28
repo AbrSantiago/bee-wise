@@ -88,4 +88,13 @@ public class ChallengeController {
         List<ExerciseCategory> categories = Arrays.asList(ExerciseCategory.values());
         return ResponseEntity.ok(categories);
     }
+
+    @GetMapping("/stats")
+    public ResponseEntity<ChallengeStatsDTO> getChallengeStars(
+            @PathVariable Long challengeId,
+            @PathVariable String username
+    ) {
+        ChallengeStatsDTO statsDTO = challengeService.getChallengeStats(challengeId, username);
+        return ResponseEntity.ok(statsDTO);
+    }
 }
