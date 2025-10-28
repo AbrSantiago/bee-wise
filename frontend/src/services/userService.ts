@@ -10,6 +10,7 @@ export type User = {
   avatar: Avatar;
   items: ShopItem[];
   beeCoins: number;
+  ranking: number;
 };
 
 export type Avatar = {

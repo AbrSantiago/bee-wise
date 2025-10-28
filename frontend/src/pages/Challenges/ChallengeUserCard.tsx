@@ -1,17 +1,15 @@
 import React from "react";
 import "./ChallengeUserCard.css";
+import type { User } from "../../services/userService";
+import { Avatar } from "../../components/layout/Avatar";
 
 export interface ChallengeUserCardProps {
-  username: string;
-  avatarUrl: string;
-  ranking: number;
+  user: User;
   isCurrentUser?: boolean;
 }
 
 const ChallengeUserCard: React.FC<ChallengeUserCardProps> = ({
-  username,
-  avatarUrl,
-  ranking,
+  user,
   isCurrentUser = false,
 }) => {
   return (
@@ -20,15 +18,9 @@ const ChallengeUserCard: React.FC<ChallengeUserCardProps> = ({
         isCurrentUser ? "current" : "opponent"
       }`}
     >
-      <p className="username">{username}</p>
-      <div className="avatar-wrapper">
-        <img
-          src={avatarUrl}
-          alt={`${username}'s avatar`}
-          className="avatar-img"
-        />
-      </div>
-      <p className="ranking">🏆 Ranking #{ranking}</p>
+      <p className="username">{user.username}</p>
+      <Avatar avatar={user.avatar} size={250} />
+      <p className="ranking">🏆 Ranking #{user.ranking}</p>
     </div>
   );
 };
