@@ -4,7 +4,7 @@ import MainLayout from "../../components/layout/MainLayout";
 import challengeService, {
   type AnswerDTO,
   type ChallengeRol,
-  type ExerciseCategory, // Importar ExerciseCategory
+  type ExerciseCategory,
 } from "../../services/challengeService";
 import type { Exercise } from "../../services/lessonService";
 import SummaryScreen from "../Practice/components/SummaryScreen";
@@ -23,7 +23,7 @@ import {
 import type { DragEndEvent } from "@dnd-kit/core";
 import FeedbackMessage from "../Practice/components/FeedbackMessage";
 import DnDOptions from "../Practice/components/DnDOptions";
-import Roulette from "../../components/layout/Roulette"; 
+import Roulette from "../../components/layout/Roulette";
 import CategoryPopup from "../../components/layout/CategoryPopup";
 
 export function ChallengePlayPage() {
@@ -47,10 +47,15 @@ export function ChallengePlayPage() {
   const [showCategoryPopup, setShowCategoryPopup] = useState(false);
 
   // --- Estados nuevos para la ruleta y el flujo de juego ---
-  const [gameState, setGameState] = useState<"ROULETTE" | "PLAYING" | "SUMMARY">("ROULETTE");
+  const [gameState, setGameState] = useState<
+    "ROULETTE" | "PLAYING" | "SUMMARY"
+  >("ROULETTE");
   const [isSpinning, setIsSpinning] = useState(false);
-  const [winningCategory, setWinningCategory] = useState<ExerciseCategory | null>(null);
-  const [rouletteCategories, setRouletteCategories] = useState<ExerciseCategory[]>([]);
+  const [winningCategory, setWinningCategory] =
+    useState<ExerciseCategory | null>(null);
+  const [rouletteCategories, setRouletteCategories] = useState<
+    ExerciseCategory[]
+  >([]);
 
   const { challengeId, roundNumber, questionsPerRound, rol } = useParams<{
     challengeId: string;
@@ -145,7 +150,8 @@ export function ChallengePlayPage() {
         challengeId: Number(challengeId),
         roundNumber: Number(roundNumber),
         rol: rol,
-        score: totalCount,
+        score: correctCount * 2,
+        correctAnswers: correctCount,
       };
 
       const challenge = await challengeService.answerRound(answerDTO);
@@ -171,7 +177,11 @@ export function ChallengePlayPage() {
         setRouletteCategories(categories);
       } catch (error) {
         console.error("No se pudieron cargar las categorías:", error);
-        setRouletteCategories(["MATRICES", "DETERMINANTS", "SYSTEM_OF_EQUATIONS"]); // Fallback
+        setRouletteCategories([
+          "MATRICES",
+          "DETERMINANTS",
+          "SYSTEM_OF_EQUATIONS",
+        ]); // Fallback
       } finally {
         setLoading(false); // Dejamos de cargar cuando las categorías están listas
       }
@@ -182,7 +192,8 @@ export function ChallengePlayPage() {
   const handleStartSpin = () => {
     if (!isSpinning) {
       // Obtener categoría aleatoria
-      challengeService.getRandomCategory()
+      challengeService
+        .getRandomCategory()
         .then((category) => {
           setWinningCategory(category);
           setIsSpinning(true);
@@ -197,95 +208,114 @@ export function ChallengePlayPage() {
     console.log("🎉 Ruleta detenida en categoría:", winningCategory);
     setIsSpinning(false);
     setShowCategoryPopup(true); // Mostrar el popup cuando termine de girar
-};
+  };
 
   const handleStartGame = async () => {
-  if (!winningCategory) return;
-  
-  setShowCategoryPopup(false); // Ocultar el popup
-  setLoading(true); // Ponemos el loading mientras se buscan los ejercicios
-  
-  try {
-    const data = await challengeService.getRandomExercises(Number(questionsPerRound), winningCategory);
-    setExercises(data);
-    setTotalCount(data.length);
-    setCorrectCount(0);
-    setStartTime(Date.now());
-    setGameState("PLAYING");
-  } catch (error) {
-    console.error("Error fetching challenge exercises:", error);
-  } finally {
-    setLoading(false); // Quitamos el loading
-  }
-};
+    if (!winningCategory) return;
+
+    setShowCategoryPopup(false); // Ocultar el popup
+    setLoading(true); // Ponemos el loading mientras se buscan los ejercicios
+
+    try {
+      const data = await challengeService.getRandomExercises(
+        Number(questionsPerRound),
+        winningCategory
+      );
+      setExercises(data);
+      setTotalCount(data.length);
+      setCorrectCount(0);
+      setStartTime(Date.now());
+      setGameState("PLAYING");
+    } catch (error) {
+      console.error("Error fetching challenge exercises:", error);
+    } finally {
+      setLoading(false); // Quitamos el loading
+    }
+  };
 
   // --- TUS useEffect ORIGINALES PARA EL TIMER ---
-useEffect(() => {
-  let interval: NodeJS.Timeout | null = null;
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
 
-  if (isTimerRunning && timeLeft > 0) {
-    interval = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          setIsTimerRunning(false);
-          handleTimeOut();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  }
+    if (isTimerRunning && timeLeft > 0) {
+      interval = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            setIsTimerRunning(false);
+            handleTimeOut();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
 
-  return () => {
-    if (interval) clearInterval(interval);
-  };
-}, [isTimerRunning, timeLeft]);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isTimerRunning, timeLeft]);
 
-useEffect(() => {
-  if (gameState === 'PLAYING' && current && !loading) {
-    setTimeLeft(25);
-    setIsTimerRunning(true);
-    console.log("🚀 Timer iniciado para nueva pregunta");
-  }
-}, [currentExercise, current, loading, gameState]);
-
+  useEffect(() => {
+    if (gameState === "PLAYING" && current && !loading) {
+      setTimeLeft(25);
+      setIsTimerRunning(true);
+      console.log("🚀 Timer iniciado para nueva pregunta");
+    }
+  }, [currentExercise, current, loading, gameState]);
 
   // --- RENDERIZADO FINAL ---
 
   if (gameState === "ROULETTE") {
-    if (loading) return <MainLayout title="Cargando...">Cargando desafío...</MainLayout>;
+    if (loading)
+      return <MainLayout title="Cargando...">Cargando desafío...</MainLayout>;
     return (
       <MainLayout title={`Desafío`}>
-        <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <h2 style={{ color: '#fff', fontFamily: 'Recoleta-Bold', fontSize: '2.5rem', marginBottom: '20px' }}>
-            ¡Gira para definir la categoría!
-        </h2>
-        <Roulette
-          categories={rouletteCategories}
-          winningCategory={winningCategory}
-          triggerSpin={isSpinning}
-          onSpinningEnd={handleSpinEnd}
-        />
-        <button
-          onClick={handleStartSpin}
-          className="check-btn"
-          disabled={isSpinning}
-          style={{ marginTop: '30px', width: '250px', fontSize: '1.5rem', padding: '15px' }}
+        <div
+          style={{
+            textAlign: "center",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
         >
-          {isSpinning ? "Girando..." : "¡GIRAR!"}
-        </button>
-      </div>
+          <h2
+            style={{
+              color: "#fff",
+              fontFamily: "Recoleta-Bold",
+              fontSize: "2.5rem",
+              marginBottom: "20px",
+            }}
+          >
+            ¡Gira para definir la categoría!
+          </h2>
+          <Roulette
+            categories={rouletteCategories}
+            winningCategory={winningCategory}
+            triggerSpin={isSpinning}
+            onSpinningEnd={handleSpinEnd}
+          />
+          <button
+            onClick={handleStartSpin}
+            className="check-btn"
+            disabled={isSpinning}
+            style={{
+              marginTop: "30px",
+              width: "250px",
+              fontSize: "1.5rem",
+              padding: "15px",
+            }}
+          >
+            {isSpinning ? "Girando..." : "¡GIRAR!"}
+          </button>
+        </div>
 
-      {/* Mostrar el popup cuando showCategoryPopup sea true */}
-      {showCategoryPopup && winningCategory && (
-        <CategoryPopup
-          category={winningCategory}
-          onStart={handleStartGame}
-        />
-      )}
-    </MainLayout>
-  );
-}
+        {/* Mostrar el popup cuando showCategoryPopup sea true */}
+        {showCategoryPopup && winningCategory && (
+          <CategoryPopup category={winningCategory} onStart={handleStartGame} />
+        )}
+      </MainLayout>
+    );
+  }
 
   if (gameState === "SUMMARY") {
     return (
@@ -298,16 +328,21 @@ useEffect(() => {
       </MainLayout>
     );
   }
-  
+
   // gameState es "PLAYING"
-  if (loading) return <MainLayout title="Cargando...">Cargando ejercicios...</MainLayout>;
+  if (loading)
+    return <MainLayout title="Cargando...">Cargando ejercicios...</MainLayout>;
 
   return (
     <MainLayout title={`Desafío - Ronda ${roundNumber}`}>
       <div className="exercise-container">
         {/* Aquí va tu JSX original del juego, sin cambios */}
-        <div className={`timer-container ${timeLeft <= 10 ? "timer-warning" : ""}`}>
-          <div className={`timer-display ${timeLeft <= 10 ? "timer-pulse" : ""}`}>
+        <div
+          className={`timer-container ${timeLeft <= 10 ? "timer-warning" : ""}`}
+        >
+          <div
+            className={`timer-display ${timeLeft <= 10 ? "timer-pulse" : ""}`}
+          >
             Tiempo restante : {timeLeft}s
           </div>
         </div>
@@ -368,7 +403,12 @@ useEffect(() => {
             )}
             <FeedbackMessage feedback={feedback} isTimeOut={isTimeOut} />
             {feedback !== null && (
-              <button className={`btn-continue mt-4 ${feedback ? "success" : "error"}`} onClick={handleContinue}>
+              <button
+                className={`btn-continue mt-4 ${
+                  feedback ? "success" : "error"
+                }`}
+                onClick={handleContinue}
+              >
                 Continuar
               </button>
             )}

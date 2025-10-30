@@ -45,6 +45,7 @@ export type AnswerDTO = {
   roundNumber: number;
   rol: ChallengeRol;
   score: number;
+  correctAnswers: number;
 };
 
 export type ChallengeRol = "CHALLENGER" | "CHALLENGED";

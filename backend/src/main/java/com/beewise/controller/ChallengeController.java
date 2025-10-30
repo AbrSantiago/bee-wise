@@ -3,6 +3,7 @@ package com.beewise.controller;
 import com.beewise.controller.dto.*;
 import com.beewise.model.Exercise;
 import com.beewise.model.ExerciseCategory;
+import com.beewise.model.Reward;
 import com.beewise.model.User;
 import com.beewise.model.challenge.Challenge;
 import com.beewise.service.ChallengeService;
@@ -88,4 +89,11 @@ public class ChallengeController {
         List<ExerciseCategory> categories = Arrays.asList(ExerciseCategory.values());
         return ResponseEntity.ok(categories);
     }
+
+//    @PostMapping("/{id}/rewards")
+//    public ResponseEntity<RewardDTO> addReward(@PathVariable Long userId){
+//        Reward reward = challengeService.addReward(userId);
+//        RewardDTO rewardDTO = RewardDTO.fromReward(reward);
+//        return ResponseEntity.ok(reward);
+//    }
 }

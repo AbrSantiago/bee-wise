@@ -1,12 +1,16 @@
 package com.beewise.service.impl;
 
 import com.beewise.controller.dto.AnswerDTO;
+import com.beewise.controller.dto.RewardDTO;
 import com.beewise.controller.dto.SendChallengeDTO;
 import com.beewise.controller.dto.UserDTO;
 import com.beewise.exception.*;
 import com.beewise.model.*;
 import com.beewise.model.challenge.*;
 import com.beewise.repository.ChallengeRepository;
+import com.beewise.repository.RewardRepository;
+import com.beewise.repository.ShopItemRepository;
+import com.beewise.repository.UserRepository;
 import com.beewise.service.ChallengeService;
 import com.beewise.service.ExerciseService;
 import com.beewise.service.UserService;
@@ -23,11 +27,17 @@ public class ChallengeServiceImpl implements ChallengeService {
     private final ChallengeRepository repository;
     private final UserService userService;
     private final ExerciseService exerciseService;
+    private final RewardRepository rewardRepository;
+    private final ShopItemRepository shopItemRepository;
+    private final UserRepository userRepository;
 
-    public ChallengeServiceImpl(ChallengeRepository repository, UserService userService, ExerciseService exerciseService) {
+    public ChallengeServiceImpl(ChallengeRepository repository, UserService userService, ExerciseService exerciseService, RewardRepository rewardRepository, ShopItemRepository shopItemRepository, UserRepository userRepository) {
         this.repository = repository;
         this.userService = userService;
         this.exerciseService = exerciseService;
+        this.rewardRepository = rewardRepository;
+        this.shopItemRepository = shopItemRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -73,6 +83,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         if (answer.getRoundNumber() > challenge.getMaxRounds() || answer.getRoundNumber() != rounds.size()) {
             throw new RoundNumberException("Wrong round number");
         }
+
         Round round = rounds.get(answer.getRoundNumber() - 1);
         round.answer(answer);
 
@@ -80,16 +91,105 @@ public class ChallengeServiceImpl implements ChallengeService {
         if (answer.getRoundNumber() == challenge.getMaxRounds() && round.isCompleted()) {
             challenge.setStatus(ChallengeStatus.COMPLETED);
             long challengerWins = rounds.stream().filter(r -> r.winner() == challenge.getChallenger()).count();
-            long challengeeWins = rounds.stream().filter(r -> r.winner() == challenge.getChallenged()).count();
-            if (challengerWins == challengeeWins) {
+            long challengedWins = rounds.stream().filter(r -> r.winner() == challenge.getChallenged()).count();
+            if (challengerWins == challengedWins) {
                 challenge.setResult(ChallengeResult.DRAW);
-            } else if (challengerWins > challengeeWins) {
+            } else if (challengerWins > challengedWins) {
                 challenge.setResult(ChallengeResult.CHALLENGER_WIN);
             } else {
                 challenge.setResult(ChallengeResult.CHALLENGED_WIN);
             }
+            if(!rewardRepository.existsByChallengeId(challenge.getId())){
+                calculateAndPersistReward(challenge);
+            }
         }
         return repository.save(challenge);
+    }
+
+    private void calculateAndPersistReward(Challenge challenge) {
+        User challenger = challenge.getChallenger();
+        User challenged = challenge.getChallenged();
+        List<Round> rounds = challenge.getRounds();
+        int totalRounds = rounds.size();
+
+        int challengerPoints = 0;
+        int challengedPoints = 0;
+
+        for (Round round : rounds) {
+            int challengerRoundPoints = round.getChallengerCorrectAnswers() * 2;
+            int challengedRoundPoints = round.getChallengedCorrectAnswers() * 2;
+
+            if (round.isChallengerPerfectRound()) {
+                challengerRoundPoints *= 2;
+            }
+            if (round.isChallengedPerfectRound()) {
+                challengedRoundPoints *= 2;
+            }
+            challengerPoints += challengerRoundPoints;
+            challengedPoints += challengedRoundPoints;
+        }
+
+        int baseCoins = challenge.getQuestionsPerRound() * totalRounds;
+        int challengerCoins = baseCoins;
+        int challengedCoins = baseCoins;
+
+        ShopItem challengerItem = null;
+        ShopItem challengedItem = null;
+
+        if (challenge.getResult() == ChallengeResult.CHALLENGER_WIN) {
+            challengerPoints += (5 * totalRounds);
+            challengerCoins *= 2;
+            challengerItem = getRandomAvailableItem(challenger);
+
+            if (challengerItem == null) {
+                challengerPoints += 10;
+            }
+        } else if (challenge.getResult() == ChallengeResult.CHALLENGED_WIN) {
+            challengedPoints += (5 * totalRounds);
+            challengedCoins *= 2;
+            challengedItem = getRandomAvailableItem(challenged);
+
+            if (challengedItem == null) {
+                challengedPoints += 10;
+            }
+        }
+
+        challenger.setPoints(challenger.getPoints() + challengerPoints);
+        challenger.setBeeCoins(challenger.getBeeCoins() + challengerCoins);
+        if (challengerItem != null) {
+            challenger.getItems().add(challengerItem);
+        }
+
+        challenged.setPoints(challenged.getPoints() + challengedPoints);
+        challenged.setBeeCoins(challenged.getBeeCoins() + challengedCoins);
+        if (challengedItem != null) {
+            challenged.getItems().add(challengedItem);
+        }
+
+        Reward challengerReward = new Reward(challenger, challenge, challengerPoints, challengerCoins, challengerItem);
+        Reward challengedReward = new Reward(challenged, challenge, challengedPoints, challengedCoins, challengedItem);
+
+        rewardRepository.save(challengerReward);
+        rewardRepository.save(challengedReward);
+
+        userRepository.save(challenger);
+        userRepository.save(challenged);
+    }
+
+    private ShopItem getRandomAvailableItem(User user) {
+        List<ShopItem> allItems = shopItemRepository.findAll();
+
+        List<ShopItem> availableItems = allItems.stream()
+                .filter(item -> !user.getItems().contains(item))
+                .toList();
+
+        if (availableItems.isEmpty()) {
+            return null;
+        }
+
+        Random random = new Random();
+        int randomIndex = random.nextInt(availableItems.size());
+        return availableItems.get(randomIndex);
     }
 
     @Override
@@ -123,4 +223,16 @@ public class ChallengeServiceImpl implements ChallengeService {
                 .orElseThrow(() -> new ChallengeNotFoundException("Challenge with id " + challengeId + " does not exists"));
         return challenge.getNextUserToPlay();
     }
+
+    @Override
+    public RewardDTO getRewards(Long challengeId, String username) {
+        User user = userService.getUserByUsername(username);
+
+        Reward reward = rewardRepository.findByChallengeIdAndUserId(challengeId,user.getId())
+                .orElseThrow(() -> new RewardNotFoundException("Rewards not found for this challenge"));
+
+        return new RewardDTO(reward);
+    }
+
+
 }
