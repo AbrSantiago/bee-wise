@@ -1,9 +1,7 @@
 package com.beewise.controller;
 
 import com.beewise.controller.dto.*;
-import com.beewise.model.Avatar;
-import com.beewise.model.ShopItem;
-import com.beewise.model.User;
+import com.beewise.model.*;
 import com.beewise.model.challenge.*;
 import com.beewise.service.ChallengeService;
 import org.junit.jupiter.api.BeforeEach;
@@ -264,6 +262,45 @@ class ChallengeControllerTest {
         assertEquals(5, response.getBody().get(0).getMaxRounds());
         assertEquals(10, response.getBody().get(0).getQuestionsPerRound());
         verify(challengeService).getAll();
+    }
+
+    @Test
+    void getRandomCategory_returnsCategory() {
+        ExerciseCategory category = ExerciseCategory.DETERMINANTS;
+        when(challengeService.getRandomCategory()).thenReturn(category);
+
+        ResponseEntity<ExerciseCategory> response = controller.getRandomCategory();
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(category, response.getBody());
+        verify(challengeService).getRandomCategory();
+    }
+
+    @Test
+    void getOpponent_returnsOpponentDTO() {
+        User user = new User();
+        user.setUsername("opponentUser");
+        user.setId(123L);
+
+        when(challengeService.getOpponent(99L, "playerUser")).thenReturn(user);
+
+        ResponseEntity<OpponentDTO> response = controller.getOpponent(99L, "playerUser");
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertNotNull(response.getBody());
+        assertEquals("opponentUser", response.getBody().getUsername());
+        verify(challengeService).getOpponent(99L, "playerUser");
+    }
+
+    @Test
+    void getAllCategories_returnsAllCategories() {
+        ResponseEntity<List<ExerciseCategory>> response = controller.getAllCategories();
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().contains(ExerciseCategory.MATRICES));
+        assertTrue(response.getBody().contains(ExerciseCategory.DETERMINANTS));
+        assertTrue(response.getBody().contains(ExerciseCategory.SYSTEM_OF_EQUATIONS));
     }
 
     // Helper methods

@@ -21,4 +21,7 @@ public class AnswerDTO {
 
     @Min(value = 0, message = "Score cannot be negative")
     private int score;
+
+    @Min(value = 0, message = "Correct answers cannot be negative")
+    private int correctAnswers;
 }

@@ -2,14 +2,14 @@ package com.beewise.service.impl;
 
 import com.beewise.controller.dto.*;
 import com.beewise.exception.*;
-import com.beewise.model.ItemCategory;
-import com.beewise.model.User;
+import com.beewise.model.*;
 import com.beewise.model.challenge.Challenge;
 import com.beewise.model.challenge.Round;
 import com.beewise.model.challenge.ChallengeResult;
 import com.beewise.model.challenge.ChallengeStatus;
 import com.beewise.model.challenge.RoundStatus;
 import com.beewise.repository.ChallengeRepository;
+import com.beewise.repository.RewardRepository;
 import com.beewise.service.ChallengeService;
 import com.beewise.service.ShopService;
 import com.beewise.service.UserService;
@@ -40,6 +40,9 @@ class ChallengeServiceImplTest {
 
     @Autowired
     private ShopService shopService;
+
+    @Autowired
+    private RewardRepository rewardRepository;
 
     private User challenger;
     private User challenged;
@@ -575,6 +578,58 @@ class ChallengeServiceImplTest {
         List<User> users = challengeService.getUsersToChallenge(nonExistentId);
 
         assertNotNull(users);
+    }
+
+    @Test
+    void getRandomExercises_returnsExercises() {
+        List<Exercise> exercises = challengeService.getRandomExercises(2, ExerciseCategory.MATH);
+        assertNotNull(exercises);
+        assertTrue(exercises.size() <= 2);
+    }
+
+    @Test
+    void getRandomCategory_returnsValidCategory() {
+        ExerciseCategory category = challengeService.getRandomCategory();
+        assertNotNull(category);
+        assertTrue(List.of(ExerciseCategory.values()).contains(category));
+    }
+
+    @Test
+    void getOpponent_returnsOpponentUser() {
+        Challenge challenge = activeChallengeWithRounds;
+        User challenger = challenge.getChallenger();
+
+        User opponent = challengeService.getOpponent(challenge.getId(), challenger.getUsername());
+        assertNotNull(opponent);
+        assertEquals(challenger.getId(), opponent.getId());
+
+
+    }
+
+    @Test
+    void getRewards_returnsRewardDTO() {
+        Challenge challenge = activeChallengeWithRounds;
+        User challenger = challenge.getChallenger();
+
+        Reward reward = new Reward(challenger, challenge, 10, 10, null);
+        rewardRepository.save(reward);
+
+        RewardDTO dto = challengeService.getRewards(challenge.getId(), challenger.getUsername());
+        assertNotNull(dto);
+        assertEquals(10, dto.getPointsGained());
+        assertEquals(10, dto.getBeeCoinsGained());
+    }
+
+    @Test
+    void getRewards_nonExistentReward_throwsException() {
+        Challenge challenge = activeChallengeWithRounds;
+        User challenger = challenge.getChallenger();
+
+        rewardRepository.deleteAll();
+
+        assertThrows(RuntimeException.class, () -> {
+            challengeService.getRewards(challenge.getId(), challenger.getUsername());
+        });
     }
 
     @Test

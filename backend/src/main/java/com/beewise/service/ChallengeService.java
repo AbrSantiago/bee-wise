@@ -2,6 +2,7 @@ package com.beewise.service;
 
 import com.beewise.controller.dto.AnswerDTO;
 import com.beewise.controller.dto.ChallengeStatsDTO;
+import com.beewise.controller.dto.RewardDTO;
 import com.beewise.controller.dto.SendChallengeDTO;
 import com.beewise.model.Exercise;
 import com.beewise.model.ExerciseCategory;
@@ -21,4 +22,5 @@ public interface ChallengeService {
     User getOpponent(Long challengeId, String username);
     ChallengeStatsDTO getChallengeStats(Long challengeId, String username);
     User getChallengeOpponent(Long challengeId, String username);
+    RewardDTO getRewards(Long challengeId, String username);
 }

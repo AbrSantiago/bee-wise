@@ -154,7 +154,8 @@ export function ChallengePlayPage() {
         challengeId: Number(challengeId),
         roundNumber: Number(roundNumber),
         rol: rol,
-        score: totalCount,
+        score: correctCount * 2,
+        correctAnswers: correctCount,
       };
 
       const challenge = await challengeService.answerRound(answerDTO);
