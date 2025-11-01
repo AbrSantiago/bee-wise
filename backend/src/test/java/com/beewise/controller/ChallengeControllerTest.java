@@ -281,10 +281,11 @@ class ChallengeControllerTest {
         User user = new User();
         user.setUsername("opponentUser");
         user.setId(123L);
+        user.setAvatar(createAvatar(user));
 
         when(challengeService.getOpponent(99L, "playerUser")).thenReturn(user);
 
-        ResponseEntity<OpponentDTO> response = controller.getOpponent(99L, "playerUser");
+        ResponseEntity<UserDTO> response = controller.getOpponent(99L, "playerUser");
 
         assertEquals(200, response.getStatusCodeValue());
         assertNotNull(response.getBody());
