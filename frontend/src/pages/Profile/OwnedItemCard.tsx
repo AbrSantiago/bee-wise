@@ -9,15 +9,15 @@ export function OwnedItemCard({ item }: Props) {
   const getImagePath = () => {
     switch (item.category) {
       case "SKIN":
-        return `src/assets/avatars/skin/${item.image}`;
+        return `/avatars/skin/${item.image}`;
       case "HAIR":
-        return `src/assets/avatars/hair/${item.image}`;
+        return `avatars/hair/${item.image}`;
       case "SHIRT":
-        return `src/assets/avatars/shirt/${item.image}`;
+        return `/avatars/shirt/${item.image}`;
       case "BACKGROUND":
-        return `src/assets/avatars/bg/${item.image}`;
+        return `/avatars/bg/${item.image}`;
       default:
-        return `src/assets/shop/${item.image}`;
+        return `/shop/${item.image}`;
     }
   };
 

@@ -18,7 +18,7 @@ const ChallengeUserCard: React.FC<ChallengeUserCardProps> = ({
     <div className={`challenge-user-card ${userClass}`}>
       <p className="username">{user.username}</p>
       <div className={`avatar-wrapper ${userClass}`}>
-        <Avatar avatar={user.avatar} size={100} />
+        <Avatar avatar={user.avatar} size={130} />
       </div>
       <p className="ranking">🏆 Ranking #{user.ranking}</p>
     </div>

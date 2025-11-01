@@ -29,8 +29,8 @@
 
 .avatar-wrapper {
   flex-shrink: 0;
-  width: 100px;
-  height: 100px;
+  width: 136px;
+  height: 136px;
   border-radius: 50%;
   overflow: hidden;
   border: 3px solid #ddd;
@@ -49,11 +49,13 @@
   font-weight: 600;
   font-size: 1.2rem;
   color: #333;
+  margin: 10px 0;
 }
 
 .ranking {
   font-size: 0.95rem;
   color: #666;
+  margin: 10px 0;
 }
 
 /* --- Animations --- */
