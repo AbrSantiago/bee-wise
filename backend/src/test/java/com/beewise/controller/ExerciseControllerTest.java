@@ -1,7 +1,9 @@
 package com.beewise.controller;
 
+import com.beewise.controller.dto.ExerciseDTO;
 import com.beewise.controller.dto.SimpleMultipleChoiceExerciseDTO;
 import com.beewise.controller.dto.SimpleOpenExerciseDTO;
+import com.beewise.model.Exercise;
 import com.beewise.model.ExerciseCategory;
 import com.beewise.model.MultipleChoiceExercise;
 import com.beewise.model.OpenExercise;
@@ -143,5 +145,36 @@ class ExerciseControllerTest {
 
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
         verify(service).deleteExercise(6L);
+    }
+
+    @Test
+    void createAll_returnsListOfDtos() {
+        SimpleOpenExerciseDTO dto1 = new SimpleOpenExerciseDTO();
+        dto1.setQuestion("Q1?");
+        dto1.setAnswer("A1");
+
+        SimpleOpenExerciseDTO dto2 = new SimpleOpenExerciseDTO();
+        dto2.setQuestion("Q2?");
+        dto2.setAnswer("A2");
+
+        OpenExercise ex1 = new OpenExercise("Q1?", "A1", ExerciseCategory.MATRICES);
+        ex1.setId(10L);
+
+        OpenExercise ex2 = new OpenExercise("Q2?", "A2", ExerciseCategory.DETERMINANTS);
+        ex2.setId(11L);
+
+        List<SimpleOpenExerciseDTO> dtos = List.of(dto1, dto2);
+        List<Exercise> exercises = List.of(ex1, ex2);
+
+        when(service.createOpenExercises(dtos)).thenReturn(exercises);
+
+        ResponseEntity<List<ExerciseDTO>> response = controller.createAll(dtos);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(2, response.getBody().size());
+        assertEquals("Q1?", response.getBody().get(0).getQuestion());
+        assertEquals("Q2?", response.getBody().get(1).getQuestion());
+        verify(service).createOpenExercises(dtos);
     }
 }

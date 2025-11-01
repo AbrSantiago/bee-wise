@@ -1,9 +1,13 @@
 package com.beewise.service.impl;
 
 import com.beewise.controller.dto.*;
+import com.beewise.exception.ItemAlreadyBoughtException;
+import com.beewise.exception.NotEnoughBeeCoinsException;
+import com.beewise.exception.SomeItemsWereNotBought;
 import com.beewise.exception.UserNotFoundException;
 import com.beewise.model.ItemCategory;
 import com.beewise.model.Lesson;
+import com.beewise.model.ShopItem;
 import com.beewise.model.User;
 import com.beewise.model.challenge.ChallengeStatus;
 import com.beewise.repository.UserRepository;
@@ -20,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -360,6 +365,125 @@ class UserServiceImplTest {
         List<User> result = userService.getUsersToChallenge(nonExistentId, activeStatuses);
 
         assertNotNull(result);
+    }
+
+    @Test
+    void updateAvatar_withOwnedItems_updatesAvatar() {
+        ShopItem skin = shopService.getItemByName("Default skin");
+        ShopItem hair = shopService.getItemByName("Default hair");
+        ShopItem shirt = shopService.getItemByName("Default shirt");
+        ShopItem background = shopService.getItemByName("Default background");
+
+        // El usuario ya tiene los ítems por defecto (gratis)
+        AvatarDTO dto = new AvatarDTO();
+        dto.setId(testUser.getAvatar().getId());
+        dto.setSkin(new ShopItemDTO(skin));
+        dto.setHair(new ShopItemDTO(hair));
+        dto.setShirt(new ShopItemDTO(shirt));
+        dto.setBackground(new ShopItemDTO(background));
+
+        User updated = userService.updateAvatar(testUser.getId(), dto);
+
+        assertNotNull(updated.getAvatar());
+        assertEquals(skin.getId(), updated.getAvatar().getSkin().getId());
+        assertEquals(hair.getId(), updated.getAvatar().getHair().getId());
+        assertEquals(shirt.getId(), updated.getAvatar().getShirt().getId());
+        assertEquals(background.getId(), updated.getAvatar().getBackground().getId());
+    }
+
+    @Test
+    void updateAvatar_withUnownedItem_throwsException() {
+        // Crea un ítem de pago
+        NewShopItemDTO paidItemDTO = new NewShopItemDTO();
+        paidItemDTO.setName("Paid skin");
+        paidItemDTO.setCategory(ItemCategory.SKIN);
+        paidItemDTO.setImage("");
+        paidItemDTO.setPrice(100);
+        ShopItem paidSkin = shopService.createShopItem(paidItemDTO);
+
+        AvatarDTO dto = new AvatarDTO();
+        dto.setId(testUser.getAvatar().getId());
+        dto.setSkin(new ShopItemDTO(paidSkin));
+        dto.setHair(new ShopItemDTO(shopService.getItemByName("Default hair")));
+        dto.setShirt(new ShopItemDTO(shopService.getItemByName("Default shirt")));
+        dto.setBackground(new ShopItemDTO(shopService.getItemByName("Default background")));
+
+        assertThrows(SomeItemsWereNotBought.class, () -> {
+            userService.updateAvatar(testUser.getId(), dto);
+        });
+    }
+
+    @Test
+    void buyItem_withEnoughBeeCoins_addsItemToUser() {
+        // Crea ítem de pago
+        NewShopItemDTO paidItemDTO = new NewShopItemDTO();
+        paidItemDTO.setName("BeeCoin Shirt");
+        paidItemDTO.setCategory(ItemCategory.SHIRT);
+        paidItemDTO.setImage("");
+        paidItemDTO.setPrice(10);
+        ShopItem paidItem = shopService.createShopItem(paidItemDTO);
+
+        testUser.setBeeCoins(20);
+        userRepository.save(testUser);
+
+        User updated = userService.buyItem(paidItem.getId(), testUser.getUsername());
+
+        assertTrue(updated.getItems().contains(paidItem));
+        assertEquals(10, updated.getBeeCoins());
+    }
+
+    @Test
+    void buyItem_alreadyOwned_throwsException() {
+        NewShopItemDTO paidItemDTO = new NewShopItemDTO();
+        paidItemDTO.setName("Unique Shirt");
+        paidItemDTO.setCategory(ItemCategory.SHIRT);
+        paidItemDTO.setImage("");
+        paidItemDTO.setPrice(5);
+        ShopItem paidItem = shopService.createShopItem(paidItemDTO);
+
+        testUser.setBeeCoins(10);
+        testUser.getItems().add(paidItem);
+        userRepository.save(testUser);
+
+        assertThrows(ItemAlreadyBoughtException.class, () -> {
+            userService.buyItem(paidItem.getId(), testUser.getUsername());
+        });
+    }
+
+    @Test
+    void buyItem_notEnoughBeeCoins_throwsException() {
+        NewShopItemDTO paidItemDTO = new NewShopItemDTO();
+        paidItemDTO.setName("Expensive Shirt");
+        paidItemDTO.setCategory(ItemCategory.SHIRT);
+        paidItemDTO.setImage("");
+        paidItemDTO.setPrice(100);
+        ShopItem paidItem = shopService.createShopItem(paidItemDTO);
+
+        testUser.setBeeCoins(10);
+        userRepository.save(testUser);
+
+        assertThrows(NotEnoughBeeCoinsException.class, () -> {
+            userService.buyItem(paidItem.getId(), testUser.getUsername());
+        });
+    }
+
+    @Test
+    void getUserItems_returnsUserItems() {
+        ShopItem skin = shopService.getItemByName("Default skin");
+        testUser.getItems().add(skin); // Asegúrate que el usuario tiene el ítem
+        userRepository.save(testUser);
+
+        List<ShopItem> items = userService.getUserItems(testUser.getUsername());
+        assertNotNull(items);
+        assertTrue(items.stream().anyMatch(i -> i.getName().equals("Default skin")));
+    }
+
+    @Test
+    void getAllByCategory_returnsGroupedItems() {
+        Map<ItemCategory, List<ShopItem>> grouped = userService.getAllByCategory(testUser.getUsername());
+        assertNotNull(grouped);
+        assertTrue(grouped.containsKey(ItemCategory.SKIN));
+        assertTrue(grouped.get(ItemCategory.SKIN).stream().anyMatch(i -> i.getName().equals("Default skin")));
     }
 
     @Test

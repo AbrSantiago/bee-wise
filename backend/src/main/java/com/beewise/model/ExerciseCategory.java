@@ -6,5 +6,5 @@ public enum ExerciseCategory {
     SYSTEM_OF_EQUATIONS,
     GROUP_THEORY,
     VECTOR_SPACES,
-    DIVISIBILITY
+    MATH, DIVISIBILITY
 }

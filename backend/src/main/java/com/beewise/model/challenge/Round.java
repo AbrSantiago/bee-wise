@@ -44,7 +44,7 @@ public class Round {
     public User winner() {
         if (challengerScore > challengedScore) {
             return challenge.getChallenger();
-        } else if (challengerScore < challengedScore){
+        } else if (challengerScore <= challengedScore){
             return challenge.getChallenged();
         } else {
             return null;
