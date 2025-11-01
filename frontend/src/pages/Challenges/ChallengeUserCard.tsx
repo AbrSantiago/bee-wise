@@ -13,7 +13,7 @@ const ChallengeUserCard: React.FC<ChallengeUserCardProps> = ({
   isCurrentUser = false,
 }) => {
   const userClass = isCurrentUser ? "current" : "opponent";
-  
+
   return (
     <div className={`challenge-user-card ${userClass}`}>
       <p className="username">{user.username}</p>

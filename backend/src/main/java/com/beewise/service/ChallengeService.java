@@ -20,4 +20,5 @@ public interface ChallengeService {
     ExerciseCategory getRandomCategory();
     User getOpponent(Long challengeId, String username);
     ChallengeStatsDTO getChallengeStats(Long challengeId, String username);
+    User getChallengeOpponent(Long challengeId, String username);
 }

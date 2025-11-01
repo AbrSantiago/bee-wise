@@ -4,7 +4,7 @@ import MainLayout from "../../components/layout/MainLayout";
 import challengeService, {
   type AnswerDTO,
   type ChallengeRol,
-  type ExerciseCategory, // Importar ExerciseCategory
+  type ExerciseCategory,
 } from "../../services/challengeService";
 import type { Exercise } from "../../services/lessonService";
 import SummaryScreen from "../Practice/components/SummaryScreen";
@@ -13,6 +13,7 @@ import "katex/dist/katex.min.css";
 // @ts-ignore
 import { BlockMath } from "react-katex";
 import "../Practice/Practice.css";
+import "./ChallengePlay.css";
 import {
   DndContext,
   closestCenter,
@@ -23,11 +24,13 @@ import {
 import type { DragEndEvent } from "@dnd-kit/core";
 import FeedbackMessage from "../Practice/components/FeedbackMessage";
 import DnDOptions from "../Practice/components/DnDOptions";
-import Roulette from "../../components/layout/Roulette"; 
+import Roulette from "../../components/layout/Roulette";
 import CategoryPopup from "../../components/layout/CategoryPopup";
+import ChallengeUserCard from "./ChallengeUserCard";
+import { useUser } from "../../context/UserContext";
+import OpponentCard from "./OpponentCard";
 
 export function ChallengePlayPage() {
-  // --- Estados de tu lógica de juego original ---
   const [currentExercise, setCurrentExercise] = useState(0);
   const [userAnswer, setUserAnswer] = useState("");
   const [feedback, setFeedback] = useState<null | boolean>(null);
@@ -45,12 +48,18 @@ export function ChallengePlayPage() {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [isTimeOut, setIsTimeOut] = useState(false);
   const [showCategoryPopup, setShowCategoryPopup] = useState(false);
+  const { user } = useUser();
 
   // --- Estados nuevos para la ruleta y el flujo de juego ---
-  const [gameState, setGameState] = useState<"ROULETTE" | "PLAYING" | "SUMMARY">("ROULETTE");
+  const [gameState, setGameState] = useState<
+    "ROULETTE" | "PLAYING" | "SUMMARY"
+  >("ROULETTE");
   const [isSpinning, setIsSpinning] = useState(false);
-  const [winningCategory, setWinningCategory] = useState<ExerciseCategory | null>(null);
-  const [rouletteCategories, setRouletteCategories] = useState<ExerciseCategory[]>([]);
+  const [winningCategory, setWinningCategory] =
+    useState<ExerciseCategory | null>(null);
+  const [rouletteCategories, setRouletteCategories] = useState<
+    ExerciseCategory[]
+  >([]);
 
   const { challengeId, roundNumber, questionsPerRound, rol } = useParams<{
     challengeId: string;
@@ -171,7 +180,11 @@ export function ChallengePlayPage() {
         setRouletteCategories(categories);
       } catch (error) {
         console.error("No se pudieron cargar las categorías:", error);
-        setRouletteCategories(["MATRICES", "DETERMINANTS", "SYSTEM_OF_EQUATIONS"]); // Fallback
+        setRouletteCategories([
+          "MATRICES",
+          "DETERMINANTS",
+          "SYSTEM_OF_EQUATIONS",
+        ]); // Fallback
       } finally {
         setLoading(false); // Dejamos de cargar cuando las categorías están listas
       }
@@ -182,7 +195,8 @@ export function ChallengePlayPage() {
   const handleStartSpin = () => {
     if (!isSpinning) {
       // Obtener categoría aleatoria
-      challengeService.getRandomCategory()
+      challengeService
+        .getRandomCategory()
         .then((category) => {
           setWinningCategory(category);
           setIsSpinning(true);
@@ -197,95 +211,114 @@ export function ChallengePlayPage() {
     console.log("🎉 Ruleta detenida en categoría:", winningCategory);
     setIsSpinning(false);
     setShowCategoryPopup(true); // Mostrar el popup cuando termine de girar
-};
+  };
 
   const handleStartGame = async () => {
-  if (!winningCategory) return;
-  
-  setShowCategoryPopup(false); // Ocultar el popup
-  setLoading(true); // Ponemos el loading mientras se buscan los ejercicios
-  
-  try {
-    const data = await challengeService.getRandomExercises(Number(questionsPerRound), winningCategory);
-    setExercises(data);
-    setTotalCount(data.length);
-    setCorrectCount(0);
-    setStartTime(Date.now());
-    setGameState("PLAYING");
-  } catch (error) {
-    console.error("Error fetching challenge exercises:", error);
-  } finally {
-    setLoading(false); // Quitamos el loading
-  }
-};
+    if (!winningCategory) return;
+
+    setShowCategoryPopup(false); // Ocultar el popup
+    setLoading(true); // Ponemos el loading mientras se buscan los ejercicios
+
+    try {
+      const data = await challengeService.getRandomExercises(
+        Number(questionsPerRound),
+        winningCategory
+      );
+      setExercises(data);
+      setTotalCount(data.length);
+      setCorrectCount(0);
+      setStartTime(Date.now());
+      setGameState("PLAYING");
+    } catch (error) {
+      console.error("Error fetching challenge exercises:", error);
+    } finally {
+      setLoading(false); // Quitamos el loading
+    }
+  };
 
   // --- TUS useEffect ORIGINALES PARA EL TIMER ---
-useEffect(() => {
-  let interval: NodeJS.Timeout | null = null;
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
 
-  if (isTimerRunning && timeLeft > 0) {
-    interval = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          setIsTimerRunning(false);
-          handleTimeOut();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  }
+    if (isTimerRunning && timeLeft > 0) {
+      interval = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            setIsTimerRunning(false);
+            handleTimeOut();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
 
-  return () => {
-    if (interval) clearInterval(interval);
-  };
-}, [isTimerRunning, timeLeft]);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isTimerRunning, timeLeft]);
 
-useEffect(() => {
-  if (gameState === 'PLAYING' && current && !loading) {
-    setTimeLeft(25);
-    setIsTimerRunning(true);
-    console.log("🚀 Timer iniciado para nueva pregunta");
-  }
-}, [currentExercise, current, loading, gameState]);
-
+  useEffect(() => {
+    if (gameState === "PLAYING" && current && !loading) {
+      setTimeLeft(25);
+      setIsTimerRunning(true);
+      console.log("🚀 Timer iniciado para nueva pregunta");
+    }
+  }, [currentExercise, current, loading, gameState]);
 
   // --- RENDERIZADO FINAL ---
 
   if (gameState === "ROULETTE") {
-    if (loading) return <MainLayout title="Cargando...">Cargando desafío...</MainLayout>;
+    if (loading)
+      return <MainLayout title="Cargando...">Cargando desafío...</MainLayout>;
     return (
       <MainLayout title={`Desafío`}>
-        <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <h2 style={{ color: '#fff', fontFamily: 'Recoleta-Bold', fontSize: '2.5rem', marginBottom: '20px' }}>
-            ¡Gira para definir la categoría!
-        </h2>
-        <Roulette
-          categories={rouletteCategories}
-          winningCategory={winningCategory}
-          triggerSpin={isSpinning}
-          onSpinningEnd={handleSpinEnd}
-        />
-        <button
-          onClick={handleStartSpin}
-          className="check-btn"
-          disabled={isSpinning}
-          style={{ marginTop: '30px', width: '250px', fontSize: '1.5rem', padding: '15px' }}
+        <div
+          style={{
+            textAlign: "center",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
         >
-          {isSpinning ? "Girando..." : "¡GIRAR!"}
-        </button>
-      </div>
+          <h2
+            style={{
+              color: "#fff",
+              fontFamily: "Recoleta-Bold",
+              fontSize: "2.5rem",
+              marginBottom: "20px",
+            }}
+          >
+            ¡Gira para definir la categoría!
+          </h2>
+          <Roulette
+            categories={rouletteCategories}
+            winningCategory={winningCategory}
+            triggerSpin={isSpinning}
+            onSpinningEnd={handleSpinEnd}
+          />
+          <button
+            onClick={handleStartSpin}
+            className="check-btn"
+            disabled={isSpinning}
+            style={{
+              marginTop: "30px",
+              width: "250px",
+              fontSize: "1.5rem",
+              padding: "15px",
+            }}
+          >
+            {isSpinning ? "Girando..." : "¡GIRAR!"}
+          </button>
+        </div>
 
-      {/* Mostrar el popup cuando showCategoryPopup sea true */}
-      {showCategoryPopup && winningCategory && (
-        <CategoryPopup
-          category={winningCategory}
-          onStart={handleStartGame}
-        />
-      )}
-    </MainLayout>
-  );
-}
+        {/* Mostrar el popup cuando showCategoryPopup sea true */}
+        {showCategoryPopup && winningCategory && (
+          <CategoryPopup category={winningCategory} onStart={handleStartGame} />
+        )}
+      </MainLayout>
+    );
+  }
 
   if (gameState === "SUMMARY") {
     return (
@@ -298,85 +331,105 @@ useEffect(() => {
       </MainLayout>
     );
   }
-  
+
   // gameState es "PLAYING"
-  if (loading) return <MainLayout title="Cargando...">Cargando ejercicios...</MainLayout>;
+  if (loading)
+    return <MainLayout title="Cargando...">Cargando ejercicios...</MainLayout>;
 
   return (
-    <MainLayout title={`Desafío - Ronda ${roundNumber}`}>
-      <div className="exercise-container">
-        {/* Aquí va tu JSX original del juego, sin cambios */}
-        <div className={`timer-container ${timeLeft <= 10 ? "timer-warning" : ""}`}>
-          <div className={`timer-display ${timeLeft <= 10 ? "timer-pulse" : ""}`}>
-            Tiempo restante : {timeLeft}s
-          </div>
-        </div>
-        {current ? (
-          <>
-            {/* TU LÓGICA DE PREGUNTAS OPEN Y DnD */}
-            {current.type === "OPEN" ? (
-              <div className="mt-4">
-                <div className="matrix-container">
-                  <p className="question-text">{current.question}</p>
-                </div>
-                <TrueFalseButtons
-                  userAnswer={userAnswer}
-                  feedback={feedback}
-                  canContinue={canContinue}
-                  onClick={(answer) => {
-                    setIsTimerRunning(false);
-                    setIsTimeOut(false);
-                    handleTrueFalseClick(answer);
-                    const correct = answer.trim() === current.answer.trim();
-                    setFeedback(correct);
-                    setCanContinue(true);
-                    if (correct) setCorrectCount((prev) => prev + 1);
-                  }}
-                />
-              </div>
-            ) : (
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
+    user && (
+      <MainLayout title={`Desafío - Ronda ${roundNumber}`}>
+        <div className="challenge-play-container">
+          <ChallengeUserCard user={user} isCurrentUser={true} />
+          <div className="exercise-container">
+            {/* Aquí va tu JSX original del juego, sin cambios */}
+            <div
+              className={`timer-container ${
+                timeLeft <= 10 ? "timer-warning" : ""
+              }`}
+            >
+              <div
+                className={`timer-display ${
+                  timeLeft <= 10 ? "timer-pulse" : ""
+                }`}
               >
-                <div className="question-and-answer-container">
-                  <div className="matrix-container">
-                    <BlockMath math={current.question.replace(/\?$/, "")} />
+                Tiempo restante : {timeLeft}s
+              </div>
+            </div>
+            {current ? (
+              <>
+                {/* TU LÓGICA DE PREGUNTAS OPEN Y DnD */}
+                {current.type === "OPEN" ? (
+                  <div className="mt-4">
+                    <div className="matrix-container">
+                      <p className="question-text">{current.question}</p>
+                    </div>
+                    <TrueFalseButtons
+                      userAnswer={userAnswer}
+                      feedback={feedback}
+                      canContinue={canContinue}
+                      onClick={(answer) => {
+                        setIsTimerRunning(false);
+                        setIsTimeOut(false);
+                        handleTrueFalseClick(answer);
+                        const correct = answer.trim() === current.answer.trim();
+                        setFeedback(correct);
+                        setCanContinue(true);
+                        if (correct) setCorrectCount((prev) => prev + 1);
+                      }}
+                    />
                   </div>
-                  <div className="answer-slot-container mt-4">
-                    {userAnswer ? <BlockMath math={userAnswer} /> : <></>}
-                  </div>
-                </div>
-                <DnDOptions
-                  options={current.options || []}
-                  canContinue={canContinue}
-                  selectedOption={selectedOption}
-                  handleOptionClick={handleOptionClick}
-                  userAnswer={userAnswer}
-                  feedback={feedback}
-                  current={current}
-                />
-                <button
-                  onClick={handleCheck}
-                  className="check-btn"
-                  disabled={canContinue || !userAnswer}
-                >
-                  Check
-                </button>
-              </DndContext>
+                ) : (
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <div className="question-and-answer-container">
+                      <div className="matrix-container">
+                        <BlockMath math={current.question.replace(/\?$/, "")} />
+                      </div>
+                      <div className="answer-slot-container mt-4">
+                        {userAnswer ? <BlockMath math={userAnswer} /> : <></>}
+                      </div>
+                    </div>
+                    <DnDOptions
+                      options={current.options || []}
+                      canContinue={canContinue}
+                      selectedOption={selectedOption}
+                      handleOptionClick={handleOptionClick}
+                      userAnswer={userAnswer}
+                      feedback={feedback}
+                      current={current}
+                    />
+                    <button
+                      onClick={handleCheck}
+                      className="check-btn"
+                      disabled={canContinue || !userAnswer}
+                    >
+                      Check
+                    </button>
+                  </DndContext>
+                )}
+                <FeedbackMessage feedback={feedback} isTimeOut={isTimeOut} />
+                {feedback !== null && (
+                  <button
+                    className={`btn-continue mt-4 ${
+                      feedback ? "success" : "error"
+                    }`}
+                    onClick={handleContinue}
+                  >
+                    Continuar
+                  </button>
+                )}
+              </>
+            ) : (
+              <p className="text-gray-500">No se encontraron ejercicios.</p>
             )}
-            <FeedbackMessage feedback={feedback} isTimeOut={isTimeOut} />
-            {feedback !== null && (
-              <button className={`btn-continue mt-4 ${feedback ? "success" : "error"}`} onClick={handleContinue}>
-                Continuar
-              </button>
-            )}
-          </>
-        ) : (
-          <p className="text-gray-500">No se encontraron ejercicios.</p>
-        )}
-      </div>
-    </MainLayout>
+          </div>
+          <OpponentCard challengeId={challengeId} username={user.username} />
+        </div>
+      </MainLayout>
+    )
   );
 }

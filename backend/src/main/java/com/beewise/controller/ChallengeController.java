@@ -75,12 +75,12 @@ public class ChallengeController {
     }
 
     @GetMapping("/{challengeId}/opponent/{username}")
-    public ResponseEntity<OpponentDTO> getOpponent(
+    public ResponseEntity<UserDTO> getOpponent(
             @PathVariable Long challengeId,
             @PathVariable String username
     ) {
         User user = challengeService.getOpponent(challengeId, username);
-        return ResponseEntity.ok(new OpponentDTO(user));
+        return ResponseEntity.ok(new UserDTO(user));
     }
 
     @GetMapping("/categories")
@@ -89,8 +89,8 @@ public class ChallengeController {
         return ResponseEntity.ok(categories);
     }
 
-    @GetMapping("/stats")
-    public ResponseEntity<ChallengeStatsDTO> getChallengeStars(
+    @GetMapping("/{challengeId}/stats/{username}")
+    public ResponseEntity<ChallengeStatsDTO> getChallengeStats(
             @PathVariable Long challengeId,
             @PathVariable String username
     ) {

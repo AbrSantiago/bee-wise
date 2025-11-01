@@ -126,6 +126,18 @@ const challengeService = {
       throw error;
     }
   },
+
+  async getChallengeOpponent(challengeId: number, username: string): Promise<User> {
+    try {
+      const response = await apiClient.get<User>(
+        `/challenge/${challengeId}/opponent/${username}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("❌ Error fetching challenge opponent:", error);
+      throw error;
+    }
+  },
 };
 
 export default challengeService;

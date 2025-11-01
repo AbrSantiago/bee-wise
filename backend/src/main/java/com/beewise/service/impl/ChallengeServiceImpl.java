@@ -130,4 +130,17 @@ public class ChallengeServiceImpl implements ChallengeService {
                 .orElseThrow(() -> new ChallengeNotFoundException("Challenge with id " + challengeId + " does not exists"));
         return challenge.getStats(username);
     }
+
+    @Override
+    public User getChallengeOpponent(Long challengeId, String username) {
+        Challenge challenge = repository.findById(challengeId)
+                .orElseThrow(() -> new ChallengeNotFoundException("Challenge with id " + challengeId + " does not exists"));
+        if (Objects.equals(challenge.getChallenger().getUsername(), username)) {
+            return challenge.getChallenger();
+        } else if (Objects.equals(challenge.getChallenged().getUsername(), username)) {
+            return challenge.getChallenger();
+        } else {
+            throw new UserNotPlayingChallengeException("User " + username + " is no playing challenge " + challenge.getId());
+        }
+    }
 }
