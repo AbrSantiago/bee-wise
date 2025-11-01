@@ -3,6 +3,7 @@ package com.beewise.controller;
 import com.beewise.controller.dto.*;
 import com.beewise.model.Exercise;
 import com.beewise.model.ExerciseCategory;
+import com.beewise.model.Reward;
 import com.beewise.model.User;
 import com.beewise.model.challenge.Challenge;
 import com.beewise.service.ChallengeService;

@@ -184,6 +184,45 @@ class ExerciseServiceImplTest {
     }
 
     @Test
+    void createOpenExercises_createsAllExercises() {
+        SimpleOpenExerciseDTO dto1 = new SimpleOpenExerciseDTO();
+        dto1.setQuestion("Q1");
+        dto1.setAnswer("A1");
+
+        SimpleOpenExerciseDTO dto2 = new SimpleOpenExerciseDTO();
+        dto2.setQuestion("Q2");
+        dto2.setAnswer("A2");
+
+        var list = Arrays.asList(dto1, dto2);
+        var result = exerciseService.createOpenExercises(list);
+
+        assertEquals(2, result.size());
+        assertTrue(result.stream().anyMatch(e -> e.getQuestion().equals("Q1")));
+        assertTrue(result.stream().anyMatch(e -> e.getQuestion().equals("Q2")));
+    }
+
+    @Test
+    void getRandomExercises_returnsLimitedExercises() {
+
+        for (int i = 0; i < 5; i++) {
+            SimpleOpenExerciseDTO dto = new SimpleOpenExerciseDTO();
+            dto.setQuestion("Math Q" + i);
+            dto.setAnswer("A" + i);
+            dto.setCategory(com.beewise.model.ExerciseCategory.MATH);
+            exerciseService.createOpenExercise(dto);
+        }
+        var result = exerciseService.getRandomExercises(3, com.beewise.model.ExerciseCategory.MATH);
+        assertNotNull(result);
+        assertTrue(result.size() <= 3);
+        assertTrue(result.stream().allMatch(e -> e.getCategory() == com.beewise.model.ExerciseCategory.MATH));
+    }
+
+    @Test
+    void deleteExercise_nonExistentId_doesNotThrow() {
+        assertDoesNotThrow(() -> exerciseService.deleteExercise(999999L));
+    }
+
+    @Test
     void contextLoads() {
         assertNotNull(exerciseService);
         assertNotNull(exerciseRepository);

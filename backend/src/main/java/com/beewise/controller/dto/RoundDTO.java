@@ -14,12 +14,17 @@ public class RoundDTO {
     private int challengerScore;
     private int challengedScore;
     private RoundStatus status;
+    private int challengerCorrectAnswers;
+    private int challengedCorrectAnswers;
 
     public RoundDTO(Round round) {
         this.roundNumber = round.getRoundNumber();
         this.challengerScore = round.getChallengerScore();
         this.challengedScore = round.getChallengedScore();
         this.status = round.getStatus();
+        this.challengerCorrectAnswers = round.getChallengerCorrectAnswers();
+        this.challengedCorrectAnswers = round.getChallengedCorrectAnswers();
+
     }
 
     public static RoundDTO fromChallengeRound(Round round) {

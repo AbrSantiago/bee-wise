@@ -2,6 +2,7 @@ package com.beewise.controller;
 
 import com.beewise.controller.dto.*;
 import com.beewise.model.Avatar;
+import com.beewise.model.ItemCategory;
 import com.beewise.model.ShopItem;
 import com.beewise.model.User;
 import com.beewise.service.UserService;
@@ -17,14 +18,15 @@ import org.springframework.http.MediaType;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.security.test.context.support.WithMockUser;
+
+import static org.mockito.ArgumentMatchers.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -325,15 +327,93 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.points").value(500));
     }
 
+    @Test
+    @WithMockUser
+    void updateAvatar_withValidRequest_returnsUpdatedUser() throws Exception {
+        Long userId = 1L;
+        AvatarDTO avatarDTO = new AvatarDTO();
+        avatarDTO.setId(10L);
+
+        User user = new User();
+        user.setId(userId);
+        user.setUsername("JohnDoe");
+        user.setAvatar(createAvatar(user)); // Usa solo el helper, no sobrescribas
+
+        when(userService.updateAvatar(eq(userId), any(AvatarDTO.class))).thenReturn(user);
+
+        mockMvc.perform(put("/users/updateAvatar/{userId}", userId)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(avatarDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(userId))
+                .andExpect(jsonPath("$.username").value("JohnDoe"));
+    }
+
+    @Test
+    @WithMockUser
+    void getUserItems_withValidToken_returnsShopItemDTOList() throws Exception {
+        ShopItem item1 = new ShopItem();
+        item1.setId(1L);
+        ShopItem item2 = new ShopItem();
+        item2.setId(2L);
+
+        when(jwtService.extractUsername("valid-token")).thenReturn("JohnDoe");
+        when(userService.getUserItems("JohnDoe")).thenReturn(List.of(item1, item2));
+
+        mockMvc.perform(get("/users/items")
+                        .header("Authorization", "Bearer valid-token"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[1].id").value(2L));
+    }
+
+    @Test
+    @WithMockUser
+    void getUserItemsByCategory_withValidToken_returnsGroupedItems() throws Exception {
+        ShopItem item1 = new ShopItem();
+        item1.setId(1L);
+        ShopItem item2 = new ShopItem();
+        item2.setId(2L);
+
+        Map<ItemCategory, List<ShopItem>> groupedItems = Map.of(
+                ItemCategory.BACKGROUND, List.of(item1),
+                ItemCategory.HAIR, List.of(item2)
+        );
+
+        when(jwtService.extractUsername("valid-token")).thenReturn("JohnDoe");
+        when(userService.getAllByCategory("JohnDoe")).thenReturn(groupedItems);
+
+        mockMvc.perform(get("/users/allItemsByCategory")
+                        .header("Authorization", "Bearer valid-token"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.BACKGROUND[0].id").value(1L))
+                .andExpect(jsonPath("$.HAIR[0].id").value(2L));
+    }
+
     // ============ HELPERS ============
 
     private Avatar createAvatar(User user) {
         Avatar avatar = new Avatar();
         avatar.setUser(user);
-        avatar.setBackground(new ShopItem());
-        avatar.setShirt(new ShopItem());
-        avatar.setSkin(new ShopItem());
-        avatar.setHair(new ShopItem());
+
+        ShopItem background = new ShopItem();
+        background.setId(1L);
+        ShopItem shirt = new ShopItem();
+        shirt.setId(2L);
+        ShopItem skin = new ShopItem();
+        skin.setId(3L);
+        ShopItem hair = new ShopItem();
+        hair.setId(4L);
+
+        avatar.setBackground(background);
+        avatar.setShirt(shirt);
+        avatar.setSkin(skin);
+        avatar.setHair(hair);
+
         return avatar;
     }
+
 }

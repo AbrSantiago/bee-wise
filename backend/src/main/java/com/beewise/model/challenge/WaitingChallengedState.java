@@ -11,6 +11,7 @@ public class WaitingChallengedState implements RoundState {
             throw new AnswerWrongRolException("Rol should be CHALLENGED");
         }
         round.setChallengedScore(answer.getScore());
+        round.setChallengedCorrectAnswers(answer.getCorrectAnswers());
         if (isEndedRound(answer)) {
             round.setStatus(RoundStatus.COMPLETED);
             createNextRoundIfNeeded(challenge, answer);

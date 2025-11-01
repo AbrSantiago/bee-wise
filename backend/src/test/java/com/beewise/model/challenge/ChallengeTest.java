@@ -1,5 +1,6 @@
 package com.beewise.model.challenge;
 
+import com.beewise.exception.ChallengeAlreadyCompletedException;
 import com.beewise.model.User;
 import org.junit.jupiter.api.Test;
 
@@ -25,6 +26,29 @@ class ChallengeTest {
         assertNull(challenge.getResult());
         assertNotNull(challenge.getRounds());
         assertTrue(challenge.getRounds().isEmpty());
+    }
+
+    @Test
+    void getNextUserToPlay_returnsCorrectUser() {
+        User challenger = new User();
+        challenger.setId(1L);
+        User challenged = new User();
+        challenged.setId(2L);
+
+        Challenge challenge = new Challenge(challenger, challenged, 3, 10);
+
+        Round round = new Round();
+        round.setRoundNumber(1);
+        round.setStatus(RoundStatus.WAITING_CHALLENGED);
+        challenge.getRounds().add(round); // Asegúrate de agregar el round
+
+        assertEquals(challenger, challenge.getNextUserToPlay());
+
+        round.setStatus(RoundStatus.WAITING_CHALLENGER);
+        assertEquals(challenged, challenge.getNextUserToPlay());
+
+        round.setStatus(RoundStatus.COMPLETED);
+        assertThrows(ChallengeAlreadyCompletedException.class, challenge::getNextUserToPlay);
     }
 
     @Test
@@ -92,4 +116,6 @@ class ChallengeTest {
         assertEquals(round1, challenge.getRounds().get(0));
         assertEquals(round2, challenge.getRounds().get(1));
     }
+
+
 }
