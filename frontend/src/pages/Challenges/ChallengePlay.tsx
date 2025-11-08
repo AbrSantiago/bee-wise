@@ -140,7 +140,7 @@ export function ChallengePlayPage() {
     setFeedback(false);
     setCanContinue(true);
     setIsTimeOut(true);
-    console.log("⏰ Tiempo agotado para la pregunta");
+    // console.log("⏰ Tiempo agotado para la pregunta");
   };
 
   const handleSubmitTurn = async () => {

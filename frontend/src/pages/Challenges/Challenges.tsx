@@ -44,9 +44,9 @@ export function ChallengesPage() {
     rounds: number,
     questions: number
   ) => {
-    console.log(
-      `Desafiando a ${selectedUsername} con ${rounds} rondas y ${questions} preguntas`
-    );
+    // console.log(
+    //   `Desafiando a ${selectedUsername} con ${rounds} rondas y ${questions} preguntas`
+    // );
     navigate(`/challenge/${challengeId}/round/1/${questions}/CHALLENGER`);
   };
 

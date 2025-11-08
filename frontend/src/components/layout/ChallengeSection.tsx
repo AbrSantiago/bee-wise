@@ -40,23 +40,23 @@ export default function ChallengesSection({
   };
 
   // LOGS DE DEBUG - agregar temporalmente
-  console.log("=== ChallengesSection Debug ===");
-  console.log("Current User ID:", currentUserId);
-  console.log("All challenges:", challenges);
-  console.log("Challenges length:", challenges.length);
+  // console.log("=== ChallengesSection Debug ===");
+  // console.log("Current User ID:", currentUserId);
+  // console.log("All challenges:", challenges);
+  // console.log("Challenges length:", challenges.length);
 
   // Filtrar desafíos pendientes donde el usuario actual es el challenged
   const pendingChallenges = challenges.filter((challenge) => {
-    console.log(`Challenge ${challenge.id}:`, {
-      status: challenge.status,
-      challengerId: challenge.challengerId,
-      challengedId: challenge.challengedId,
-      isPending: challenge.status === "PENDING",
-      isUserChallenged: challenge.challengedId === currentUserId,
-      shouldShow:
-        challenge.status === "PENDING" &&
-        challenge.challengedId === currentUserId,
-    });
+    // console.log(`Challenge ${challenge.id}:`, {
+    //   status: challenge.status,
+    //   challengerId: challenge.challengerId,
+    //   challengedId: challenge.challengedId,
+    //   isPending: challenge.status === "PENDING",
+    //   isUserChallenged: challenge.challengedId === currentUserId,
+    //   shouldShow:
+    //     challenge.status === "PENDING" &&
+    //     challenge.challengedId === currentUserId,
+    // });
     return (
       challenge.status === "PENDING" && challenge.challengedId === currentUserId
     );

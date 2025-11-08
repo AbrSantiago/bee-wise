@@ -3,8 +3,8 @@ import shopService from "../../services/shopService";
 import "./ShopPage.css";
 import { useEffect, useState } from "react";
 import MainLayout from "../../components/layout/MainLayout";
-import userService from "../../services/userService";
 import { useUser } from "../../context/UserContext";
+import { ShopItemCard } from "./ShopItemCard";
 
 export function ShopPage() {
   const [shopItems, setShopItems] = useState<ShopItem[]>([]);
@@ -71,18 +71,18 @@ export function ShopPage() {
       setLoading(true);
       closeModal();
 
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("accessToken");
 
       if (!token || !user) {
         alert("Debes iniciar sesión para comprar items");
         return;
       }
 
-      console.log(`Comprando item ${itemToConfirm.id} con token:`, token);
+      // console.log(`Comprando item ${itemToConfirm.id} con token:`, token);
 
       const response = await shopService.buyItem(itemToConfirm.id, token);
 
-      console.log("Respuesta del servidor:", response);
+      // console.log("Respuesta del servidor:", response);
 
       alert("¡Compra realizada con éxito!");
 
@@ -90,7 +90,6 @@ export function ShopPage() {
 
       await fetchShopItems();
       await fetchItemsByCategory();
-      // setUserItems(user.items);
     } catch (error: any) {
       console.error("Error al comprar el item:", error);
 
@@ -104,74 +103,6 @@ export function ShopPage() {
     } finally {
       setLoading(false);
       setPurchasingItemId(null);
-    }
-  };
-
-  const handleBuyItem = async (itemId: number) => {
-    try {
-      setPurchasingItemId(itemId);
-      setLoading(true);
-
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        alert("Debes iniciar sesión para comprar items");
-        return;
-      }
-
-      console.log(`Comprando item ${itemId} con token:`, token);
-
-      const response = await shopService.buyItem(itemId, token);
-
-      console.log("Respuesta del servidor:", response);
-
-      alert("¡Compra realizada con éxito!");
-
-      await fetchShopItems();
-      await fetchItemsByCategory();
-    } catch (error: any) {
-      console.error("Error al comprar el item:", error);
-
-      if (error.response?.status === 400) {
-        alert("No tienes suficientes monedas para comprar este item");
-      } else if (error.response?.status === 404) {
-        alert("Item no encontrado");
-      } else {
-        alert("Error al realizar la compra. Intenta nuevamente.");
-      }
-    } finally {
-      setLoading(false);
-      setPurchasingItemId(null);
-    }
-  };
-
-  const getImagePath = (item: ShopItem) => {
-    switch (item.category) {
-      case "SKIN":
-        return `src/assets/avatars/skin/${item.image}`;
-      case "HAIR":
-        return `src/assets/avatars/hair/${item.image}`;
-      case "SHIRT":
-        return `src/assets/avatars/shirt/${item.image}`;
-      case "BACKGROUND":
-        return `src/assets/avatars/bg/${item.image}`;
-      default:
-        return `src/assets/shop/${item.image}`;
-    }
-  };
-
-  const getCategoryClass = (item: ShopItem) => {
-    switch (item.category) {
-      case "SKIN":
-        return "skin-item";
-      case "HAIR":
-        return "hair-item";
-      case "SHIRT":
-        return "shirt-item";
-      case "BACKGROUND":
-        return "background-item";
-      default:
-        return "";
     }
   };
 
@@ -247,33 +178,16 @@ export function ShopPage() {
             </div>
 
             <div className="owned-shop">
-              {getFilteredItems().map((item) => {
-                const isOwned = userOwnsItem(item.id); // 👈 VERIFICAR
-                const isPurchasing = purchasingItemId === item.id;
-
-                return (
-                  <div key={item.id} className="item-card">
-                    <img
-                      src={getImagePath(item)}
-                      alt={item.name}
-                      className={`item-image ${getCategoryClass(item)}`}
-                    />
-                    <p className="item-name">{item.name}</p>
-                    <p className="item-price">🪙 {item.price}</p>
-                    <button
-                      className="buy-button"
-                      onClick={() => openConfirmModal(item)}
-                      disabled={isOwned || (loading && isPurchasing)}
-                    >
-                      {isPurchasing
-                        ? "Comprando..."
-                        : isOwned
-                        ? "Ya lo tenes"
-                        : "Comprar"}
-                    </button>
-                  </div>
-                );
-              })}
+              {getFilteredItems().map((item) => (
+                <ShopItemCard
+                  key={item.id}
+                  item={item}
+                  userOwnsItem={userOwnsItem}
+                  purchasingItemId={purchasingItemId}
+                  loading={loading}
+                  openConfirmModal={openConfirmModal}
+                />
+              ))}
             </div>
           </section>
         </div>
