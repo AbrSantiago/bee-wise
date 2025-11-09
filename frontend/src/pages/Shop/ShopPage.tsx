@@ -36,7 +36,7 @@ export function ShopPage() {
     try {
       const items = await shopService.getAllItems();
       setShopItems(items);
-      console.log("Items de la tienda:", items);
+      // console.log("Items de la tienda:", items);
     } catch (error) {
       console.error("Error al traer los items de la tienda:", error);
     }
@@ -46,7 +46,7 @@ export function ShopPage() {
     try {
       const items = await shopService.getItemsByCategory();
       setItemsByCategory(items);
-      console.log("Items por categoría:", items);
+      // console.log("Items por categoría:", items);
     } catch (error) {
       console.error("Error al traer items por categoría:", error);
     }

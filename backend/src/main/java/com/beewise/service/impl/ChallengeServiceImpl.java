@@ -2,13 +2,11 @@ package com.beewise.service.impl;
 
 import com.beewise.controller.dto.AnswerDTO;
 import com.beewise.controller.dto.ChallengeStatsDTO;
-import com.beewise.controller.dto.RewardDTO;
 import com.beewise.controller.dto.SendChallengeDTO;
 import com.beewise.exception.*;
 import com.beewise.model.*;
 import com.beewise.model.challenge.*;
 import com.beewise.repository.ChallengeRepository;
-import com.beewise.repository.RewardRepository;
 import com.beewise.repository.ShopItemRepository;
 import com.beewise.repository.UserRepository;
 import com.beewise.service.ChallengeService;
@@ -27,15 +25,19 @@ public class ChallengeServiceImpl implements ChallengeService {
     private final ChallengeRepository repository;
     private final UserService userService;
     private final ExerciseService exerciseService;
-    private final RewardRepository rewardRepository;
     private final ShopItemRepository shopItemRepository;
     private final UserRepository userRepository;
 
-    public ChallengeServiceImpl(ChallengeRepository repository, UserService userService, ExerciseService exerciseService, RewardRepository rewardRepository, ShopItemRepository shopItemRepository, UserRepository userRepository) {
+    public ChallengeServiceImpl(
+            ChallengeRepository repository,
+            UserService userService,
+            ExerciseService exerciseService,
+            ShopItemRepository shopItemRepository,
+            UserRepository userRepository
+    ) {
         this.repository = repository;
         this.userService = userService;
         this.exerciseService = exerciseService;
-        this.rewardRepository = rewardRepository;
         this.shopItemRepository = shopItemRepository;
         this.userRepository = userRepository;
     }
@@ -99,9 +101,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             } else {
                 challenge.setResult(ChallengeResult.CHALLENGED_WIN);
             }
-            if(!rewardRepository.existsByChallengeId(challenge.getId())){
-                calculateAndPersistReward(challenge);
-            }
+            calculateAndPersistReward(challenge);
         }
         return repository.save(challenge);
     }
@@ -116,8 +116,8 @@ public class ChallengeServiceImpl implements ChallengeService {
         int challengedPoints = 0;
 
         for (Round round : rounds) {
-            int challengerRoundPoints = round.getChallengerCorrectAnswers() * 2;
-            int challengedRoundPoints = round.getChallengedCorrectAnswers() * 2;
+            int challengerRoundPoints = round.getChallengerScore() * 2;
+            int challengedRoundPoints = round.getChallengedScore() * 2;
 
             if (round.isChallengerPerfectRound()) {
                 challengerRoundPoints *= 2;
@@ -165,12 +165,6 @@ public class ChallengeServiceImpl implements ChallengeService {
         if (challengedItem != null) {
             challenged.getItems().add(challengedItem);
         }
-
-        Reward challengerReward = new Reward(challenger, challenge, challengerPoints, challengerCoins, challengerItem);
-        Reward challengedReward = new Reward(challenged, challenge, challengedPoints, challengedCoins, challengedItem);
-
-        rewardRepository.save(challengerReward);
-        rewardRepository.save(challengedReward);
 
         userRepository.save(challenger);
         userRepository.save(challenged);
@@ -243,16 +237,4 @@ public class ChallengeServiceImpl implements ChallengeService {
             throw new UserNotPlayingChallengeException("User " + username + " is no playing challenge " + challenge.getId());
         }
     }
-
-    @Override
-    public RewardDTO getRewards(Long challengeId, String username) {
-        User user = userService.getUserByUsername(username);
-
-        Reward reward = rewardRepository.findByChallengeIdAndUserId(challengeId,user.getId())
-                .orElseThrow(() -> new RewardNotFoundException("Rewards not found for this challenge"));
-
-        return new RewardDTO(reward);
-    }
-
-
 }

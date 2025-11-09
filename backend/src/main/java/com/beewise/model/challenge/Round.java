@@ -29,12 +29,6 @@ public class Round {
     @Enumerated(EnumType.STRING)
     private RoundStatus status;
 
-    @Column(name = "challenger_correct_answers")
-    private int challengerCorrectAnswers = 0;
-
-    @Column(name = "challenged_correct_answers")
-    private int challengedCorrectAnswers = 0;
-
     public Round(Challenge challenge, int roundNumber, RoundStatus status) {
         this.challenge = challenge;
         this.roundNumber = roundNumber;
@@ -44,7 +38,7 @@ public class Round {
     public User winner() {
         if (challengerScore > challengedScore) {
             return challenge.getChallenger();
-        } else if (challengerScore <= challengedScore){
+        } else if (challengerScore < challengedScore){
             return challenge.getChallenged();
         } else {
             return null;
@@ -70,12 +64,13 @@ public class Round {
     public boolean isWaitingChallenged() {
         return status == RoundStatus.WAITING_CHALLENGED;
     }
+
     public boolean isChallengerPerfectRound() {
-        return challengerCorrectAnswers == challenge.getQuestionsPerRound();
+        return challengerScore == challenge.getQuestionsPerRound();
     }
 
     public boolean isChallengedPerfectRound() {
-        return challengedCorrectAnswers == challenge.getQuestionsPerRound();
+        return challengedScore == challenge.getQuestionsPerRound();
     }
 
 }
