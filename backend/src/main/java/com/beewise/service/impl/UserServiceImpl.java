@@ -4,6 +4,7 @@ import com.beewise.controller.dto.*;
 import com.beewise.exception.*;
 import com.beewise.model.*;
 import com.beewise.model.challenge.ChallengeStatus;
+import com.beewise.repository.LevelRepository;
 import com.beewise.repository.UserRepository;
 import com.beewise.service.*;
 import jakarta.transaction.Transactional;
@@ -24,19 +25,21 @@ public class UserServiceImpl implements UserService {
     private final LessonService lessonService;
     private final AvatarService avatarService;
     private final ShopService shopService;
+    private final LevelRepository levelRepository;
 
     public UserServiceImpl(
             UserRepository userRepository,
             BCryptPasswordEncoder passwordEncoder,
             LessonProgressService progressService,
             LessonService lessonService,
-            AvatarService avatarService, ShopService shopService) {
+            AvatarService avatarService, ShopService shopService, LevelRepository levelRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.progressService = progressService;
         this.lessonService = lessonService;
         this.avatarService = avatarService;
         this.shopService = shopService;
+        this.levelRepository = levelRepository;
     }
 
     @Override
@@ -56,6 +59,10 @@ public class UserServiceImpl implements UserService {
         newUser.setUsername(registerUserDTO.getUsername());
         newUser.setPasswordHash(passwordEncoder.encode(registerUserDTO.getPassword()));
         newUser.setAvatar(avatarService.newDefaultAvatar(newUser));
+
+        Level defaultLevel = levelRepository.findFirstByOrderByMinPointsAsc()
+                .orElseThrow(() -> new RuntimeException("Not found level 1 in database."));
+        newUser.setLevel(defaultLevel);
 
         return userRepository.save(newUser);
     }
@@ -92,12 +99,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public LessonCompleteDTO lessonComplete(LessonCompleteRequestDTO requestDTO) {
         Lesson lesson = lessonService.getLessonById(requestDTO.getCompletedLessonId());
+
         User user = userRepository.findById(requestDTO.getUserId())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
-        user.setPoints(user.getPoints() + requestDTO.getCorrectExercises() * 10);
-        user.setCurrentLesson(+1);
+        
+        Integer pointsEarned = requestDTO.getCorrectExercises() * 10;
+        addPointsToUser(user, pointsEarned);
+
+        user.setCurrentLesson(user.getCurrentLesson() + 1);
         userRepository.save(user);
+        
         progressService.upsertProgress(user, lesson);
+        
         return new LessonCompleteDTO(true, "Progress updated", user.getPoints());
     }
 
@@ -158,6 +171,18 @@ public class UserServiceImpl implements UserService {
         return items.stream().collect(Collectors.groupingBy(ShopItem::getCategory));
     }
 
+    @Override
+    public Boolean addPointsToUser(User user, Integer pointsToAdd) {
+        if (pointsToAdd <= 0) return false;
+
+        Integer newPoints = user.getPoints() + pointsToAdd;
+        user.setPoints(newPoints);
+
+        checkAndUpdateUserLevel(user);
+        userRepository.save(user);
+        return true;
+    }
+
 
     // =============== HELPERS ===============
 
@@ -175,6 +200,18 @@ public class UserServiceImpl implements UserService {
     private void checkIfHasItem(ShopItem item, User user) {
         if (!user.getItems().contains(item) && item.getPrice() != 0) {
             throw new SomeItemsWereNotBought("Items " + item.getId() + " were not bought");
+        }
+    }
+
+    private void checkAndUpdateUserLevel(User user) {
+        // Buscar el nivel apropiado según los puntos actuales
+        Level appropriateLevel = levelRepository
+                .findFirstByMinPointsLessThanEqualOrderByMinPointsDesc(user.getPoints())
+                .orElse(user.getLevel()); // Si no encuentra, mantiene el nivel actual
+        
+        // Solo actualizar si es diferente al nivel actual
+        if (!appropriateLevel.getId().equals(user.getLevel().getId())) {
+            user.setLevel(appropriateLevel);
         }
     }
 }

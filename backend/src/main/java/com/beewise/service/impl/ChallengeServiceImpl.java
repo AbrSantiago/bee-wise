@@ -154,14 +154,18 @@ public class ChallengeServiceImpl implements ChallengeService {
             }
         }
 
-        challenger.setPoints(challenger.getPoints() + challengerPoints);
+        // USAR EL MÉTODO CENTRALIZADO para añadir puntos y actualizar niveles
+        userService.addPointsToUser(challenger, challengerPoints);
+        userService.addPointsToUser(challenged, challengedPoints);
+    
+        // Añadir BeeCoins
         challenger.setBeeCoins(challenger.getBeeCoins() + challengerCoins);
+        challenged.setBeeCoins(challenged.getBeeCoins() + challengedCoins);
+    
+        // Añadir items si corresponde
         if (challengerItem != null) {
             challenger.getItems().add(challengerItem);
         }
-
-        challenged.setPoints(challenged.getPoints() + challengedPoints);
-        challenged.setBeeCoins(challenged.getBeeCoins() + challengedCoins);
         if (challengedItem != null) {
             challenged.getItems().add(challengedItem);
         }

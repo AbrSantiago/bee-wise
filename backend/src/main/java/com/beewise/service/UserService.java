@@ -22,4 +22,5 @@ public interface UserService {
     User buyItem(Long itemId, String username);
     List<ShopItem> getUserItems(String username);
     Map<ItemCategory, List<ShopItem>> getAllByCategory(String username);
+    Boolean addPointsToUser(User user, Integer pointsToAdd);
 }

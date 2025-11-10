@@ -56,6 +56,10 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Avatar avatar;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "level_id")
+    private Level level;
+
     @ManyToMany
     @JoinTable(
             name = "user_items",
