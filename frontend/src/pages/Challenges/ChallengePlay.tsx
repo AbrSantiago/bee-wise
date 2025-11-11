@@ -30,6 +30,7 @@ import ChallengeUserCard from "./ChallengeUserCard";
 import { useUser } from "../../context/UserContext";
 import OpponentCard from "./OpponentCard";
 import ChallengeSummary from "./ChallengeSummary";
+import Confetti from "../../components/layout/Confetti";
 
 export function ChallengePlayPage() {
   const [currentExercise, setCurrentExercise] = useState(0);
@@ -37,6 +38,7 @@ export function ChallengePlayPage() {
   const [feedback, setFeedback] = useState<null | boolean>(null);
   const [canContinue, setCanContinue] = useState(false);
   const [pendingExercises, setPendingExercises] = useState<Exercise[]>([]);
+  const [showSummary, setShowSummary] = useState(false); // Mantendremos este por ahora para la lógica final
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [startTime, setStartTime] = useState<number | null>(null);
   const [endTime, setEndTime] = useState<number | null>(null);
@@ -48,6 +50,8 @@ export function ChallengePlayPage() {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [isTimeOut, setIsTimeOut] = useState(false);
   const [showCategoryPopup, setShowCategoryPopup] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [isWinner, setIsWinner] = useState(false);
   const { user } = useUser();
 
   const [gameState, setGameState] = useState<
@@ -161,6 +165,23 @@ export function ChallengePlayPage() {
 
       if (challenge.status === "COMPLETED") {
         setGameState("CHALLENGE_SUMMARY");
+        const currentUserIsWinner =
+          (rol === "CHALLENGER" && challenge.result === "CHALLENGER_WIN") ||
+          (rol === "CHALLENGED" && challenge.result === "CHALLENGED_WIN");
+
+        if (currentUserIsWinner) {
+          setIsWinner(true);
+          setShowConfetti(true);
+
+          // Ocultar confetis después de 5 segundos
+          setTimeout(() => {
+            setShowConfetti(false);
+          }, 5000);
+        }
+
+        setTimeout(
+          () => currentUserIsWinner ? 2000 : 0
+        );
       }
     } catch (error) {
       console.error("Error submitting turn:", error);
@@ -319,6 +340,7 @@ export function ChallengePlayPage() {
   if (gameState === "ROUND_SUMMARY") {
     return (
       <MainLayout title={`Resumen de la ronda`}>
+        {showConfetti && <Confetti duration={5000} />}
         <SummaryScreen
           time={endTime && startTime ? endTime - startTime : 0}
           correctCount={correctCount}
@@ -329,6 +351,7 @@ export function ChallengePlayPage() {
   }
 
   if (gameState === "CHALLENGE_SUMMARY") {
+    {showConfetti && <Confetti duration={5000} />}
     console.log("CHALLENGE SUMMARY!");
     return (
       <MainLayout title={`Resumen del Desafío`}>

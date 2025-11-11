@@ -5,7 +5,13 @@ import "katex/dist/katex.min.css";
 import { BlockMath } from "react-katex";
 import "./Practice.css";
 import { useParams } from "react-router-dom";
-import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, } from "@dnd-kit/core";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
 import type { DragEndEvent } from "@dnd-kit/core";
 import lessonService, { type Exercise } from "../../services/lessonService";
 import { useUserPoints } from "../../context/UserPointsContext";
@@ -14,10 +20,11 @@ import DnDOptions from "./components/DnDOptions";
 import FeedbackMessage from "./components/FeedbackMessage";
 import SummaryScreen from "./components/SummaryScreen";
 import CorrectionIntroScreen from "./components/CorrectionIntroScreen";
+import Confetti from "../../components/layout/Confetti";
 
 export function PracticePage() {
   const { id } = useParams<{ id: string }>();
-  const { userPoints,refreshPoints } = useUserPoints();
+  const { userPoints, refreshPoints } = useUserPoints();
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [currentExercise, setCurrentExercise] = useState(0);
   const [userAnswer, setUserAnswer] = useState("");
@@ -34,6 +41,7 @@ export function PracticePage() {
   const [totalCount, setTotalCount] = useState(0);
   const [inCorrectionRound, setInCorrectionRound] = useState(false);
   const [lessonCompleted, setLessonCompleted] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const current = exercises[currentExercise];
 
@@ -43,7 +51,7 @@ export function PracticePage() {
         if (id) {
           const lesson = await lessonService.getLesson(id);
           console.log("2 - Agarro una lesson:", lesson);
-          
+
           setExercises(lesson.exercises);
           setTotalCount(lesson.exercises.length);
           setCorrectCount(0);
@@ -63,13 +71,19 @@ export function PracticePage() {
       if (showSummary && !lessonCompleted && id && userId) {
         try {
           setLessonCompleted(true);
-          
+
           const response = await lessonService.lessonComplete({
             completedLessonId: parseInt(id),
             userId: userId,
-            correctExercises: correctCount
+            correctExercises: correctCount,
           });
           await refreshPoints();
+          if (correctCount > 0) {
+            setShowConfetti(true);
+            setTimeout(() => {
+              setShowConfetti(false);
+            }, 5000);
+          }
         } catch (error) {
           console.error("❌ Error completing lesson:", error);
           setLessonCompleted(false);
@@ -78,7 +92,14 @@ export function PracticePage() {
     };
 
     completeLessonCall();
-  }, [showSummary, lessonCompleted, id, userPoints?.userId, correctCount, refreshPoints]);
+  }, [
+    showSummary,
+    lessonCompleted,
+    id,
+    userPoints?.userId,
+    correctCount,
+    refreshPoints,
+  ]);
 
   // --- DnD setup ---
   const sensors = useSensors(useSensor(PointerSensor));
@@ -225,6 +246,7 @@ export function PracticePage() {
   if (showSummary) {
     return (
       <MainLayout title={`Lección ${id}`}>
+        {showConfetti && <Confetti duration={3000} intensity="high" />}
         <SummaryScreen
           time={endTime && startTime ? endTime - startTime : 0}
           correctCount={correctCount}
@@ -269,7 +291,8 @@ export function PracticePage() {
                     const correct = answer.trim() === current.answer.trim();
                     setFeedback(correct);
                     setCanContinue(true);
-                    if (correct && !inCorrectionRound) setCorrectCount((prev) => prev + 1);
+                    if (correct && !inCorrectionRound)
+                      setCorrectCount((prev) => prev + 1);
                   }}
                 />
               </div>
@@ -310,7 +333,9 @@ export function PracticePage() {
 
             {feedback !== null && (
               <button
-                className={`btn-continue mt-4 ${feedback ? "success" : "error"}`}
+                className={`btn-continue mt-4 ${
+                  feedback ? "success" : "error"
+                }`}
                 onClick={handleContinue}
               >
                 Continuar
