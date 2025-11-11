@@ -578,7 +578,7 @@ class ChallengeServiceImplTest {
 
     @Test
     void getRandomExercises_returnsExercises() {
-        List<Exercise> exercises = challengeService.getRandomExercises(2, ExerciseCategory.MATH);
+        List<Exercise> exercises = challengeService.getRandomExercises(2, ExerciseCategory.DIVISIBILITY);
         assertNotNull(exercises);
         assertTrue(exercises.size() <= 2);
     }

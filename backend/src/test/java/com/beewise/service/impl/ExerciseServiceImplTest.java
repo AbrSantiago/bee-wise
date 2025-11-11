@@ -5,6 +5,7 @@ import com.beewise.controller.dto.SimpleOpenExerciseDTO;
 import com.beewise.exception.ExerciseNotFoundException;
 import com.beewise.exception.InvalidIdException;
 import com.beewise.model.Exercise;
+import com.beewise.model.ExerciseCategory;
 import com.beewise.model.MultipleChoiceExercise;
 import com.beewise.model.OpenExercise;
 import com.beewise.repository.ExerciseRepository;
@@ -101,7 +102,7 @@ class ExerciseServiceImplTest {
         assertNotNull(result.getId());
         assertEquals("What is 5 + 3?", result.getQuestion());
         assertEquals("8", result.getAnswer());
-        assertTrue(result instanceof OpenExercise);
+        assertInstanceOf(OpenExercise.class, result);
     }
 
     @Test
@@ -118,7 +119,7 @@ class ExerciseServiceImplTest {
         assertNotNull(result.getId());
         assertEquals("What is the largest planet?", result.getQuestion());
         assertEquals("Jupiter", result.getAnswer());
-        assertTrue(result instanceof MultipleChoiceExercise);
+        assertInstanceOf(MultipleChoiceExercise.class, result);
 
         MultipleChoiceExercise mcExercise = (MultipleChoiceExercise) result;
         assertEquals(4, mcExercise.getOptions().size());
@@ -208,13 +209,13 @@ class ExerciseServiceImplTest {
             SimpleOpenExerciseDTO dto = new SimpleOpenExerciseDTO();
             dto.setQuestion("Math Q" + i);
             dto.setAnswer("A" + i);
-            dto.setCategory(com.beewise.model.ExerciseCategory.MATH);
+            dto.setCategory(ExerciseCategory.MATRICES);
             exerciseService.createOpenExercise(dto);
         }
-        var result = exerciseService.getRandomExercises(3, com.beewise.model.ExerciseCategory.MATH);
+        var result = exerciseService.getRandomExercises(3, ExerciseCategory.MATRICES);
         assertNotNull(result);
         assertTrue(result.size() <= 3);
-        assertTrue(result.stream().allMatch(e -> e.getCategory() == com.beewise.model.ExerciseCategory.MATH));
+        assertTrue(result.stream().allMatch(e -> e.getCategory() == ExerciseCategory.MATRICES));
     }
 
     @Test

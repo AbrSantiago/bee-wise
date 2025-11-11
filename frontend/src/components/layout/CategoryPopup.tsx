@@ -1,6 +1,6 @@
 import React from 'react';
 import './CategoryPopup.css';
-import type { ExerciseCategory } from '../../services/challengeService';
+import { ExerciseCategoryNames, type ExerciseCategory } from '../../services/challengeService';
 
 interface CategoryPopupProps {
   category: ExerciseCategory;
@@ -12,7 +12,9 @@ const CategoryPopup: React.FC<CategoryPopupProps> = ({ category, onStart }) => {
     <div className="popup-overlay">
       <div className="popup-content">
         <h2>Categoría seleccionada:</h2>
-        <h3 className="popup-category-name">{category.replace(/_/g, ' ')}</h3>
+        <h3 className="popup-category-name">
+          {ExerciseCategoryNames[category]}
+        </h3>
         <p>¡Prepárate para responder las preguntas!</p>
         <button onClick={onStart} className="popup-start-btn">
           ¡Comenzar!

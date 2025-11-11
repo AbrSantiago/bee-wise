@@ -66,4 +66,16 @@ public class User {
 
     @Min(value = 0, message = "BeeCoins cannot be negative")
     private int beeCoins = 100;
+
+    public void addPoints(int delta) {
+        this.points += delta;
+    }
+
+    public void addBeeCoins(int delta) {
+        this.beeCoins += delta;
+    }
+
+    public void addItem(ShopItem item) {
+        this.items.add(item);
+    }
 }

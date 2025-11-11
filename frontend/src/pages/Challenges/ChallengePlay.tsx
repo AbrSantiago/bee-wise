@@ -29,6 +29,7 @@ import CategoryPopup from "../../components/layout/CategoryPopup";
 import ChallengeUserCard from "./ChallengeUserCard";
 import { useUser } from "../../context/UserContext";
 import OpponentCard from "./OpponentCard";
+import ChallengeSummary from "./ChallengeSummary";
 
 export function ChallengePlayPage() {
   const [currentExercise, setCurrentExercise] = useState(0);
@@ -36,7 +37,6 @@ export function ChallengePlayPage() {
   const [feedback, setFeedback] = useState<null | boolean>(null);
   const [canContinue, setCanContinue] = useState(false);
   const [pendingExercises, setPendingExercises] = useState<Exercise[]>([]);
-  const [showSummary, setShowSummary] = useState(false); // Mantendremos este por ahora para la lógica final
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [startTime, setStartTime] = useState<number | null>(null);
   const [endTime, setEndTime] = useState<number | null>(null);
@@ -50,9 +50,8 @@ export function ChallengePlayPage() {
   const [showCategoryPopup, setShowCategoryPopup] = useState(false);
   const { user } = useUser();
 
-  // --- Estados nuevos para la ruleta y el flujo de juego ---
   const [gameState, setGameState] = useState<
-    "ROULETTE" | "PLAYING" | "SUMMARY"
+    "ROULETTE" | "PLAYING" | "CHALLENGE_SUMMARY" | "ROUND_SUMMARY"
   >("ROULETTE");
   const [isSpinning, setIsSpinning] = useState(false);
   const [winningCategory, setWinningCategory] =
@@ -131,7 +130,7 @@ export function ChallengePlayPage() {
       setPendingExercises(newPending);
     } else {
       setEndTime(Date.now());
-      setGameState("SUMMARY"); // <-- ÚNICO CAMBIO: Usamos gameState en lugar de showSummary
+      setGameState("ROUND_SUMMARY"); // <-- ÚNICO CAMBIO: Usamos gameState en lugar de showSummary
       handleSubmitTurn();
     }
   };
@@ -161,11 +160,7 @@ export function ChallengePlayPage() {
       const challenge = await challengeService.answerRound(answerDTO);
 
       if (challenge.status === "COMPLETED") {
-        alert(`Challenge completed! Result: ${challenge.result}`);
-        navigate("/challenges");
-      } else {
-        alert("Turn submitted! Next player notified.");
-        navigate("/challenges");
+        setGameState("CHALLENGE_SUMMARY");
       }
     } catch (error) {
       console.error("Error submitting turn:", error);
@@ -321,14 +316,23 @@ export function ChallengePlayPage() {
     );
   }
 
-  if (gameState === "SUMMARY") {
+  if (gameState === "ROUND_SUMMARY") {
     return (
-      <MainLayout title={`Resumen del Desafío`}>
+      <MainLayout title={`Resumen de la ronda`}>
         <SummaryScreen
           time={endTime && startTime ? endTime - startTime : 0}
           correctCount={correctCount}
           totalCount={totalCount}
         />
+      </MainLayout>
+    );
+  }
+
+  if (gameState === "CHALLENGE_SUMMARY") {
+    console.log("CHALLENGE SUMMARY!");
+    return (
+      <MainLayout title={`Resumen del Desafío`}>
+        <ChallengeSummary challengeId={challengeId} />
       </MainLayout>
     );
   }

@@ -1,8 +1,6 @@
 package com.beewise.service.impl;
 
-import com.beewise.controller.dto.AnswerDTO;
-import com.beewise.controller.dto.ChallengeStatsDTO;
-import com.beewise.controller.dto.SendChallengeDTO;
+import com.beewise.controller.dto.*;
 import com.beewise.exception.*;
 import com.beewise.model.*;
 import com.beewise.model.challenge.*;
@@ -101,73 +99,8 @@ public class ChallengeServiceImpl implements ChallengeService {
             } else {
                 challenge.setResult(ChallengeResult.CHALLENGED_WIN);
             }
-            calculateAndPersistReward(challenge);
         }
         return repository.save(challenge);
-    }
-
-    private void calculateAndPersistReward(Challenge challenge) {
-        User challenger = challenge.getChallenger();
-        User challenged = challenge.getChallenged();
-        List<Round> rounds = challenge.getRounds();
-        int totalRounds = rounds.size();
-
-        int challengerPoints = 0;
-        int challengedPoints = 0;
-
-        for (Round round : rounds) {
-            int challengerRoundPoints = round.getChallengerScore() * 2;
-            int challengedRoundPoints = round.getChallengedScore() * 2;
-
-            if (round.isChallengerPerfectRound()) {
-                challengerRoundPoints *= 2;
-            }
-            if (round.isChallengedPerfectRound()) {
-                challengedRoundPoints *= 2;
-            }
-            challengerPoints += challengerRoundPoints;
-            challengedPoints += challengedRoundPoints;
-        }
-
-        int baseCoins = challenge.getQuestionsPerRound() * totalRounds;
-        int challengerCoins = baseCoins;
-        int challengedCoins = baseCoins;
-
-        ShopItem challengerItem = null;
-        ShopItem challengedItem = null;
-
-        if (challenge.getResult() == ChallengeResult.CHALLENGER_WIN) {
-            challengerPoints += (5 * totalRounds);
-            challengerCoins *= 2;
-            challengerItem = getRandomAvailableItem(challenger);
-
-            if (challengerItem == null) {
-                challengerPoints += 10;
-            }
-        } else if (challenge.getResult() == ChallengeResult.CHALLENGED_WIN) {
-            challengedPoints += (5 * totalRounds);
-            challengedCoins *= 2;
-            challengedItem = getRandomAvailableItem(challenged);
-
-            if (challengedItem == null) {
-                challengedPoints += 10;
-            }
-        }
-
-        challenger.setPoints(challenger.getPoints() + challengerPoints);
-        challenger.setBeeCoins(challenger.getBeeCoins() + challengerCoins);
-        if (challengerItem != null) {
-            challenger.getItems().add(challengerItem);
-        }
-
-        challenged.setPoints(challenged.getPoints() + challengedPoints);
-        challenged.setBeeCoins(challenged.getBeeCoins() + challengedCoins);
-        if (challengedItem != null) {
-            challenged.getItems().add(challengedItem);
-        }
-
-        userRepository.save(challenger);
-        userRepository.save(challenged);
     }
 
     private ShopItem getRandomAvailableItem(User user) {
@@ -236,5 +169,46 @@ public class ChallengeServiceImpl implements ChallengeService {
         } else {
             throw new UserNotPlayingChallengeException("User " + username + " is no playing challenge " + challenge.getId());
         }
+    }
+
+    @Override
+    public ChallengeSummaryDTO getSummaryAndReward(Long challengeId, String username) {
+        Challenge challenge = repository.findById(challengeId)
+                .orElseThrow(() -> new ChallengeNotFoundException("Challenge with id " + challengeId + " does not exists"));
+        ChallengeSummaryDTO summaryDTO = challenge.getSummary(username);
+        switch (challenge.getRol(username)) {
+            case CHALLENGER -> {
+                if (challenge.isChallengerGotReward()) {
+                    throw new UserAlreadyGotRewardException("User " + username + " already got reward");
+                }
+                User challenger = challenge.getChallenger();
+                ShopItem randomItem = getRandomAvailableItem(challenger);
+                if (randomItem != null) {
+                    summaryDTO.setItem(new ShopItemDTO(randomItem));
+                    challenger.addItem(randomItem);
+                }
+                challenger.addPoints(challenge.getChallengerRewardPoints());
+                challenger.addBeeCoins(challenge.getChallengerRewardBeeCoins());
+                userRepository.save(challenger);
+                challenge.setChallengerGotReward(true);
+            }
+            case CHALLENGED -> {
+                if (challenge.isChallengedGotReward()) {
+                    throw new UserAlreadyGotRewardException("User " + username + " already got reward");
+                }
+                User challenged = challenge.getChallenged();
+                ShopItem randomItem = getRandomAvailableItem(challenged);
+                if (randomItem != null) {
+                    summaryDTO.setItem(new ShopItemDTO(randomItem));
+                    challenged.addItem(randomItem);
+                }
+                challenged.addPoints(challenge.getChallengedRewardPoints());
+                challenged.addBeeCoins(challenge.getChallengedRewardBeeCoins());
+                challenge.setChallengedGotReward(true);
+                userRepository.save(challenged);
+            }
+        }
+        repository.save(challenge);
+        return summaryDTO;
     }
 }

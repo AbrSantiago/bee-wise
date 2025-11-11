@@ -4,6 +4,7 @@ import com.beewise.controller.dto.*;
 import com.beewise.model.*;
 import com.beewise.model.challenge.*;
 import com.beewise.service.ChallengeService;
+import com.beewise.service.impl.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,11 +26,14 @@ class ChallengeControllerTest {
     @Mock
     private ChallengeService challengeService;
 
+    @Mock
+    private JwtService jwtService;
+
     private ChallengeController controller;
 
     @BeforeEach
     void setUp() {
-        controller = new ChallengeController(challengeService);
+        controller = new ChallengeController(challengeService, jwtService);
     }
 
     @Test
@@ -217,7 +221,7 @@ class ChallengeControllerTest {
 
     @Test
     void constructor_initializesController() {
-        ChallengeController testController = new ChallengeController(challengeService);
+        ChallengeController testController = new ChallengeController(challengeService, jwtService);
         assertNotNull(testController);
     }
 

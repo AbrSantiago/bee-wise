@@ -6,6 +6,7 @@ import com.beewise.model.ExerciseCategory;
 import com.beewise.model.User;
 import com.beewise.model.challenge.Challenge;
 import com.beewise.service.ChallengeService;
+import com.beewise.service.impl.JwtService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,9 +18,11 @@ import java.util.List;
 @RequestMapping("/challenge")
 public class ChallengeController {
     private final ChallengeService challengeService;
+    private final JwtService jwtService;
 
-    public ChallengeController(ChallengeService challengeService) {
+    public ChallengeController(ChallengeService challengeService, JwtService jwtService) {
         this.challengeService = challengeService;
+        this.jwtService = jwtService;
     }
 
     @GetMapping
@@ -96,5 +99,15 @@ public class ChallengeController {
     ) {
         ChallengeStatsDTO statsDTO = challengeService.getChallengeStats(challengeId, username);
         return ResponseEntity.ok(statsDTO);
+    }
+
+    @GetMapping("/{challengeId}/summary")
+    public ResponseEntity<ChallengeSummaryDTO> getChallengeSummary(
+            @PathVariable Long challengeId,
+            @RequestHeader("Authorization") String authHeader
+    ) {
+        String username = jwtService.extractUsername(authHeader.substring(7));
+        ChallengeSummaryDTO summaryDTO = challengeService.getSummaryAndReward(challengeId, username);
+        return ResponseEntity.ok(summaryDTO);
     }
 }

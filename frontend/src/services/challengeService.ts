@@ -1,6 +1,6 @@
 import apiClient from "./api";
 import type { Exercise } from "./lessonService";
-import type { User } from "./userService";
+import type { Avatar, ShopItem, User } from "./userService";
 
 export type ChallengeStatus = "PENDING" | "ACTIVE" | "EXPIRED" | "COMPLETED";
 export type ChallengeResult = "CHALLENGER_WIN" | "CHALLENGED_WIN" | "DRAW" | null;
@@ -12,6 +12,15 @@ export type ExerciseCategory =
   | "GROUP_THEORY"
   | "VECTOR_SPACES"
   | "DIVISIBILITY";
+
+export const ExerciseCategoryNames: Record<ExerciseCategory, string> = {
+  MATRICES: "Matrices",
+  DETERMINANTS: "Determinantes",
+  SYSTEM_OF_EQUATIONS: "Sistemas de ecuaciones",
+  GROUP_THEORY: "Teoría de grupos",
+  VECTOR_SPACES: "Espacios vectoriales",
+  DIVISIBILITY: "Divisibilidad",
+};
 
 export type RoundDTO = {
   roundNumber: number;
@@ -47,6 +56,21 @@ export type AnswerDTO = {
   score: number;
   correctAnswers: number;
 };
+
+export type ChallengeSummaryDTO = {
+  username: string;
+  avatar: Avatar;
+  opponentUsername: string;
+  opponentAvatar: Avatar;
+  roundsWon: number;
+  totalRounds: number;
+  beeCoins: number;
+  points: number;
+  item: ShopItem;
+  winner: ChallengeWinner;
+};
+
+export type ChallengeWinner = "ME" | "OPPONENT" | "DRAW";
 
 export type ChallengeRol = "CHALLENGER" | "CHALLENGED";
 
@@ -136,6 +160,23 @@ const challengeService = {
       return response.data;
     } catch (error) {
       console.error("❌ Error fetching challenge opponent:", error);
+      throw error;
+    }
+  },
+
+  async getChallengeSummary(challengeId: number, token: string): Promise<ChallengeSummaryDTO> {
+    try {
+      const response = await apiClient.get<ChallengeSummaryDTO>(
+        `/challenge/${challengeId}/summary`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("❌ Error fetching challenge summary:", error);
       throw error;
     }
   },

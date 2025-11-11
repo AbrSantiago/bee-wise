@@ -1,6 +1,9 @@
 import React, { useRef, useState, useEffect } from "react";
 import "./Roulette.css"; // Usaremos un CSS mejorado
-import type { ExerciseCategory } from "../../services/challengeService";
+import {
+  ExerciseCategoryNames,
+  type ExerciseCategory,
+} from "../../services/challengeService";
 
 interface RouletteProps {
   categories: ExerciseCategory[] | undefined; // Acepta undefined para manejar casos donde no se pase correctamente
@@ -15,12 +18,20 @@ const Roulette: React.FC<RouletteProps> = ({
   triggerSpin,
   onSpinningEnd,
 }) => {
+  console.log("categories: " + categories);
   const wheelRef = useRef<HTMLDivElement>(null);
   const [isSpinning, setIsSpinning] = useState(false);
 
   const categoryColors = [
-    "#F44336", "#2196F3", "#4CAF50", "#FFEB3B", "#9C27B0", "#FF9800",
-    "#E91E63", "#00BCD4", "#8BC34A"
+    "#F44336",
+    "#2196F3",
+    "#4CAF50",
+    "#FFEB3B",
+    "#9C27B0",
+    "#FF9800",
+    "#E91E63",
+    "#00BCD4",
+    "#8BC34A",
   ];
 
   useEffect(() => {
@@ -30,28 +41,28 @@ const Roulette: React.FC<RouletteProps> = ({
   }, [triggerSpin, winningCategory]);
 
   const spinWheel = () => {
-  if (!wheelRef.current || isSpinning || !winningCategory) return;
+    if (!wheelRef.current || isSpinning || !winningCategory) return;
 
-  setIsSpinning(true);
+    setIsSpinning(true);
 
-  const winningIndex = categories.indexOf(winningCategory);
-  const segmentCount = categories.length;
-  const segmentAngle = 360 / segmentCount;
+    const winningIndex = categories.indexOf(winningCategory);
+    const segmentCount = categories.length;
+    const segmentAngle = 360 / segmentCount;
 
-  // Calcula el ángulo de parada centrado en el segmento
-  const stopAngle = (winningIndex * segmentAngle) + (segmentAngle / 2);
+    // Calcula el ángulo de parada centrado en el segmento
+    const stopAngle = winningIndex * segmentAngle + segmentAngle / 2;
 
-  // Asegúrate de que el ángulo final esté centrado en el segmento
-  const randomRotations = 5; // Número de rotaciones completas
-  const finalDegree = (360 * randomRotations) - stopAngle;
+    // Asegúrate de que el ángulo final esté centrado en el segmento
+    const randomRotations = 5; // Número de rotaciones completas
+    const finalDegree = 360 * randomRotations - stopAngle;
 
-  wheelRef.current.style.transition = "transform 6s ease-out";
-  wheelRef.current.style.transform = `rotate(${finalDegree}deg)`;
+    wheelRef.current.style.transition = "transform 6s ease-out";
+    wheelRef.current.style.transform = `rotate(${finalDegree}deg)`;
 
-  setTimeout(() => {
-    onSpinningEnd();
-  }, 6000);
-};
+    setTimeout(() => {
+      onSpinningEnd();
+    }, 6000);
+  };
 
   const getSegmentStyle = (index: number) => {
     const segmentCount = categories.length;
@@ -72,7 +83,9 @@ const Roulette: React.FC<RouletteProps> = ({
             className="segment"
             style={getSegmentStyle(index)}
           >
-            <div className="segment-text">{category.replace(/_/g, ' ')}</div>
+            <div className="segment-text">
+              {ExerciseCategoryNames[category]}
+            </div>
           </div>
         ))}
       </div>
