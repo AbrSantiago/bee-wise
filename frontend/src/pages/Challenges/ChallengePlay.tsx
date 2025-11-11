@@ -29,6 +29,7 @@ import CategoryPopup from "../../components/layout/CategoryPopup";
 import ChallengeUserCard from "./ChallengeUserCard";
 import { useUser } from "../../context/UserContext";
 import OpponentCard from "./OpponentCard";
+import Confetti from "../../components/layout/Confetti";
 
 export function ChallengePlayPage() {
   const [currentExercise, setCurrentExercise] = useState(0);
@@ -48,6 +49,8 @@ export function ChallengePlayPage() {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [isTimeOut, setIsTimeOut] = useState(false);
   const [showCategoryPopup, setShowCategoryPopup] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [isWinner, setIsWinner] = useState(false);
   const { user } = useUser();
 
   // --- Estados nuevos para la ruleta y el flujo de juego ---
@@ -161,8 +164,27 @@ export function ChallengePlayPage() {
       const challenge = await challengeService.answerRound(answerDTO);
 
       if (challenge.status === "COMPLETED") {
-        alert(`Challenge completed! Result: ${challenge.result}`);
-        navigate("/challenges");
+        const currentUserIsWinner =
+          (rol === "CHALLENGER" && challenge.result === "CHALLENGER_WIN") ||
+          (rol === "CHALLENGED" && challenge.result === "CHALLENGED_WIN");
+
+        if (currentUserIsWinner) {
+          setIsWinner(true);
+          setShowConfetti(true);
+
+          // Ocultar confetis después de 5 segundos
+          setTimeout(() => {
+            setShowConfetti(false);
+          }, 5000);
+        }
+
+        setTimeout(
+          () => {
+            alert(`Challenge completed! Result: ${challenge.result}`);
+            navigate("/challenges");
+          },
+          currentUserIsWinner ? 2000 : 0
+        );
       } else {
         alert("Turn submitted! Next player notified.");
         navigate("/challenges");
@@ -324,6 +346,7 @@ export function ChallengePlayPage() {
   if (gameState === "SUMMARY") {
     return (
       <MainLayout title={`Resumen del Desafío`}>
+        {showConfetti && <Confetti duration={5000} />}
         <SummaryScreen
           time={endTime && startTime ? endTime - startTime : 0}
           correctCount={correctCount}
