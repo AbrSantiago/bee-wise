@@ -157,7 +157,7 @@ export function ChallengePlayPage() {
         challengeId: Number(challengeId),
         roundNumber: Number(roundNumber),
         rol: rol,
-        score: correctCount * 2,
+        score: correctCount,
         correctAnswers: correctCount,
       };
 

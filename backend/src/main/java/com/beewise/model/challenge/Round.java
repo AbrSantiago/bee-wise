@@ -64,13 +64,4 @@ public class Round {
     public boolean isWaitingChallenged() {
         return status == RoundStatus.WAITING_CHALLENGED;
     }
-
-    public boolean isChallengerPerfectRound() {
-        return challengerScore == challenge.getQuestionsPerRound();
-    }
-
-    public boolean isChallengedPerfectRound() {
-        return challengedScore == challenge.getQuestionsPerRound();
-    }
-
 }

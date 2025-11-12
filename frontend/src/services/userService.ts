@@ -43,6 +43,22 @@ export type UserPointsResponse = {
   currentLesson: number;
 };
 
+export interface UserStatsDTO {
+  challengesPlayed: number;
+  challengesWon: number;
+  winRate: number;
+  roundsWon: number;
+  avgCorrectAnswersPerChallenge: number;
+
+  totalPoints: number;
+  beeCoinsSpent: number;
+  longestWinStreak: number;
+  itemsObtained: number;
+
+  percentile: number; // e.g., 85 means "better than 85% of players"
+  accuracy: number;   // e.g., 0.8 means 80%
+}
+
 const userService = {
   async login(username: string, password: string): Promise<AuthResponse> {
     const response = await apiClient.post<AuthResponse>(
@@ -117,7 +133,21 @@ const userService = {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
-  },  
+  },
+
+  async getUserStats(token: string): Promise<UserStatsDTO> {
+    try {
+      const response = await apiClient.get<UserStatsDTO>("/users/stats", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching user stats:", error);
+      throw error;
+    }
+  },
 };
 
 export default userService;

@@ -149,7 +149,7 @@ public class UserServiceImpl implements UserService {
         if (user.getBeeCoins() < item.getPrice()) {
             throw new NotEnoughBeeCoinsException("User " + username + " has obtain not enough BeeCoins to buy item " + itemId);
         }
-        user.setBeeCoins(user.getBeeCoins() - item.getPrice());
+        user.spendBeeCoins(item.getPrice());
         userItems.add(item);
         user.setItems(userItems);
         return userRepository.save(user);
@@ -181,6 +181,27 @@ public class UserServiceImpl implements UserService {
         checkAndUpdateUserLevel(user);
         userRepository.save(user);
         return true;
+    }
+
+    @Override
+    public UserStatsDTO getStats(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
+        Long userId = user.getId();
+        UserStatsDTO statsDTO = new UserStatsDTO();
+        statsDTO.setChallengesPlayed(userRepository.getChallengesPlayed(userId));
+        statsDTO.setChallengesWon(userRepository.getChallengesWon(userId));
+        statsDTO.setWinRate(statsDTO.getChallengesPlayed() == 0 ? 0 :
+                100 * userRepository.getChallengesWon(userId) / userRepository.getChallengesPlayed(userId));
+        statsDTO.setRoundsWon(userRepository.getRoundsWon(userId));
+        statsDTO.setAvgCorrectAnswersPerChallenge((int) userRepository.getAccuracyPercentagePerChallenge(userId));
+        statsDTO.setTotalPoints(user.getPoints());
+        statsDTO.setBeeCoinsSpent(user.getSpentBeeCoins());
+        statsDTO.setLongestWinStreak(11);
+        statsDTO.setItemsObtained(user.getItems().size());
+        statsDTO.setPercentile(12);
+        statsDTO.setAccuracy((int) userRepository.getAccuracy(userId));
+        return statsDTO;
     }
 
 

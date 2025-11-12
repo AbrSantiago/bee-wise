@@ -109,4 +109,13 @@ public class UserController {
                 ));
         return ResponseEntity.ok(groupedDTOs);
     }
+
+    @GetMapping("/stats")
+    public ResponseEntity<UserStatsDTO> getUserStats(
+            @RequestHeader("Authorization") String token
+    ) {
+        String username = jwtService.extractUsername(token.substring(7));
+        UserStatsDTO statsDTO = userService.getStats(username);
+        return ResponseEntity.ok(statsDTO);
+    }
 }
