@@ -53,11 +53,11 @@ const Roulette: React.FC<RouletteProps> = ({
     const stopAngle = winningIndex * segmentAngle + segmentAngle / 2;
 
     // Asegúrate de que el ángulo final esté centrado en el segmento
-    const randomRotations = 5; // Número de rotaciones completas
+    const randomRotations = 4; // Número de rotaciones completas
     const finalDegree = 360 * randomRotations - stopAngle;
 
-    wheelRef.current.style.transition = "transform 6s ease-out";
-    wheelRef.current.style.transform = `rotate(${finalDegree}deg)`;
+    wheelRef.current.style.transition = "transform 4s ease-out";
+    wheelRef.current.style.transform = `rotate(${finalDegree + 40}deg)`;
 
     setTimeout(() => {
       onSpinningEnd();
@@ -76,7 +76,7 @@ const Roulette: React.FC<RouletteProps> = ({
   return (
     <div className="roulette-display">
       <div className="roulette-pointer"></div>
-      <div id="wheel" ref={wheelRef}>
+      <div id="wheel" ref={wheelRef} className="wheel">
         {categories?.map((category, index) => (
           <div
             key={category}

@@ -60,8 +60,8 @@ export default function ChallengeSummary({ challengeId }: Props) {
       break;
     case "OPPONENT":
       title = "Perdiste";
-      winnerClass = "winner";
-      loserClass = "loser";
+      winnerClass = "loser";
+      loserClass = "winner";
       break;
     case "DRAW":
       title = "¡Empate!";
@@ -76,46 +76,48 @@ export default function ChallengeSummary({ challengeId }: Props) {
 
   return (
     <div className="challenge-summary-container">
-      <h2 className="challenge-summary-title">{title}</h2>
+      <div className="challenge-summary">
+        <h2 className="challenge-summary-title">{title}</h2>
 
-      <div className="challenge-summary-players">
-        <div className={`player-card ${winnerClass}`}>
-          <Avatar avatar={summary.avatar} size={100} />
-          <p className="username">{summary.username}</p>
+        <div className="challenge-summary-players">
+          <div className={`player-card ${winnerClass}`}>
+            <Avatar avatar={summary.avatar} size={100} />
+            <p className="username">{summary.username}</p>
+          </div>
+          <img src="/vs.png" alt="vs" className="vs" />
+          <div className={`player-card ${loserClass}`}>
+            <Avatar avatar={summary.opponentAvatar} size={100} />
+            <p className="username">{summary.opponentUsername}</p>
+          </div>
         </div>
 
-        <div className={`player-card ${loserClass}`}>
-          <Avatar avatar={summary.opponentAvatar} size={100} />
-          <p className="username">{summary.opponentUsername}</p>
+        <div className="challenge-summary-stats">
+          <p>
+            Rondas ganadas:{" "}
+            <b>
+              {summary.roundsWon}/{summary.totalRounds}
+            </b>
+          </p>
+          <p>
+            BeeCoins obtenidas: <b>{summary.beeCoins}</b>
+          </p>
+          <p>
+            Puntos obtenidos: <b>{summary.points}</b>
+          </p>
         </div>
+        {summary.item && (
+          <div className="challenge-summary-item">
+            <p>Item obtenido:</p>
+            <OwnedItemCard item={summary.item} />
+          </div>
+        )}
+
+        <Link to="/">
+          <button className="summary-btn-back-home">
+            <span>Volver al inicio</span>
+          </button>
+        </Link>
       </div>
-
-      <div className="challenge-summary-stats">
-        <p>
-          Rondas ganadas:{" "}
-          <b>
-            {summary.roundsWon}/{summary.totalRounds}
-          </b>
-        </p>
-        <p>
-          BeeCoins obtenidas: <b>{summary.beeCoins}</b>
-        </p>
-        <p>
-          Puntos obtenidos: <b>{summary.points}</b>
-        </p>
-      </div>
-      {summary.item && (
-        <div className="challenge-summary-item">
-          <p>Item obtenido:</p>
-          <OwnedItemCard item={summary.item} />
-        </div>
-      )}
-
-      <Link to="/">
-        <button className="summary-btn-back-home">
-          <span>Volver al inicio</span>
-        </button>
-      </Link>
     </div>
   );
 }

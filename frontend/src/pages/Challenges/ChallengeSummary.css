@@ -1,4 +1,10 @@
 .challenge-summary-container {
+  max-height: calc(100vh - 110px);
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.challenge-summary {
   margin-top: 50px;
   display: flex;
   flex-direction: column;
@@ -21,7 +27,7 @@
 }
 
 /* Hexágono decorativo */
-.challenge-summary-container::before {
+.challenge-summary::before {
   content: "";
   position: absolute;
   top: -32px;
@@ -47,14 +53,30 @@
 
 /* Player section */
 .challenge-summary-players {
+  /* position: absolute; */
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 24px;
+  /* gap: 24px; */
   width: 100%;
 }
 
+.vs {
+  position: relative;
+  z-index: 1;
+  font-size: 3rem;
+  font-weight: bold;
+  color: black;
+  height: 20%;
+  width: 20%;
+  margin-top: 30px;
+  margin-left: -20px;
+  margin-right: -20px;
+}
+
 .player-card {
+  position: relative;
+  z-index: 0;
   border-radius: 16px;
   padding: 1rem;
   width: 150px;
