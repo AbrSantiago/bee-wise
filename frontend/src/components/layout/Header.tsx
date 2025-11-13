@@ -1,4 +1,3 @@
-import React from "react";
 import { useUserPoints } from "../../context/UserPointsContext";
 import "./layout.css";
 import { useUser } from "../../context/UserContext";
