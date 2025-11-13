@@ -33,10 +33,10 @@ public class ChallengeController {
     }
 
     @GetMapping("/usersToChallenge/{challengerId}")
-    public ResponseEntity<List<UserDTO>> getUsersToChallenge(@PathVariable Long challengerId) {
+    public ResponseEntity<List<UserToChallengeDTO>> getUsersToChallenge(@PathVariable Long challengerId) {
         List<User> users = challengeService.getUsersToChallenge(challengerId);
-        List<UserDTO> useDTOs = users.stream().map(UserDTO::new).toList();
-        return ResponseEntity.ok(useDTOs);
+        List<UserToChallengeDTO> userDTOs = users.stream().map(UserToChallengeDTO::new).toList();
+        return ResponseEntity.ok(userDTOs);
     }
 
     @PostMapping("/send")

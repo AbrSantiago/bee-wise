@@ -59,6 +59,13 @@ export interface UserStatsDTO {
   accuracy: number;   // e.g., 0.8 means 80%
 }
 
+export interface UserToChallengeDTO {
+  id: number;
+  username: string;
+  avatar: Avatar;
+  points: number;
+}
+
 const userService = {
   async login(username: string, password: string): Promise<AuthResponse> {
     const response = await apiClient.post<AuthResponse>(

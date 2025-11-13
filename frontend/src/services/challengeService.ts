@@ -1,6 +1,6 @@
 import apiClient from "./api";
 import type { Exercise } from "./lessonService";
-import type { Avatar, ShopItem, User } from "./userService";
+import type { Avatar, ShopItem, User, UserToChallengeDTO } from "./userService";
 
 export type ChallengeStatus = "PENDING" | "ACTIVE" | "EXPIRED" | "COMPLETED";
 export type ChallengeResult = "CHALLENGER_WIN" | "CHALLENGED_WIN" | "DRAW" | null;
@@ -88,8 +88,8 @@ const challengeService = {
     }
   },
   
-  async getUsersToChallenge(challengerId: number): Promise<User[]> {
-    const response = await apiClient.get<User[]>(`/challenge/usersToChallenge/${challengerId}`);
+  async getUsersToChallenge(challengerId: number): Promise<UserToChallengeDTO[]> {
+    const response = await apiClient.get<UserToChallengeDTO[]>(`/challenge/usersToChallenge/${challengerId}`);
     return response.data;
   },
 
