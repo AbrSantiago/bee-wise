@@ -5,7 +5,13 @@ import "katex/dist/katex.min.css";
 import { BlockMath } from "react-katex";
 import "./Practice.css";
 import { useParams } from "react-router-dom";
-import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, } from "@dnd-kit/core";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
 import type { DragEndEvent } from "@dnd-kit/core";
 import lessonService, { type Exercise } from "../../services/lessonService";
 import { useUserPoints } from "../../context/UserPointsContext";
@@ -14,10 +20,11 @@ import DnDOptions from "./components/DnDOptions";
 import FeedbackMessage from "./components/FeedbackMessage";
 import SummaryScreen from "./components/SummaryScreen";
 import CorrectionIntroScreen from "./components/CorrectionIntroScreen";
+import ProgressBar from "../../components/layout/ProgressBar";
 
 export function PracticePage() {
   const { id } = useParams<{ id: string }>();
-  const { userPoints,refreshPoints } = useUserPoints();
+  const { userPoints, refreshPoints } = useUserPoints();
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [currentExercise, setCurrentExercise] = useState(0);
   const [userAnswer, setUserAnswer] = useState("");
@@ -43,7 +50,7 @@ export function PracticePage() {
         if (id) {
           const lesson = await lessonService.getLesson(id);
           console.log("2 - Agarro una lesson:", lesson);
-          
+
           setExercises(lesson.exercises);
           setTotalCount(lesson.exercises.length);
           setCorrectCount(0);
@@ -63,11 +70,11 @@ export function PracticePage() {
       if (showSummary && !lessonCompleted && id && userId) {
         try {
           setLessonCompleted(true);
-          
+
           const response = await lessonService.lessonComplete({
             completedLessonId: parseInt(id),
             userId: userId,
-            correctExercises: correctCount
+            correctExercises: correctCount,
           });
           await refreshPoints();
         } catch (error) {
@@ -78,7 +85,14 @@ export function PracticePage() {
     };
 
     completeLessonCall();
-  }, [showSummary, lessonCompleted, id, userPoints?.userId, correctCount, refreshPoints]);
+  }, [
+    showSummary,
+    lessonCompleted,
+    id,
+    userPoints?.userId,
+    correctCount,
+    refreshPoints,
+  ]);
 
   // --- DnD setup ---
   const sensors = useSensors(useSensor(PointerSensor));
@@ -236,91 +250,89 @@ export function PracticePage() {
 
   if (showCorrectionIntro) {
     return (
-      <MainLayout title={`Lección ${id}`}>
-        <CorrectionIntroScreen
-          lessonId={id}
-          onContinue={() => {
-            setExercises(pendingExercises);
-            setCurrentExercise(0);
-            setPendingExercises([]);
-            setShowCorrectionIntro(false);
-          }}
-        />
-      </MainLayout>
+      <CorrectionIntroScreen
+        lessonId={id}
+        onContinue={() => {
+          setExercises(pendingExercises);
+          setCurrentExercise(0);
+          setPendingExercises([]);
+          setShowCorrectionIntro(false);
+        }}
+      />
     );
   }
 
   return (
-    <MainLayout title={`Lección ${id}`}>
-      <div className="exercise-container">
-        {current ? (
-          <>
-            {current.type === "OPEN" ? (
-              <div className="mt-4">
-                <div className="matrix-container">
-                  <p className="question-text">{current.question}</p>
-                </div>
-                <TrueFalseButtons
-                  userAnswer={userAnswer}
-                  feedback={feedback}
-                  canContinue={canContinue}
-                  onClick={(answer) => {
-                    handleTrueFalseClick(answer);
-                    const correct = answer.trim() === current.answer.trim();
-                    setFeedback(correct);
-                    setCanContinue(true);
-                    if (correct && !inCorrectionRound) setCorrectCount((prev) => prev + 1);
-                  }}
-                />
+    <div className="exercise-container">
+      <ProgressBar current={currentExercise} total={exercises.length} />
+      {current ? (
+        <>
+          {current.type === "OPEN" ? (
+            <div className="mt-4">
+              <div className="matrix-container">
+                <p className="question-text">{current.question}</p>
               </div>
-            ) : (
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-              >
-                <div className="question-and-answer-container">
-                  <div className="matrix-container">
-                    <BlockMath math={current.question.replace(/\?$/, "")} />
-                  </div>
-                  <div className="answer-slot-container mt-4">
-                    {userAnswer ? <BlockMath math={userAnswer} /> : <></>}
-                  </div>
+              <TrueFalseButtons
+                userAnswer={userAnswer}
+                feedback={feedback}
+                canContinue={canContinue}
+                onClick={(answer) => {
+                  handleTrueFalseClick(answer);
+                  const correct = answer.trim() === current.answer.trim();
+                  setFeedback(correct);
+                  setCanContinue(true);
+                  if (correct && !inCorrectionRound)
+                    setCorrectCount((prev) => prev + 1);
+                }}
+              />
+            </div>
+          ) : (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <div className="question-and-answer-container">
+                <div className="matrix-container">
+                  <BlockMath math={current.question.replace(/\?$/, "")} />
                 </div>
-                <DnDOptions
-                  options={current.options || []}
-                  canContinue={canContinue}
-                  selectedOption={selectedOption}
-                  handleOptionClick={handleOptionClick}
-                  userAnswer={userAnswer}
-                  feedback={feedback}
-                  current={current}
-                />
-                <button
-                  onClick={handleCheck}
-                  className="check-btn"
-                  disabled={canContinue || !userAnswer}
-                >
-                  Check
-                </button>
-              </DndContext>
-            )}
-
-            <FeedbackMessage feedback={feedback} />
-
-            {feedback !== null && (
+                <div className="answer-slot-container mt-4">
+                  {userAnswer ? <BlockMath math={userAnswer} /> : <></>}
+                </div>
+              </div>
+              <DnDOptions
+                options={current.options || []}
+                canContinue={canContinue}
+                selectedOption={selectedOption}
+                handleOptionClick={handleOptionClick}
+                userAnswer={userAnswer}
+                feedback={feedback}
+                current={current}
+              />
               <button
-                className={`btn-continue mt-4 ${feedback ? "success" : "error"}`}
-                onClick={handleContinue}
+                onClick={handleCheck}
+                className="check-btn"
+                disabled={canContinue || !userAnswer}
               >
-                Continuar
+                Check
               </button>
-            )}
-          </>
-        ) : (
-          <p className="text-gray-500">Cargando ejercicio...</p>
-        )}
-      </div>
-    </MainLayout>
+            </DndContext>
+          )}
+
+          <FeedbackMessage feedback={feedback} />
+
+          {feedback !== null && (
+            <button
+              className={`btn-continue mt-4 ${feedback ? "success" : "error"}`}
+              onClick={handleContinue}
+            >
+              Continuar
+            </button>
+          )}
+        </>
+      ) : (
+        <p className="text-gray-500">Cargando ejercicio...</p>
+      )}
+    </div>
   );
 }
