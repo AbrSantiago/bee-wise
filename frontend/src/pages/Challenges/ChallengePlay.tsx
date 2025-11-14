@@ -30,6 +30,7 @@ import ChallengeUserCard from "./ChallengeUserCard";
 import { useUser } from "../../context/UserContext";
 import OpponentCard from "./OpponentCard";
 import ChallengeSummary from "./ChallengeSummary";
+import Confetti from "../../components/layout/Confetti";
 
 export function ChallengePlayPage() {
   const [currentExercise, setCurrentExercise] = useState(0);
@@ -48,6 +49,10 @@ export function ChallengePlayPage() {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [isTimeOut, setIsTimeOut] = useState(false);
   const [showCategoryPopup, setShowCategoryPopup] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [isWinner, setIsWinner] = useState(false);
+  const [summaryDataLoaded, setSummaryDataLoaded] = useState(false); // NUEVO
+
   const { user } = useUser();
 
   const [gameState, setGameState] = useState<
@@ -160,12 +165,42 @@ export function ChallengePlayPage() {
       const challenge = await challengeService.answerRound(answerDTO);
 
       if (challenge.status === "COMPLETED") {
-        setGameState("CHALLENGE_SUMMARY");
+        const currentUserIsWinner =
+          (rol === "CHALLENGER" && challenge.result === "CHALLENGER_WIN") ||
+          (rol === "CHALLENGED" && challenge.result === "CHALLENGED_WIN");
+
+        setIsWinner(currentUserIsWinner);
+        setSummaryDataLoaded(false); // Resetear cuando cambiamos de estado
+
+        setTimeout(() => {
+          setGameState("CHALLENGE_SUMMARY");
+        }, 500);
       }
     } catch (error) {
       console.error("Error submitting turn:", error);
     }
   };
+
+  useEffect(() => {
+    if (gameState === "CHALLENGE_SUMMARY" && isWinner && summaryDataLoaded) {
+      const timer = setTimeout(() => {
+        setShowConfetti(true);
+
+        setTimeout(() => {
+          setShowConfetti(false);
+        }, 8000);
+      }, 300);
+
+      return () => clearTimeout(timer);
+    }
+  }, [gameState, isWinner, summaryDataLoaded]);
+
+  useEffect(() => {
+    if (gameState !== "CHALLENGE_SUMMARY") {
+      setShowConfetti(false);
+      setSummaryDataLoaded(false);
+    }
+  }, [gameState]);
 
   // --- LÓGICA DE LA RULETA ---
   useEffect(() => {
@@ -332,7 +367,11 @@ export function ChallengePlayPage() {
     console.log("CHALLENGE SUMMARY!");
     return (
       <MainLayout title={`Resumen del Desafío`}>
-        <ChallengeSummary challengeId={challengeId} />
+        {showConfetti && <Confetti duration={8000} intensity="high" />}
+        <ChallengeSummary
+          challengeId={challengeId}
+          onDataLoaded={() => setSummaryDataLoaded(true)}
+        />
       </MainLayout>
     );
   }

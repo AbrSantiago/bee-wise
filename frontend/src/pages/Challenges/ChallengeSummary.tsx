@@ -10,9 +10,10 @@ import { useUser } from "../../context/UserContext";
 
 interface Props {
   challengeId: string | undefined;
+  onDataLoaded?: () => void;
 }
 
-export default function ChallengeSummary({ challengeId }: Props) {
+export default function ChallengeSummary({ challengeId, onDataLoaded }: Props) {
   const [summary, setSummary] = useState<ChallengeSummaryDTO | null>(null);
   const [loading, setLoading] = useState(true);
   const { refreshUser } = useUser();
@@ -33,10 +34,13 @@ export default function ChallengeSummary({ challengeId }: Props) {
         console.error("Error fetching challenge summary:", error);
       } finally {
         setLoading(false);
+        if (onDataLoaded) {
+          onDataLoaded();
+        }
       }
     }
     fetchSummary();
-  }, [challengeId]);
+  }, [challengeId, onDataLoaded]);
 
   if (loading) {
     return <div className="challenge-summary-loading">Loading...</div>;
