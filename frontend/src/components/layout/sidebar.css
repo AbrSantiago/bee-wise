@@ -15,3 +15,22 @@
 .logout-btn:hover {
   /* background-color: rgba(0,0,0,0.1); */
 }
+
+.nav-item-locked {
+  opacity: 0.6;
+  position: relative;
+}
+
+.unlock-badge {
+  background: #ffd700;
+  color: #333;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 10px;
+  margin-left: 0.5rem;
+  font-weight: bold;
+}
+
+.nav-item-locked:hover {
+  opacity: 0.8;
+}

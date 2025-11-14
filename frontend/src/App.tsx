@@ -17,6 +17,8 @@ import { UserProvider } from "./context/UserContext";
 import { ChallengePlayPage } from "./pages/Challenges/ChallengePlay";
 import { AvatarEditPage } from "./pages/AvatarPage/AvatarEditPage";
 import { ShopPage } from "./pages/Shop/ShopPage";
+import { FeatureLockedPage } from "./pages/FeatureLocked/FeatureLockedPage";
+import { FeatureProtectedRoute } from "./components/layout/FeatureProtectedRoute";
 
 function App() {
   return (
@@ -37,7 +39,18 @@ function App() {
               <Route path="/practice/:id" element={<PracticePage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/avatar" element={<AvatarEditPage />} />
-              <Route path="/challenges" element={<ChallengesPage />} />
+
+              {/* Challenges - Requiere Nivel 2 */}
+              <Route
+                path="/challenges"
+                element={
+                  <FeatureProtectedRoute requiredLevel={2}>
+                    <ChallengesPage />
+                  </FeatureProtectedRoute>
+                }
+              />
+
+              <Route path="/feature-locked" element={<FeatureLockedPage />} />
               <Route path="/ranking" element={<RankingPage />} />
               <Route path="/shop" element={<ShopPage />} />
               <Route path="/test" element={<Test />} />

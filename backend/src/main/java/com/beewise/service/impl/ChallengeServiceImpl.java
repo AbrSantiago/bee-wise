@@ -187,7 +187,7 @@ public class ChallengeServiceImpl implements ChallengeService {
                     summaryDTO.setItem(new ShopItemDTO(randomItem));
                     challenger.addItem(randomItem);
                 }
-                challenger.addPoints(challenge.getChallengerRewardPoints());
+                userService.addPointsToUser(challenger, challenge.getChallengerRewardPoints());
                 challenger.addBeeCoins(challenge.getChallengerRewardBeeCoins());
                 userRepository.save(challenger);
                 challenge.setChallengerGotReward(true);
@@ -202,7 +202,7 @@ public class ChallengeServiceImpl implements ChallengeService {
                     summaryDTO.setItem(new ShopItemDTO(randomItem));
                     challenged.addItem(randomItem);
                 }
-                challenged.addPoints(challenge.getChallengedRewardPoints());
+                userService.addPointsToUser(challenged, challenge.getChallengedRewardPoints());
                 challenged.addBeeCoins(challenge.getChallengedRewardBeeCoins());
                 challenge.setChallengedGotReward(true);
                 userRepository.save(challenged);

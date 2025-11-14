@@ -22,6 +22,7 @@ public class UserDTO {
     private AvatarDTO avatar;
     private List<ShopItemDTO> items;
     private int beeCoins;
+    private LevelDTO level;
 
     public UserDTO(User user) {
         this.id = user.getId();
@@ -41,5 +42,6 @@ public class UserDTO {
                 .map(ShopItemDTO::new)
                 .toList();
         this.beeCoins = user.getBeeCoins();
+        this.level = new LevelDTO(user.getLevel());
     }
 }

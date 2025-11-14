@@ -1,5 +1,11 @@
 import apiClient from "./api";
 
+export interface Level {
+  level: number;
+  name: string;
+  iconUrl: string;
+}
+
 export type User = {
   id: number;
   name: string;
@@ -10,6 +16,7 @@ export type User = {
   avatar: Avatar;
   items: ShopItem[];
   beeCoins: number;
+  level: Level;
   ranking: number;
 };
 

@@ -1,15 +1,19 @@
-import { useAuth } from '../../context/AuthContext';
-import './layout.css';
-import './Sidebar.css'
-import { Link } from 'react-router-dom';
+import { useAuth } from "../../context/AuthContext";
+import { useUser } from "../../context/UserContext";
+import "./layout.css";
+import "./Sidebar.css";
+import { Link } from "react-router-dom";
 
 const Sidebar = () => {
   const { logout } = useAuth();
+  const { user } = useUser();
 
   const handleLogout = () => {
     logout();
   };
-  
+
+  const isChallengesUnlocked = user?.level?.level && user.level.level >= 2;
+
   return (
     <div className="sidebar">
       {/* Logo/Título */}
