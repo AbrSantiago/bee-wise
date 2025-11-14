@@ -182,10 +182,12 @@ public class ChallengeServiceImpl implements ChallengeService {
                     throw new UserAlreadyGotRewardException("User " + username + " already got reward");
                 }
                 User challenger = challenge.getChallenger();
-                ShopItem randomItem = getRandomAvailableItem(challenger);
-                if (randomItem != null) {
-                    summaryDTO.setItem(new ShopItemDTO(randomItem));
-                    challenger.addItem(randomItem);
+                if (challenge.challengerWon()) {
+                    ShopItem randomItem = getRandomAvailableItem(challenger);
+                    if (randomItem != null) {
+                        summaryDTO.setItem(new ShopItemDTO(randomItem));
+                        challenger.addItem(randomItem);
+                    }
                 }
                 userService.addPointsToUser(challenger, challenge.getChallengerRewardPoints());
                 challenger.addBeeCoins(challenge.getChallengerRewardBeeCoins());
@@ -197,10 +199,12 @@ public class ChallengeServiceImpl implements ChallengeService {
                     throw new UserAlreadyGotRewardException("User " + username + " already got reward");
                 }
                 User challenged = challenge.getChallenged();
-                ShopItem randomItem = getRandomAvailableItem(challenged);
-                if (randomItem != null) {
-                    summaryDTO.setItem(new ShopItemDTO(randomItem));
-                    challenged.addItem(randomItem);
+                if (challenge.challengerWon()) {
+                    ShopItem randomItem = getRandomAvailableItem(challenged);
+                    if (randomItem != null) {
+                        summaryDTO.setItem(new ShopItemDTO(randomItem));
+                        challenged.addItem(randomItem);
+                    }
                 }
                 userService.addPointsToUser(challenged, challenge.getChallengedRewardPoints());
                 challenged.addBeeCoins(challenge.getChallengedRewardBeeCoins());

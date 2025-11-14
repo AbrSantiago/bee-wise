@@ -227,4 +227,12 @@ public class Challenge {
     private boolean isChallenged(String username) {
         return Objects.equals(challenged.getUsername(), username);
     }
+
+    public boolean challengerWon() {
+        return result == ChallengeResult.CHALLENGER_WIN;
+    }
+
+    public boolean challengedWon() {
+        return result == ChallengeResult.CHALLENGED_WIN;
+    }
 }
