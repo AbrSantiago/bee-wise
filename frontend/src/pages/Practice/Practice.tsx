@@ -22,10 +22,12 @@ import SummaryScreen from "./components/SummaryScreen";
 import CorrectionIntroScreen from "./components/CorrectionIntroScreen";
 import ProgressBar from "../../components/layout/ProgressBar";
 import Confetti from "../../components/layout/Confetti";
+import { useUser } from "../../context/UserContext";
 
 export function PracticePage() {
   const { id } = useParams<{ id: string }>();
   const { userPoints, refreshPoints } = useUserPoints();
+  const { refreshUser } = useUser();
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [currentExercise, setCurrentExercise] = useState(0);
   const [userAnswer, setUserAnswer] = useState("");
@@ -73,12 +75,12 @@ export function PracticePage() {
         try {
           setLessonCompleted(true);
 
-          const response = await lessonService.lessonComplete({
+          await lessonService.lessonComplete({
             completedLessonId: parseInt(id),
             userId: userId,
             correctExercises: correctCount,
           });
-          await refreshPoints();
+          refreshUser();
           if (correctCount > 0) {
             setShowConfetti(true);
             setTimeout(() => {
