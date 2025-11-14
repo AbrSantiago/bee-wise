@@ -11,7 +11,7 @@ export function OwnedItemCard({ item }: Props) {
       case "SKIN":
         return `/avatars/skin/${item.image}`;
       case "HAIR":
-        return `avatars/hair/${item.image}`;
+        return `/avatars/hair/${item.image}`;
       case "SHIRT":
         return `/avatars/shirt/${item.image}`;
       case "BACKGROUND":
