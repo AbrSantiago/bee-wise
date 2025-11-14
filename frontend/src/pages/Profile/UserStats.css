@@ -1,0 +1,72 @@
+.user-stats__container {
+  /* background-color: #ffe3ac; */
+  background: linear-gradient(120deg, #fffbbe, #fff175);
+  /* background: linear-gradient(120deg, #ffe9be, #ffd175); */
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  color: #333;
+  width: 600px;
+  margin: 0 auto;
+  font-family: "Poppins", sans-serif;
+}
+
+.user-stats__title {
+  color: #7b4bff;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.user-stats__subtitle {
+  color: #444;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.user-stats__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+}
+
+.user-stats__card {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.user-stats__card:hover {
+  transform: translateY(-3px);
+}
+
+.user-stats__label {
+  display: block;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.user-stats__value {
+  font-size: 1.4rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.user-stats__summary {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 1rem;
+  color: #5b3ec8;
+}
+
+.user-stats__loading,
+.user-stats__error {
+  text-align: center;
+  color: #777;
+  padding: 20px;
+}

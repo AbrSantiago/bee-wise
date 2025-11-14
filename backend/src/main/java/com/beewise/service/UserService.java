@@ -23,4 +23,5 @@ public interface UserService {
     List<ShopItem> getUserItems(String username);
     Map<ItemCategory, List<ShopItem>> getAllByCategory(String username);
     Boolean addPointsToUser(User user, Integer pointsToAdd);
+    UserStatsDTO getStats(String username);
 }

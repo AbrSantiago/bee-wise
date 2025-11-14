@@ -60,15 +60,12 @@ class RoundTest {
     }
 
     @Test
-    void winner_whenScoresEqual_returnsChallengedUser() {
+    void winner_whenScoresEqual_returnsNoUser() {
         Challenge challenge = createChallenge();
         Round round = new Round(challenge, 1, RoundStatus.COMPLETED);
         round.setChallengerScore(75);
         round.setChallengedScore(75);
-
-        User winner = round.winner();
-
-        assertEquals(challenge.getChallenged(), winner);
+        assertNull(round.winner());
     }
 
     @Test
@@ -109,9 +106,7 @@ class RoundTest {
         answer.setRol(ChallengeRol.CHALLENGER);
         answer.setScore(95);
 
-        assertThrows(RoundCompletedException.class, () -> {
-            round.answer(answer);
-        });
+        assertThrows(RoundCompletedException.class, () -> round.answer(answer));
     }
 
     @Test
@@ -243,13 +238,10 @@ class RoundTest {
     }
 
     @Test
-    void winner_withZeroScores_returnsChallengedUser() {
+    void winner_withZeroScores_returnsNoUser() {
         Challenge challenge = createChallenge();
         Round round = new Round(challenge, 1, RoundStatus.COMPLETED);
-
-        User winner = round.winner();
-
-        assertEquals(challenge.getChallenged(), winner);
+        assertNull(round.winner());
     }
 
     @Test

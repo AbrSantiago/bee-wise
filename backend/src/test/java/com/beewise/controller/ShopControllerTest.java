@@ -3,10 +3,7 @@ package com.beewise.controller;
 import com.beewise.controller.dto.NewShopItemDTO;
 import com.beewise.controller.dto.ShopItemDTO;
 import com.beewise.controller.dto.UserDTO;
-import com.beewise.model.Avatar;
-import com.beewise.model.ItemCategory;
-import com.beewise.model.ShopItem;
-import com.beewise.model.User;
+import com.beewise.model.*;
 import com.beewise.service.ShopService;
 import com.beewise.service.UserService;
 import com.beewise.service.impl.JwtService;
@@ -105,7 +102,22 @@ class ShopControllerTest {
         Long itemId = 1L;
         String token = "Bearer testtoken";
         String username = "user1";
+        User user = getUser();
+
+        when(jwtService.extractUsername("testtoken")).thenReturn(username);
+        when(userService.buyItem(itemId, username)).thenReturn(user);
+
+        ResponseEntity<UserDTO> response = controller.buyItem(itemId, token);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertNotNull(response.getBody());
+        verify(jwtService).extractUsername("testtoken");
+        verify(userService).buyItem(itemId, username);
+    }
+
+    private static User getUser() {
         User user = new User();
+        user.setLevel(getLevel());
 
         Avatar avatar = new Avatar();
         avatar.setId(123L);
@@ -127,15 +139,12 @@ class ShopControllerTest {
         avatar.setHair(hair);
 
         user.setAvatar(avatar);
+        return user;
+    }
 
-        when(jwtService.extractUsername("testtoken")).thenReturn(username);
-        when(userService.buyItem(itemId, username)).thenReturn(user);
-
-        ResponseEntity<UserDTO> response = controller.buyItem(itemId, token);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertNotNull(response.getBody());
-        verify(jwtService).extractUsername("testtoken");
-        verify(userService).buyItem(itemId, username);
+    private static Level getLevel() {
+        Level lvl = new Level();
+        lvl.setId(1L);
+        return lvl;
     }
 }

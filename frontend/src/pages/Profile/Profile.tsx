@@ -4,6 +4,7 @@ import MainLayout from "../../components/layout/MainLayout";
 import { useUser } from "../../context/UserContext";
 import { OwnedItemCard } from "./OwnedItemCard";
 import "./Profile.css";
+import UserStats from "./UserStats";
 
 export function ProfilePage() {
   const { user } = useUser();
@@ -48,8 +49,10 @@ export function ProfilePage() {
             </section>
           </div>
 
+          <UserStats />
+
           {/* Items del usuario */}
-          <section className="user-items-container">
+          {/* <section className="user-items-container">
             <h3>Tus ítems</h3>
             {items.length === 0 ? (
               <p className="no-items">Todavía no compraste ningún ítem</p>
@@ -60,7 +63,7 @@ export function ProfilePage() {
                 ))}
               </div>
             )}
-          </section>
+          </section> */}
         </div>
       </div>
     </MainLayout>

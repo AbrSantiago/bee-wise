@@ -21,6 +21,7 @@ import FeedbackMessage from "./components/FeedbackMessage";
 import SummaryScreen from "./components/SummaryScreen";
 import CorrectionIntroScreen from "./components/CorrectionIntroScreen";
 import ProgressBar from "../../components/layout/ProgressBar";
+import Confetti from "../../components/layout/Confetti";
 
 export function PracticePage() {
   const { id } = useParams<{ id: string }>();
@@ -41,6 +42,7 @@ export function PracticePage() {
   const [totalCount, setTotalCount] = useState(0);
   const [inCorrectionRound, setInCorrectionRound] = useState(false);
   const [lessonCompleted, setLessonCompleted] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const current = exercises[currentExercise];
 
@@ -77,6 +79,12 @@ export function PracticePage() {
             correctExercises: correctCount,
           });
           await refreshPoints();
+          if (correctCount > 0) {
+            setShowConfetti(true);
+            setTimeout(() => {
+              setShowConfetti(false);
+            }, 5000);
+          }
         } catch (error) {
           console.error("❌ Error completing lesson:", error);
           setLessonCompleted(false);
@@ -250,15 +258,17 @@ export function PracticePage() {
 
   if (showCorrectionIntro) {
     return (
-      <CorrectionIntroScreen
-        lessonId={id}
-        onContinue={() => {
-          setExercises(pendingExercises);
-          setCurrentExercise(0);
-          setPendingExercises([]);
-          setShowCorrectionIntro(false);
-        }}
-      />
+      <MainLayout title={`Lección ${id}`}>
+        <CorrectionIntroScreen
+          lessonId={id}
+          onContinue={() => {
+            setExercises(pendingExercises);
+            setCurrentExercise(0);
+            setPendingExercises([]);
+            setShowCorrectionIntro(false);
+          }}
+        />
+      </MainLayout>
     );
   }
 

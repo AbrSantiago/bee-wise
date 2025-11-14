@@ -38,6 +38,7 @@ export function ChallengePlayPage() {
   const [feedback, setFeedback] = useState<null | boolean>(null);
   const [canContinue, setCanContinue] = useState(false);
   const [pendingExercises, setPendingExercises] = useState<Exercise[]>([]);
+  const [showSummary, setShowSummary] = useState(false); // Mantendremos este por ahora para la lógica final
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [startTime, setStartTime] = useState<number | null>(null);
   const [endTime, setEndTime] = useState<number | null>(null);
@@ -158,7 +159,7 @@ export function ChallengePlayPage() {
         challengeId: Number(challengeId),
         roundNumber: Number(roundNumber),
         rol: rol,
-        score: correctCount * 2,
+        score: correctCount,
         correctAnswers: correctCount,
       };
 

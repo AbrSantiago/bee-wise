@@ -82,14 +82,13 @@ class ChallengeControllerTest {
         when(challengeService.getUsersToChallenge(5L)).thenReturn(users);
 
 
-        ResponseEntity<List<UserDTO>> response = controller.getUsersToChallenge(5L);
+        ResponseEntity<List<UserToChallengeDTO>> response = controller.getUsersToChallenge(5L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(3, response.getBody().size());
         assertEquals(1L, response.getBody().get(0).getId());
         assertEquals("user1", response.getBody().get(0).getUsername());
-        assertEquals("user1@test.com", response.getBody().get(0).getEmail());
         verify(challengeService).getUsersToChallenge(5L);
     }
 
@@ -97,7 +96,7 @@ class ChallengeControllerTest {
     void getUsersToChallenge_withEmptyList_returnsEmptyList() {
         when(challengeService.getUsersToChallenge(10L)).thenReturn(List.of());
 
-        ResponseEntity<List<UserDTO>> response = controller.getUsersToChallenge(10L);
+        ResponseEntity<List<UserToChallengeDTO>> response = controller.getUsersToChallenge(10L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -232,7 +231,7 @@ class ChallengeControllerTest {
 
         when(challengeService.getUsersToChallenge(99L)).thenReturn(users);
 
-        ResponseEntity<List<UserDTO>> response = controller.getUsersToChallenge(99L);
+        ResponseEntity<List<UserToChallengeDTO>> response = controller.getUsersToChallenge(99L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -286,6 +285,7 @@ class ChallengeControllerTest {
         user.setUsername("opponentUser");
         user.setId(123L);
         user.setAvatar(createAvatar(user));
+        user.setLevel(lvl2());
 
         when(challengeService.getOpponent(99L, "playerUser")).thenReturn(user);
 
@@ -295,6 +295,10 @@ class ChallengeControllerTest {
         assertNotNull(response.getBody());
         assertEquals("opponentUser", response.getBody().getUsername());
         verify(challengeService).getOpponent(99L, "playerUser");
+    }
+
+    private Level lvl2() {
+        return new Level();
     }
 
     @Test

@@ -21,4 +21,13 @@ h1 {
   gap: 2rem;
   justify-content: center;
   padding: 2rem;
+
+  max-height: calc(100vh - 290px);
+  overflow-y: auto;
+  scrollbar-width: none;
+  width: 500px;
+
+  /* background: linear-gradient(-145deg, #fff8e1, #fff6d9);
+  border: 2px solid #fbc02d;
+  border-radius: 16px; */
 }

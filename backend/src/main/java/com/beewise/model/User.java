@@ -1,5 +1,6 @@
 package com.beewise.model;
 
+import com.beewise.exception.NotEnoughBeeCoinsException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
@@ -71,6 +72,8 @@ public class User {
     @Min(value = 0, message = "BeeCoins cannot be negative")
     private int beeCoins = 100;
 
+    private int spentBeeCoins = 0;
+
     public void addPoints(int delta) {
         this.points += delta;
     }
@@ -81,5 +84,13 @@ public class User {
 
     public void addItem(ShopItem item) {
         this.items.add(item);
+    }
+
+    public void spendBeeCoins(int delta) {
+        if (this.beeCoins < delta) {
+            throw new NotEnoughBeeCoinsException("User " + username + " has no enough bee coims");
+        }
+        this.beeCoins -= delta;
+        this.spentBeeCoins += delta;
     }
 }

@@ -35,6 +35,7 @@ class UserDTOTest {
         user.setPoints(150);
         user.setCurrentLesson(5);
         user.setAvatar(createAvatar(user));
+        user.setLevel(getLvl());
 
         Lesson lesson1 = new Lesson();
         lesson1.setId(10L);
@@ -75,6 +76,8 @@ class UserDTOTest {
         user.setLessonProgresses(new ArrayList<>());
         user.setAvatar(createAvatar(user));
 
+        user.setLevel(getLvl());
+
         UserDTO dto = new UserDTO(user);
 
         assertNull(dto.getId());
@@ -85,6 +88,12 @@ class UserDTOTest {
         assertEquals(0, dto.getPoints());
         assertEquals(0, dto.getCurrentLesson());
         assertTrue(dto.getCompletedLessons().isEmpty());
+    }
+
+    private static Level getLvl() {
+        Level lvl = new Level();
+        lvl.setId(1L);
+        return lvl;
     }
 
     @Test
@@ -99,6 +108,7 @@ class UserDTOTest {
         user.setCurrentLesson(3);
         user.setLessonProgresses(new ArrayList<>());
         user.setAvatar(createAvatar(user));
+        user.setLevel(getLvl());
 
         UserDTO dto = new UserDTO(user);
 
@@ -123,6 +133,7 @@ class UserDTOTest {
         user.setPoints(200);
         user.setCurrentLesson(8);
         user.setAvatar(createAvatar(user));
+        user.setLevel(getLvl());
 
         Lesson lesson1 = new Lesson();
         lesson1.setId(1L);
@@ -212,6 +223,7 @@ class UserDTOTest {
         user.setCurrentLesson(1);
         user.setLessonProgresses(new ArrayList<>());
         user.setAvatar(createAvatar(user));
+        user.setLevel(getLvl());
 
         UserDTO dto = new UserDTO(user);
 
@@ -231,6 +243,7 @@ class UserDTOTest {
         user.setCurrentLesson(0);
         user.setLessonProgresses(new ArrayList<>());
         user.setAvatar(createAvatar(user));
+        user.setLevel(getLvl());
 
         UserDTO dto = new UserDTO(user);
 

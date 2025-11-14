@@ -33,4 +33,54 @@ public interface UserRepository extends JpaRepository<User, Long> {
             @Param("challengerId") Long challengerId,
             @Param("activeStatuses") List<ChallengeStatus> activeStatuses
     );
+
+    /** Desafíos jugados (en cualquier rol) */
+    @Query("""
+        SELECT COUNT(c)
+        FROM Challenge c
+        WHERE c.challenger.id = :userId OR c.challenged.id = :userId
+    """)
+    int getChallengesPlayed(@Param("userId") Long userId);
+
+    /** Desafíos ganados */
+    @Query("""
+        SELECT COUNT(c)
+        FROM Challenge c
+        WHERE c.result = 'CHALLENGER_WIN' AND c.challenger.id = :userId
+           OR c.result = 'CHALLENGED_WIN' AND c.challenged.id = :userId
+    """)
+    int getChallengesWon(@Param("userId") Long userId);
+
+    /** Rondas ganadas */
+    @Query("""
+        SELECT COUNT(r)
+        FROM Round r
+        WHERE (r.challenge.challenger.id = :userId AND r.challengerScore > r.challengedScore)
+           OR (r.challenge.challenged.id = :userId AND r.challengedScore > r.challengerScore)
+    """)
+    int getRoundsWon(@Param("userId") Long userId);
+
+    @Query("""
+        SELECT COALESCE(
+            AVG(
+                CASE
+                    WHEN r.challenge.challenger.id = :userId THEN r.challengerScore * 1.0 / r.challenge.questionsPerRound
+                    ELSE r.challengedScore * 1.0 / r.challenge.questionsPerRound
+                END
+            ) * 100, 0)
+        FROM Round r
+    """)
+    double getAccuracyPercentagePerChallenge(@Param("userId") Long userId);
+
+    /** Precisión general (respuestas correctas / total de respuestas) */
+    @Query("""
+        SELECT COALESCE(
+            SUM(CASE\s
+                    WHEN r.challenge.challenger.id = :userId THEN r.challengerScore
+                    ELSE r.challengedScore
+                END) * 1.0 /\s
+            SUM(r.challenge.questionsPerRound), 0)
+        FROM Round r
+    \s""")
+    double getAccuracy(@Param("userId") Long userId);
 }

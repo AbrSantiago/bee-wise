@@ -37,25 +37,23 @@
   height: 0;
   width: 260px; /* Mitad del ancho de la ruleta */
   position: absolute;
-  clip-path: polygon(100% 0, 50% 100%, 0 0);
+  clip-path: polygon(100% 0, 50% 100%, 0% 0%);
   transform-origin: bottom;
   left: 21%; /* (ancho ruleta - ancho segmento) / 2 */
   top: 0;
   border-bottom-width: 225px; /* Mitad de la altura de la ruleta */
   border-bottom-style: solid;
-  /* El color se aplica desde el componente JS */
 }
 
 .segment-text {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: -140px; /* Ajustar según tamaño */
+  bottom: -110px; /* Ajustar según tamaño */
   text-align: center;
   transform: rotate(-90deg);
   color: white;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
-  text-transform: capitalize;
 }
