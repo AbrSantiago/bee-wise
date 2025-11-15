@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import MainLayout from "../../components/layout/MainLayout";
 import "katex/dist/katex.min.css";
 // @ts-ignore
 import { BlockMath } from "react-katex";
@@ -45,6 +46,7 @@ export function PracticePage() {
   const [inCorrectionRound, setInCorrectionRound] = useState(false);
   const [lessonCompleted, setLessonCompleted] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [levelUpInfo, setLevelUpInfo] = useState<LevelUpInfo | null>(null);
 
   const current = exercises[currentExercise];
 
@@ -75,11 +77,16 @@ export function PracticePage() {
         try {
           setLessonCompleted(true);
 
-          await lessonService.lessonComplete({
+          const response = await lessonService.lessonComplete({
             completedLessonId: parseInt(id),
             userId: userId,
             correctExercises: correctCount,
           });
+
+          if (response.levelUp) {
+            setLevelUpInfo(response.levelUp);
+          }
+
           refreshUser();
           if (correctCount > 0) {
             setShowConfetti(true);
@@ -249,10 +256,12 @@ export function PracticePage() {
   if (showSummary) {
     return (
       <div className="practice-summary-container">
+        {showConfetti && <Confetti duration={8000} intensity="high" />}
         <SummaryScreen
           time={endTime && startTime ? endTime - startTime : 0}
           correctCount={correctCount}
           totalCount={totalCount}
+          levelUp={levelUpInfo}
         />
       </div>
     );

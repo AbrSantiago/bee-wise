@@ -48,11 +48,18 @@
 
 .profile-stats {
   display: flex;
+  flex-direction: column;
   color: #666;
-  gap: 20px;
-  justify-content: center;
+  gap: 10px;
+  justify-content: flex-start;
   margin-top: 15px;
   font-size: 1.1rem;
+}
+
+.profile-stats > div {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .profile-avatar {
@@ -80,4 +87,25 @@
 .edit-avatar-btn:hover {
   background-color: #f9844a;
   color: white;
+}
+
+.level-info-display {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.level-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 0.3rem;
+}
+
+.level-icon {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }

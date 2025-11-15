@@ -9,9 +9,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class LessonCompleteDTO {
-    private boolean success;
-    private String message;
-    private int totalPoints;
-    private LevelUpInfoDTO levelUp;
+public class LevelUpInfoDTO {
+    private Long oldLevelId;
+    private Long newLevelId;
+    private String newLevelName;
+    private String newLevelIconUrl;
 }

@@ -18,4 +18,5 @@ public class ChallengeSummaryDTO {
     private int points;
     private ShopItemDTO item = null;
     private ChallengeWinner winner;
+    private LevelUpInfoDTO levelUp = null;
 }

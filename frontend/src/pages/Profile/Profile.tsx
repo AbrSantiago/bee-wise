@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Avatar } from "../../components/layout/Avatar";
 import MainLayout from "../../components/layout/MainLayout";
 import { useUser } from "../../context/UserContext";
+import { OwnedItemCard } from "./OwnedItemCard";
 import "./Profile.css";
 import UserStats from "./UserStats";
 
@@ -18,7 +19,14 @@ export function ProfilePage() {
     );
   }
 
-  const { name, surname, username, email, avatar } = user;
+  const {
+    name,
+    surname,
+    username,
+    email,
+    avatar,
+    level,
+  } = user;
 
   return (
     <MainLayout title="Perfil">
@@ -40,6 +48,19 @@ export function ProfilePage() {
                 {name} {surname}
               </p>
               <p>{email}</p>
+              <div className="profile-stats">
+                <div>
+                  <strong>Nivel:</strong>
+                  <span>
+                    {level.level} - {level.name}
+                  </span>
+                  <img
+                    src={level.iconUrl}
+                    alt={level.name}
+                    className="level-icon"
+                  />
+                </div>
+              </div>
             </section>
           </div>
 

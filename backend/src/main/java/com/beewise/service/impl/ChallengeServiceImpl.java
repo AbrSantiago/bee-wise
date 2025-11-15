@@ -176,12 +176,17 @@ public class ChallengeServiceImpl implements ChallengeService {
         Challenge challenge = repository.findById(challengeId)
                 .orElseThrow(() -> new ChallengeNotFoundException("Challenge with id " + challengeId + " does not exists"));
         ChallengeSummaryDTO summaryDTO = challenge.getSummary(username);
+
+        LevelUpInfoDTO levelUpInfo = null;
+
         switch (challenge.getRol(username)) {
             case CHALLENGER -> {
                 if (challenge.isChallengerGotReward()) {
                     throw new UserAlreadyGotRewardException("User " + username + " already got reward");
                 }
                 User challenger = challenge.getChallenger();
+                Level oldLevel = challenger.getLevel();
+
                 if (challenge.challengerWon()) {
                     ShopItem randomItem = getRandomAvailableItem(challenger);
                     if (randomItem != null) {
@@ -190,6 +195,21 @@ public class ChallengeServiceImpl implements ChallengeService {
                     }
                 }
                 userService.addPointsToUser(challenger, challenge.getChallengerRewardPoints());
+
+                System.out.println("🔍 Old Level: " + oldLevel.getId());
+                System.out.println("🔍 New Level: " + challenger.getLevel().getId());
+
+                // ⬅️ VERIFICAR DESPUÉS de addPointsToUser
+                if (!oldLevel.getId().equals(challenger.getLevel().getId())) {
+                    levelUpInfo = new LevelUpInfoDTO(
+                            oldLevel.getId(),
+                            challenger.getLevel().getId(),
+                            challenger.getLevel().getName(),
+                            challenger.getLevel().getIconUrl()
+                    );
+                    System.out.println("🔍 LevelUpInfo created: " + levelUpInfo);
+                }
+
                 challenger.addBeeCoins(challenge.getChallengerRewardBeeCoins());
                 userRepository.save(challenger);
                 challenge.setChallengerGotReward(true);
@@ -199,7 +219,10 @@ public class ChallengeServiceImpl implements ChallengeService {
                     throw new UserAlreadyGotRewardException("User " + username + " already got reward");
                 }
                 User challenged = challenge.getChallenged();
-                if (challenge.challengerWon()) {
+                Level oldLevel = challenged.getLevel();
+
+                // ⬅️ CORREGIR: debe ser challengedWon() no challengerWon()
+                if (challenge.challengedWon()) {
                     ShopItem randomItem = getRandomAvailableItem(challenged);
                     if (randomItem != null) {
                         summaryDTO.setItem(new ShopItemDTO(randomItem));
@@ -207,11 +230,28 @@ public class ChallengeServiceImpl implements ChallengeService {
                     }
                 }
                 userService.addPointsToUser(challenged, challenge.getChallengedRewardPoints());
+                System.out.println("🔍 Old Level: " + oldLevel.getId());
+                System.out.println("🔍 New Level: " + challenged.getLevel().getId());
+                // ⬅️ VERIFICAR DESPUÉS de addPointsToUser
+                if (!oldLevel.getId().equals(challenged.getLevel().getId())) {
+                    levelUpInfo = new LevelUpInfoDTO(
+                            oldLevel.getId(),
+                            challenged.getLevel().getId(),
+                            challenged.getLevel().getName(),
+                            challenged.getLevel().getIconUrl()
+                    );
+                    System.out.println("🔍 LevelUpInfo created: " + levelUpInfo);
+
+                }
+
                 challenged.addBeeCoins(challenge.getChallengedRewardBeeCoins());
                 challenge.setChallengedGotReward(true);
                 userRepository.save(challenged);
             }
         }
+        System.out.println("🔍 Setting levelUp in DTO...");
+        summaryDTO.setLevelUp(levelUpInfo); // ⬅️ Asegúrate que sea setLevelUpInfo()
+        System.out.println("🔍 DTO levelUp: " + summaryDTO.getLevelUp());
         repository.save(challenge);
         return summaryDTO;
     }
