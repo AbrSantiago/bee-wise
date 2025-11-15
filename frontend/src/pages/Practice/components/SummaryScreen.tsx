@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import "./SummaryScreen.css";
+import Beector from "../../../components/layout/Beector";
 
 interface Props {
   time?: number;
@@ -25,6 +26,7 @@ export default function SummaryScreen({
   return (
     <div className="summary-container">
       <p className="summary-title">¡Has terminado todos los ejercicios!</p>
+      <Beector imgSrc="/image/BeeHappy.png" />
       <div className="summary-stats">
         <p>
           Tiempo total: <b>{formatTime(time)}</b>

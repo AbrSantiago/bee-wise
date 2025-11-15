@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import MainLayout from "../../components/layout/MainLayout";
 import "katex/dist/katex.min.css";
 // @ts-ignore
 import { BlockMath } from "react-katex";
@@ -23,7 +22,7 @@ import CorrectionIntroScreen from "./components/CorrectionIntroScreen";
 import ProgressBar from "../../components/layout/ProgressBar";
 import Confetti from "../../components/layout/Confetti";
 import { useUser } from "../../context/UserContext";
-import { div } from "framer-motion/client";
+import Beector from "../../components/layout/Beector";
 
 export function PracticePage() {
   const { id } = useParams<{ id: string }>();
@@ -262,7 +261,6 @@ export function PracticePage() {
   if (showCorrectionIntro) {
     return (
       <CorrectionIntroScreen
-        lessonId={id}
         onContinue={() => {
           setExercises(pendingExercises);
           setCurrentExercise(0);
@@ -280,7 +278,15 @@ export function PracticePage() {
         <div className="current-excercise">
           {current.type === "OPEN" ? (
             <div>
-              <p className="question-text">{current.question}</p>
+              <div className="bee-and-buttons">
+                {/* <img
+                  src="/image/BeeReading.png"
+                  alt="Bee reading"
+                  className="bee-reading"
+                /> */}
+                <Beector imgSrc="/image/BeeReading.png" size={180} />
+                <p className="question-text">{current.question}</p>
+              </div>
               <TrueFalseButtons
                 userAnswer={userAnswer}
                 feedback={feedback}

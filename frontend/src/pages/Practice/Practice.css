@@ -290,3 +290,9 @@ input[readonly] {
 .practice-summary-container {
   margin-top: 140px;
 }
+
+.bee-and-buttons {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}

@@ -1,14 +1,15 @@
+import Beector from "../../../components/layout/Beector";
 import "./CorrectionIntroScreen.css";
 
 interface Props {
   onContinue: () => void;
-  lessonId: string | undefined;
 }
 
-export default function CorrectionIntroScreen({ onContinue, lessonId }: Props) {
+export default function CorrectionIntroScreen({ onContinue }: Props) {
   return (
     <div className="correction-intro-container">
       <p className="correction-text">Ahora vamos a corregir los errores</p>
+      <Beector imgSrc="/image/BeeSmart.png" />
       <button className="btn-continue error" onClick={onContinue}>
         Continuar
       </button>
