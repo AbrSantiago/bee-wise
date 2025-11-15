@@ -19,7 +19,17 @@ export function ProfilePage() {
     );
   }
 
-  const { name, surname, username, email, beeCoins, avatar, items } = user;
+  const {
+    name,
+    surname,
+    username,
+    email,
+    beeCoins,
+    avatar,
+    items,
+    level,
+    points,
+  } = user;
 
   return (
     <MainLayout title="Perfil">
@@ -44,6 +54,19 @@ export function ProfilePage() {
               <div className="profile-stats">
                 <div>
                   <strong>BeeCoins:</strong> 🪙 {beeCoins}
+                </div>
+
+                {/* ⬅️ NIVEL */}
+                <div>
+                  <strong>Nivel:</strong>
+                  <span>
+                    {level.level} - {level.name}
+                  </span>
+                  <img
+                    src={level.iconUrl}
+                    alt={level.name}
+                    className="level-icon"
+                  />
                 </div>
               </div>
             </section>
