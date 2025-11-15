@@ -23,6 +23,7 @@ import CorrectionIntroScreen from "./components/CorrectionIntroScreen";
 import ProgressBar from "../../components/layout/ProgressBar";
 import Confetti from "../../components/layout/Confetti";
 import { useUser } from "../../context/UserContext";
+import { div } from "framer-motion/client";
 
 export function PracticePage() {
   const { id } = useParams<{ id: string }>();
@@ -248,29 +249,27 @@ export function PracticePage() {
 
   if (showSummary) {
     return (
-      <MainLayout title={`Lección ${id}`}>
+      <div className="practice-summary-container">
         <SummaryScreen
           time={endTime && startTime ? endTime - startTime : 0}
           correctCount={correctCount}
           totalCount={totalCount}
         />
-      </MainLayout>
+      </div>
     );
   }
 
   if (showCorrectionIntro) {
     return (
-      <MainLayout title={`Lección ${id}`}>
-        <CorrectionIntroScreen
-          lessonId={id}
-          onContinue={() => {
-            setExercises(pendingExercises);
-            setCurrentExercise(0);
-            setPendingExercises([]);
-            setShowCorrectionIntro(false);
-          }}
-        />
-      </MainLayout>
+      <CorrectionIntroScreen
+        lessonId={id}
+        onContinue={() => {
+          setExercises(pendingExercises);
+          setCurrentExercise(0);
+          setPendingExercises([]);
+          setShowCorrectionIntro(false);
+        }}
+      />
     );
   }
 
@@ -278,12 +277,10 @@ export function PracticePage() {
     <div className="exercise-container">
       <ProgressBar current={currentExercise} total={exercises.length} />
       {current ? (
-        <>
+        <div className="current-excercise">
           {current.type === "OPEN" ? (
-            <div className="mt-4">
-              <div className="matrix-container">
-                <p className="question-text">{current.question}</p>
-              </div>
+            <div>
+              <p className="question-text">{current.question}</p>
               <TrueFalseButtons
                 userAnswer={userAnswer}
                 feedback={feedback}
@@ -341,7 +338,7 @@ export function PracticePage() {
               Continuar
             </button>
           )}
-        </>
+        </div>
       ) : (
         <p className="text-gray-500">Cargando ejercicio...</p>
       )}

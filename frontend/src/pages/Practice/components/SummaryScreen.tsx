@@ -19,13 +19,23 @@ export default function SummaryScreen({
   correctCount = 0,
   totalCount = 0,
 }: Props) {
-  const percent = totalCount ? Math.round((correctCount / totalCount) * 100) : 0;
+  const percent = totalCount
+    ? Math.round((correctCount / totalCount) * 100)
+    : 0;
   return (
     <div className="summary-container">
       <p className="summary-title">¡Has terminado todos los ejercicios!</p>
       <div className="summary-stats">
-        <p>Tiempo total: <b>{formatTime(time)}</b></p>
-        <p>Aciertos: <b>{correctCount}/{totalCount}</b> ({percent}%)</p>
+        <p>
+          Tiempo total: <b>{formatTime(time)}</b>
+        </p>
+        <p>
+          Aciertos:{" "}
+          <b>
+            {correctCount}/{totalCount}
+          </b>{" "}
+          ({percent}%)
+        </p>
       </div>
       <Link to={`/`}>
         <button className="summary-btn-back-home">

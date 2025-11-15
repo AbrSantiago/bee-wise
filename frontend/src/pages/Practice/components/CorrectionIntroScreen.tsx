@@ -1,3 +1,5 @@
+import "./CorrectionIntroScreen.css";
+
 interface Props {
   onContinue: () => void;
   lessonId: string | undefined;
