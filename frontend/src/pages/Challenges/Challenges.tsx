@@ -8,6 +8,7 @@ import challengeService from "../../services/challengeService";
 import { useUser } from "../../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import UserToChallengeCard from "../../components/layout/UserToChallengeCard";
+import Beector from "../../components/layout/Beector";
 
 export function ChallengesPage() {
   const navigate = useNavigate();
@@ -50,7 +51,11 @@ export function ChallengesPage() {
   return (
     <MainLayout title="Desafíos">
       <div className="challenges">
-        <h1>⚔️ Elegí tu oponente ⚔️</h1>
+        <div className="challenge-title-container">
+          <Beector imgSrc="/image/BeeWarrior1.png" size={80} />
+          <h1>Elegí tu oponente</h1>
+          <Beector imgSrc="/image/BeeWarrior2.png" size={80} />
+        </div>
         <div className="user-cards-container">
           {users.map((user) => (
             <UserToChallengeCard

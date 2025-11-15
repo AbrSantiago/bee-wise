@@ -1,9 +1,18 @@
 .challenge-container {
   margin-top: 40px;
 }
+
 .challenge-content {
   display: flex;
   align-items: flex-start;
+  gap: 10px;
+}
+
+.challenge-title-container {
+  /* color: #8f147e; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 10px;
 }
 
