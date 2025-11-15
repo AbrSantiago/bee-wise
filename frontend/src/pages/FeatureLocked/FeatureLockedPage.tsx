@@ -1,13 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import MainLayout from "../../components/layout/MainLayout";
 import "./FeatureLocked.css";
-import lockedBeeImage from "../../../public/image/bee_sad2.png"; // Ajusta la ruta según donde guardes la imagen
+import lockedBeeImage from "/image/BeeAngry.png";
 
 export function FeatureLockedPage() {
   const navigate = useNavigate();
 
   return (
-    <MainLayout title="">
+    <MainLayout title="Desafíos">
       <div className="feature-locked-container">
         <div className="locked-card">
           <img

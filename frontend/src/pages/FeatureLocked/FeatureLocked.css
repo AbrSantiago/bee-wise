@@ -2,11 +2,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 70vh;
+  /* min-height: 70vh; */
   padding: 2rem;
   background: linear-gradient(135deg, #fff9e6 0%, #ffe8a3 50%, #ffd86f 100%);
   border-radius: 20px;
-  margin: 1rem;
+  margin: 2rem 1rem;
   position: relative;
   overflow: hidden;
 }
@@ -71,7 +71,7 @@
 }
 
 /* Decoración de esquinas */
-.locked-card::after {
+/* .locked-card::after {
   content: "🐝";
   position: absolute;
   font-size: 3rem;
@@ -79,7 +79,7 @@
   top: 1rem;
   right: 1rem;
   animation: rotate 20s linear infinite;
-}
+} */
 
 @keyframes pulse {
   0%,
@@ -103,8 +103,6 @@
 }
 
 .locked-bee-image {
-  width: 200px;
-  height: 200px;
   margin-bottom: 1.5rem;
   animation: float 3s ease-in-out infinite;
   position: relative;
@@ -193,8 +191,8 @@
 /* Responsive */
 @media (max-width: 1768px) {
   .locked-bee-image {
-    width: 520px;
-    height: 320px;
+    width: 45%;
+    /* height: 395px; */
   }
 
   .locked-card h1 {
