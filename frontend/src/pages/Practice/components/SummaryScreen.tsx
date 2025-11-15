@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import "./SummaryScreen.css";
 import Beector from "../../../components/layout/Beector";
 import type { LevelUpInfo } from "../../../services/lessonService";
+import LvlUpNotification from "../../../components/layout/LvlUpNotification";
 
 interface Props {
   time?: number;
@@ -30,30 +31,7 @@ export default function SummaryScreen({
     <div className="summary-container">
       <p className="summary-title">¡Has terminado todos los ejercicios!</p>
       <Beector imgSrc="/image/BeeHappy.png" />
-
-      {/* NOTIFICACIÓN DE LEVEL UP */}
-      {levelUp && (
-        <div className="level-up-notification">
-          {/* <div className="level-up-icon">🎉</div> */}
-          <h2 className="level-up-title">¡Subiste de Nivel!</h2>
-          <div className="level-up-details">
-            <div className="level-transition">
-              <span className="old-level">Nivel {levelUp.oldLevelId}</span>
-              <span className="arrow">→</span>
-              <span className="new-level">Nivel {levelUp.newLevelId}</span>
-            </div>
-            <div className="new-level-info">
-              <img
-                src={levelUp.newLevelIconUrl}
-                alt={levelUp.newLevelName}
-                className="level-icon"
-              />
-              <p className="level-name">{levelUp.newLevelName}</p>
-            </div>
-          </div>
-        </div>
-      )}
-
+      <LvlUpNotification levelUp={levelUp} />
       <div className="summary-stats">
         <p>
           Tiempo total: <b>{formatTime(time)}</b>
