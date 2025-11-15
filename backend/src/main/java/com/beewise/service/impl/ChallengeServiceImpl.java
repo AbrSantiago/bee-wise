@@ -196,10 +196,6 @@ public class ChallengeServiceImpl implements ChallengeService {
                 }
                 userService.addPointsToUser(challenger, challenge.getChallengerRewardPoints());
 
-                System.out.println("🔍 Old Level: " + oldLevel.getId());
-                System.out.println("🔍 New Level: " + challenger.getLevel().getId());
-
-                // ⬅️ VERIFICAR DESPUÉS de addPointsToUser
                 if (!oldLevel.getId().equals(challenger.getLevel().getId())) {
                     levelUpInfo = new LevelUpInfoDTO(
                             oldLevel.getId(),
@@ -207,7 +203,6 @@ public class ChallengeServiceImpl implements ChallengeService {
                             challenger.getLevel().getName(),
                             challenger.getLevel().getIconUrl()
                     );
-                    System.out.println("🔍 LevelUpInfo created: " + levelUpInfo);
                 }
 
                 challenger.addBeeCoins(challenge.getChallengerRewardBeeCoins());
@@ -221,7 +216,6 @@ public class ChallengeServiceImpl implements ChallengeService {
                 User challenged = challenge.getChallenged();
                 Level oldLevel = challenged.getLevel();
 
-                // ⬅️ CORREGIR: debe ser challengedWon() no challengerWon()
                 if (challenge.challengedWon()) {
                     ShopItem randomItem = getRandomAvailableItem(challenged);
                     if (randomItem != null) {
@@ -230,9 +224,6 @@ public class ChallengeServiceImpl implements ChallengeService {
                     }
                 }
                 userService.addPointsToUser(challenged, challenge.getChallengedRewardPoints());
-                System.out.println("🔍 Old Level: " + oldLevel.getId());
-                System.out.println("🔍 New Level: " + challenged.getLevel().getId());
-                // ⬅️ VERIFICAR DESPUÉS de addPointsToUser
                 if (!oldLevel.getId().equals(challenged.getLevel().getId())) {
                     levelUpInfo = new LevelUpInfoDTO(
                             oldLevel.getId(),
@@ -240,8 +231,6 @@ public class ChallengeServiceImpl implements ChallengeService {
                             challenged.getLevel().getName(),
                             challenged.getLevel().getIconUrl()
                     );
-                    System.out.println("🔍 LevelUpInfo created: " + levelUpInfo);
-
                 }
 
                 challenged.addBeeCoins(challenge.getChallengedRewardBeeCoins());
@@ -249,9 +238,7 @@ public class ChallengeServiceImpl implements ChallengeService {
                 userRepository.save(challenged);
             }
         }
-        System.out.println("🔍 Setting levelUp in DTO...");
-        summaryDTO.setLevelUp(levelUpInfo); // ⬅️ Asegúrate que sea setLevelUpInfo()
-        System.out.println("🔍 DTO levelUp: " + summaryDTO.getLevelUp());
+        summaryDTO.setLevelUp(levelUpInfo);
         repository.save(challenge);
         return summaryDTO;
     }
