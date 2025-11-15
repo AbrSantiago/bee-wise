@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { Avatar } from "../../components/layout/Avatar";
 import MainLayout from "../../components/layout/MainLayout";
 import { useUser } from "../../context/UserContext";
-import { OwnedItemCard } from "./OwnedItemCard";
 import "./Profile.css";
 import UserStats from "./UserStats";
 
@@ -19,7 +18,7 @@ export function ProfilePage() {
     );
   }
 
-  const { name, surname, username, email, beeCoins, avatar, items } = user;
+  const { name, surname, username, email, avatar } = user;
 
   return (
     <MainLayout title="Perfil">
@@ -41,29 +40,10 @@ export function ProfilePage() {
                 {name} {surname}
               </p>
               <p>{email}</p>
-              <div className="profile-stats">
-                <div>
-                  <strong>BeeCoins:</strong> 🪙 {beeCoins}
-                </div>
-              </div>
             </section>
           </div>
 
           <UserStats />
-
-          {/* Items del usuario */}
-          {/* <section className="user-items-container">
-            <h3>Tus ítems</h3>
-            {items.length === 0 ? (
-              <p className="no-items">Todavía no compraste ningún ítem</p>
-            ) : (
-              <div className="items-grid">
-                {items.map((item) => (
-                  <OwnedItemCard key={item.id} item={item} />
-                ))}
-              </div>
-            )}
-          </section> */}
         </div>
       </div>
     </MainLayout>
