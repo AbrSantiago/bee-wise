@@ -1,5 +1,5 @@
 import apiClient from "./api";
-import type { Exercise } from "./lessonService";
+import type { Exercise, LevelUpInfo } from "./lessonService";
 import type { Avatar, ShopItem, User, UserToChallengeDTO } from "./userService";
 
 export type ChallengeStatus = "PENDING" | "ACTIVE" | "EXPIRED" | "COMPLETED";
@@ -68,6 +68,7 @@ export type ChallengeSummaryDTO = {
   points: number;
   item: ShopItem;
   winner: ChallengeWinner;
+  levelUp: LevelUpInfo | null;
 };
 
 export type ChallengeWinner = "ME" | "OPPONENT" | "DRAW";

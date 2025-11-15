@@ -21,10 +21,18 @@ export type LessonCompleteRequest = {
   correctExercises: number;
 };
 
+export type LevelUpInfo = {
+  oldLevelId: number;
+  newLevelId: number;
+  newLevelName: string;
+  newLevelIconUrl: string;
+};
+
 export type LessonCompleteResponse = {
   success: boolean;
   message: string;
   totalPoints: number;
+  levelUp: LevelUpInfo | null;
 };
 
 const lessonService = {

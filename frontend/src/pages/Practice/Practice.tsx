@@ -45,6 +45,7 @@ export function PracticePage() {
   const [inCorrectionRound, setInCorrectionRound] = useState(false);
   const [lessonCompleted, setLessonCompleted] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [levelUpInfo, setLevelUpInfo] = useState<LevelUpInfo | null>(null);
 
   const current = exercises[currentExercise];
 
@@ -75,11 +76,16 @@ export function PracticePage() {
         try {
           setLessonCompleted(true);
 
-          await lessonService.lessonComplete({
+          const response = await lessonService.lessonComplete({
             completedLessonId: parseInt(id),
             userId: userId,
             correctExercises: correctCount,
           });
+
+          if (response.levelUp) {
+            setLevelUpInfo(response.levelUp);
+          }
+
           refreshUser();
           if (correctCount > 0) {
             setShowConfetti(true);
@@ -249,10 +255,12 @@ export function PracticePage() {
   if (showSummary) {
     return (
       <MainLayout title={`Lección ${id}`}>
+        {showConfetti && <Confetti duration={8000} intensity="high" />}
         <SummaryScreen
           time={endTime && startTime ? endTime - startTime : 0}
           correctCount={correctCount}
           totalCount={totalCount}
+          levelUp={levelUpInfo}
         />
       </MainLayout>
     );

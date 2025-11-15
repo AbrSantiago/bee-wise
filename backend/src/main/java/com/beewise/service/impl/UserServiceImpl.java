@@ -100,12 +100,26 @@ public class UserServiceImpl implements UserService {
         Lesson lesson = lessonService.getLessonById(requestDTO.getCompletedLessonId());
         User user = userRepository.findById(requestDTO.getUserId())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        Level oldLevel = user.getLevel();
+
         Integer pointsEarned = requestDTO.getCorrectExercises() * 10;
         addPointsToUser(user, pointsEarned);
         user.setCurrentLesson(user.getCurrentLesson() + 1);
         userRepository.save(user);
         progressService.upsertProgress(user, lesson);
-        return new LessonCompleteDTO(true, "Progress updated", user.getPoints());
+
+        LevelUpInfoDTO levelUpInfo = null;
+        if (!oldLevel.getId().equals(user.getLevel().getId())) {
+            levelUpInfo = new LevelUpInfoDTO(
+                    oldLevel.getId(),
+                    user.getLevel().getId(),
+                    user.getLevel().getName(),
+                    user.getLevel().getIconUrl()
+            );
+        }
+
+        return new LessonCompleteDTO(true, "Progress updated", user.getPoints(), levelUpInfo);
     }
 
     @Override
