@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
@@ -165,7 +165,7 @@ describe("ChallengePlayPage", () => {
       // Hacer clic en girar
       await user.click(spinButton);
 
-      // Esperar a que termine la animación de la ruleta (5 segundos)
+      // Esperar 5 segundos reales para la animación
       await new Promise((resolve) => setTimeout(resolve, 5000));
 
       // Buscar el botón "Comenzar" y hacer clic
@@ -192,7 +192,7 @@ describe("ChallengePlayPage", () => {
       );
       await user.click(trueButton);
 
-      // ✅ Buscar el botón "Continuar" con clase "success"
+      // Buscar el botón "Continuar" con clase "success"
       const continueButton = await screen.findByRole(
         "button",
         { name: /Continuar/i },
@@ -201,29 +201,26 @@ describe("ChallengePlayPage", () => {
       expect(continueButton).toBeInTheDocument();
       expect(continueButton).toHaveClass("success");
 
-      // ✅ Verificar que el feedback message existe (sin importar el texto exacto)
+      // Verificar que el feedback message existe
       const feedbackMessage = document.querySelector(".feedback-message");
       expect(feedbackMessage).toBeInTheDocument();
-    }, 60000);
+    }, 30000);
 
     it("debe mostrar feedback negativo cuando se responde incorrectamente", async () => {
       const user = userEvent.setup();
       renderChallengePlay();
 
-      // Esperar el botón de girar
       const spinButton = await screen.findByRole(
         "button",
         { name: /¡GIRAR!/i },
         { timeout: 10000 }
       );
 
-      // Hacer clic en girar
       await user.click(spinButton);
 
-      // Esperar a que termine la animación de la ruleta (5 segundos)
+      // Esperar la animación
       await new Promise((resolve) => setTimeout(resolve, 5000));
 
-      // Buscar el botón "Comenzar" y hacer clic
       const startButton = await screen.findByRole(
         "button",
         { name: /¡?Comenzar!?/i },
@@ -231,7 +228,6 @@ describe("ChallengePlayPage", () => {
       );
       await user.click(startButton);
 
-      // Esperar a que aparezca la pregunta
       const question = await screen.findByText(
         /¿2 \+ 2 = 4\?/i,
         {},
@@ -239,7 +235,6 @@ describe("ChallengePlayPage", () => {
       );
       expect(question).toBeInTheDocument();
 
-      // Buscar y hacer clic en el botón FALSO (respuesta incorrecta)
       const falseButton = await screen.findByRole(
         "button",
         { name: /FALSO/i },
@@ -247,7 +242,6 @@ describe("ChallengePlayPage", () => {
       );
       await user.click(falseButton);
 
-      // ✅ Buscar el texto real del feedback
       const incorrectFeedback = await screen.findByText(
         /Mmm, nop|no te rindas/i,
         {},
@@ -255,33 +249,29 @@ describe("ChallengePlayPage", () => {
       );
       expect(incorrectFeedback).toBeInTheDocument();
 
-      // ✅ Verificar que el botón Continuar tiene clase "error"
       const continueButton = await screen.findByRole(
         "button",
         { name: /Continuar/i },
         { timeout: 10000 }
       );
       expect(continueButton).toHaveClass("error");
-    }, 60000);
+    }, 30000);
 
     it("debe mostrar timeout cuando se acaba el tiempo sin responder", async () => {
       const user = userEvent.setup();
       renderChallengePlay();
 
-      // Esperar el botón de girar
       const spinButton = await screen.findByRole(
         "button",
         { name: /¡GIRAR!/i },
         { timeout: 10000 }
       );
 
-      // Hacer clic en girar
       await user.click(spinButton);
 
-      // Esperar a que termine la animación de la ruleta (5 segundos)
+      // Esperar la animación (tiempo real)
       await new Promise((resolve) => setTimeout(resolve, 5000));
 
-      // Buscar el botón "Comenzar" y hacer clic
       const startButton = await screen.findByRole(
         "button",
         { name: /¡?Comenzar!?/i },
@@ -289,7 +279,6 @@ describe("ChallengePlayPage", () => {
       );
       await user.click(startButton);
 
-      // Esperar a que aparezca la pregunta
       const question = await screen.findByText(
         /¿2 \+ 2 = 4\?/i,
         {},
@@ -297,15 +286,17 @@ describe("ChallengePlayPage", () => {
       );
       expect(question).toBeInTheDocument();
 
-      // NO hacer clic, esperar el timeout (25 segundos + margen)
-      // ✅ Buscar el botón Continuar que aparece después del timeout
+      // Esperar 26 segundos REALES para el timeout
+      await new Promise((resolve) => setTimeout(resolve, 26000));
+
+      // Buscar el botón Continuar que aparece después del timeout
       const continueButton = await screen.findByRole(
         "button",
         { name: /Continuar/i },
-        { timeout: 30000 }
+        { timeout: 5000 }
       );
       expect(continueButton).toBeInTheDocument();
       expect(continueButton).toHaveClass("error");
-    }, 60000);
+    }, 45000);
   });
 });
