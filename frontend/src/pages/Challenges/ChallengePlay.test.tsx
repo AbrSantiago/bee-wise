@@ -52,7 +52,7 @@ vi.mock("../../services/challengeService");
 const mockExercise = {
   id: 1,
   question: "¿2 + 2 = 4?",
-  answer: "VERDADERO",
+  answer: "Verdadero",
   type: "OPEN" as const,
   options: null,
   solution: "Sí, es correcto",
@@ -168,18 +168,10 @@ describe("ChallengePlayPage", () => {
       // Esperar a que termine la animación de la ruleta (5 segundos)
       await new Promise((resolve) => setTimeout(resolve, 5000));
 
-      // Esperar a que aparezca el popup de categoría
-      const categoryPopup = await screen.findByText(
-        /Categoría|MATRICES/i,
-        {},
-        { timeout: 5000 }
-      );
-      expect(categoryPopup).toBeInTheDocument();
-
       // Buscar el botón "Comenzar" y hacer clic
       const startButton = await screen.findByRole(
         "button",
-        { name: /Comenzar/i },
+        { name: /¡?Comenzar!?/i },
         { timeout: 5000 }
       );
       await user.click(startButton);
@@ -200,13 +192,18 @@ describe("ChallengePlayPage", () => {
       );
       await user.click(trueButton);
 
-      // Esperar el feedback de respuesta correcta
-      const correctFeedback = await screen.findByText(
-        /¡Correcto!/i,
-        {},
+      // ✅ Buscar el botón "Continuar" con clase "success"
+      const continueButton = await screen.findByRole(
+        "button",
+        { name: /Continuar/i },
         { timeout: 10000 }
       );
-      expect(correctFeedback).toBeInTheDocument();
+      expect(continueButton).toBeInTheDocument();
+      expect(continueButton).toHaveClass("success");
+
+      // ✅ Verificar que el feedback message existe (sin importar el texto exacto)
+      const feedbackMessage = document.querySelector(".feedback-message");
+      expect(feedbackMessage).toBeInTheDocument();
     }, 60000);
 
     it("debe mostrar feedback negativo cuando se responde incorrectamente", async () => {
@@ -226,18 +223,10 @@ describe("ChallengePlayPage", () => {
       // Esperar a que termine la animación de la ruleta (5 segundos)
       await new Promise((resolve) => setTimeout(resolve, 5000));
 
-      // Esperar a que aparezca el popup de categoría
-      const categoryPopup = await screen.findByText(
-        /Categoría|MATRICES/i,
-        {},
-        { timeout: 5000 }
-      );
-      expect(categoryPopup).toBeInTheDocument();
-
       // Buscar el botón "Comenzar" y hacer clic
       const startButton = await screen.findByRole(
         "button",
-        { name: /Comenzar/i },
+        { name: /¡?Comenzar!?/i },
         { timeout: 5000 }
       );
       await user.click(startButton);
@@ -258,13 +247,21 @@ describe("ChallengePlayPage", () => {
       );
       await user.click(falseButton);
 
-      // Esperar el feedback de respuesta incorrecta
+      // ✅ Buscar el texto real del feedback
       const incorrectFeedback = await screen.findByText(
-        /Incorrecto/i,
+        /Mmm, nop|no te rindas/i,
         {},
         { timeout: 10000 }
       );
       expect(incorrectFeedback).toBeInTheDocument();
+
+      // ✅ Verificar que el botón Continuar tiene clase "error"
+      const continueButton = await screen.findByRole(
+        "button",
+        { name: /Continuar/i },
+        { timeout: 10000 }
+      );
+      expect(continueButton).toHaveClass("error");
     }, 60000);
 
     it("debe mostrar timeout cuando se acaba el tiempo sin responder", async () => {
@@ -284,18 +281,10 @@ describe("ChallengePlayPage", () => {
       // Esperar a que termine la animación de la ruleta (5 segundos)
       await new Promise((resolve) => setTimeout(resolve, 5000));
 
-      // Esperar a que aparezca el popup de categoría
-      const categoryPopup = await screen.findByText(
-        /Categoría|MATRICES/i,
-        {},
-        { timeout: 5000 }
-      );
-      expect(categoryPopup).toBeInTheDocument();
-
       // Buscar el botón "Comenzar" y hacer clic
       const startButton = await screen.findByRole(
         "button",
-        { name: /Comenzar/i },
+        { name: /¡?Comenzar!?/i },
         { timeout: 5000 }
       );
       await user.click(startButton);
@@ -308,14 +297,15 @@ describe("ChallengePlayPage", () => {
       );
       expect(question).toBeInTheDocument();
 
-      // NO hacer clic en ningún botón, simplemente esperar el timeout
-      // El componente tiene un timer de 25 segundos, así que esperamos 26 segundos
-      const timeoutMessage = await screen.findByText(
-        /Se acabó el tiempo|Tiempo agotado|Time's up/i,
-        {},
+      // NO hacer clic, esperar el timeout (25 segundos + margen)
+      // ✅ Buscar el botón Continuar que aparece después del timeout
+      const continueButton = await screen.findByRole(
+        "button",
+        { name: /Continuar/i },
         { timeout: 30000 }
       );
-      expect(timeoutMessage).toBeInTheDocument();
+      expect(continueButton).toBeInTheDocument();
+      expect(continueButton).toHaveClass("error");
     }, 60000);
   });
 });

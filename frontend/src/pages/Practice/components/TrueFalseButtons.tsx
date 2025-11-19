@@ -1,4 +1,4 @@
-import "./TrueFalseButtons.css"
+import "./TrueFalseButtons.css";
 
 interface Props {
   userAnswer: string;
