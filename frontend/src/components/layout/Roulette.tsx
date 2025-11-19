@@ -75,7 +75,8 @@ const Roulette: React.FC<RouletteProps> = ({
 
   return (
     <div className="roulette-display">
-      <div className="roulette-pointer"></div>
+      {/* <div className="roulette-pointer"></div> */}
+      <img className="roulette-frame" src="/image/Roulette.png" />
       <div id="wheel" ref={wheelRef} className="wheel">
         {categories?.map((category, index) => (
           <div

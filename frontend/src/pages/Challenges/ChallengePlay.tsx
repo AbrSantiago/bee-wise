@@ -24,13 +24,12 @@ import {
 import type { DragEndEvent } from "@dnd-kit/core";
 import FeedbackMessage from "../Practice/components/FeedbackMessage";
 import DnDOptions from "../Practice/components/DnDOptions";
-import Roulette from "../../components/layout/Roulette";
-import CategoryPopup from "../../components/layout/CategoryPopup";
 import ChallengeUserCard from "./ChallengeUserCard";
 import { useUser } from "../../context/UserContext";
 import OpponentCard from "./OpponentCard";
 import ChallengeSummary from "./ChallengeSummary";
 import Confetti from "../../components/layout/Confetti";
+import RouletteScreen from "./RouletteScreen";
 
 export function ChallengePlayPage() {
   const [currentExercise, setCurrentExercise] = useState(0);
@@ -304,51 +303,16 @@ export function ChallengePlayPage() {
     if (loading)
       return <MainLayout title="Cargando...">Cargando desafío...</MainLayout>;
     return (
-      <MainLayout title={`Desafío`}>
-        <div
-          style={{
-            textAlign: "center",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <h2
-            style={{
-              color: "#fff",
-              fontFamily: "Recoleta-Bold",
-              fontSize: "2.5rem",
-              marginBottom: "20px",
-            }}
-          >
-            ¡Gira para definir la categoría!
-          </h2>
-          <Roulette
-            categories={rouletteCategories}
-            winningCategory={winningCategory}
-            triggerSpin={isSpinning}
-            onSpinningEnd={handleSpinEnd}
-          />
-          <button
-            onClick={handleStartSpin}
-            className="check-btn"
-            disabled={isSpinning}
-            style={{
-              marginTop: "30px",
-              width: "250px",
-              fontSize: "1.5rem",
-              padding: "15px",
-            }}
-          >
-            {isSpinning ? "Girando..." : "¡GIRAR!"}
-          </button>
-        </div>
-
-        {/* Mostrar el popup cuando showCategoryPopup sea true */}
-        {showCategoryPopup && winningCategory && (
-          <CategoryPopup category={winningCategory} onStart={handleStartGame} />
-        )}
-      </MainLayout>
+      <RouletteScreen
+        loading={loading}
+        categories={rouletteCategories}
+        winningCategory={winningCategory}
+        isSpinning={isSpinning}
+        showCategoryPopup={showCategoryPopup}
+        onSpinStart={handleStartSpin}
+        onSpinEnd={handleSpinEnd}
+        onStartGame={handleStartGame}
+      />
     );
   }
 
