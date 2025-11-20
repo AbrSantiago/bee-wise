@@ -1,3 +1,4 @@
+import BeeCoin from "../../components/layout/BeeCoin";
 import type { ShopItem } from "../../services/userService";
 import "./ShopItemCard.css";
 
@@ -62,11 +63,16 @@ export function ShopItemCard({
       />
       <div className={`shop-item-separator`} />
       <div className="buy-button">
-        {isPurchasing
-          ? "Comprando..."
-          : isOwned
-          ? "Adquirido"
-          : `🪙 ${item.price}`}
+        {isPurchasing ? (
+          "Comprando..."
+        ) : isOwned ? (
+          "Adquirido"
+        ) : (
+          <div className="price-container">
+            <BeeCoin size={20} />
+            <span>{item.price}</span>
+          </div>
+        )}
       </div>
     </button>
   );

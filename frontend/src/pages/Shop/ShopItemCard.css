@@ -67,9 +67,12 @@
 }
 
 .buy-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 25px;
-  padding: 3px 0 0 0;
+  padding: 0px 0 0 0;
   margin: 0;
   border: none;
   color: #f39c12;
@@ -81,4 +84,11 @@
 
 .buy-button:disabled {
   cursor: not-allowed;
+}
+
+.price-container {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
 }

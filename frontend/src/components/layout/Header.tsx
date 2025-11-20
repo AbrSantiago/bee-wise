@@ -27,7 +27,11 @@ const Header = ({ title, sectionInfo }: HeaderProps) => {
           <span className="stat-value">{!user ? "..." : user.points || 0}</span>
         </div>
         <div className="stat-item">
-          <span className="stat-icon">🪙</span>
+          <img
+            src="/image/BeeCoin.png"
+            alt="BeeCoin"
+            className="bee-coin-img"
+          />
           <span className="stat-value">
             {!user ? "..." : user.beeCoins || 0}
           </span>

@@ -124,6 +124,7 @@
 
 .stat-item {
   display: flex;
+  gap: 8px;
   align-items: center;
   background: rgba(255, 255, 255, 0.85);
   border-radius: 9px;
@@ -141,7 +142,6 @@
 
 .stat-icon {
   font-size: 1.2rem;
-  margin-right: 7px;
 }
 
 .stat-value {
@@ -178,4 +178,9 @@
   margin: 0 auto;
   left: 240px;
   right: 0;
+}
+
+.bee-coin-img {
+  padding: 1px;
+  max-height: 27px;
 }
