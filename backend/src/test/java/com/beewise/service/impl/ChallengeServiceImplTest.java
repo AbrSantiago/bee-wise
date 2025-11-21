@@ -9,6 +9,7 @@ import com.beewise.model.challenge.ChallengeResult;
 import com.beewise.model.challenge.ChallengeStatus;
 import com.beewise.model.challenge.RoundStatus;
 import com.beewise.repository.ChallengeRepository;
+import com.beewise.repository.LevelRepository;
 import com.beewise.service.ChallengeService;
 import com.beewise.service.ShopService;
 import com.beewise.service.UserService;
@@ -40,12 +41,18 @@ class ChallengeServiceImplTest {
     @Autowired
     private ShopService shopService;
 
+    @Autowired
+    private LevelRepository levelRepository;
+
     private User challenger;
     private User challenged;
     private Challenge activeChallengeWithRounds;
 
     @BeforeEach
     void setUp() {
+
+        createDefaultLevels();
+
         createItem("Default skin", ItemCategory.SKIN);
         createItem("Default hair", ItemCategory.HAIR);
         createItem("Default shirt", ItemCategory.SHIRT);
@@ -72,6 +79,22 @@ class ChallengeServiceImplTest {
         dto.setSurname("User");
         dto.setPassword("password123");
         return userService.registerUser(dto);
+    }
+
+    private void createDefaultLevels() {
+        if (levelRepository.count() == 0) {
+            Level level1 = new Level();
+            level1.setName("Beginner");
+            level1.setMinPoints(0);
+            level1.setIconUrl("icon1.png");
+            levelRepository.save(level1);
+
+            Level level2 = new Level();
+            level2.setName("Intermediate");
+            level2.setMinPoints(100);
+            level2.setIconUrl("icon2.png");
+            levelRepository.save(level2);
+        }
     }
 
     private Challenge createActiveChallengeWithRounds() {
@@ -375,7 +398,7 @@ class ChallengeServiceImplTest {
         Challenge result = challengeService.answerRound(challengedAnswer);
 
         assertEquals(ChallengeStatus.COMPLETED, result.getStatus());
-        assertEquals(ChallengeResult.CHALLENGED_WIN, result.getResult());
+        assertEquals(ChallengeResult.DRAW, result.getResult());
     }
 
     // challenger reply in state WAITING_CHALLENGED

@@ -5,8 +5,10 @@ import com.beewise.controller.dto.RefreshTokenResponseDTO;
 import com.beewise.controller.dto.RegisterUserDTO;
 import com.beewise.exception.InvalidTokenException;
 import com.beewise.model.ItemCategory;
+import com.beewise.model.Level;
 import com.beewise.model.RefreshToken;
 import com.beewise.model.User;
+import com.beewise.repository.LevelRepository;
 import com.beewise.repository.RefreshTokenRepository;
 import com.beewise.service.ShopService;
 import com.beewise.service.TokenService;
@@ -42,6 +44,9 @@ class TokenServiceImplTest {
     @Autowired
     private ShopService shopService;
 
+    @Autowired
+    private LevelRepository levelRepository;
+
     private User testUser;
     private RefreshToken validRefreshToken;
     private RefreshToken expiredRefreshToken;
@@ -49,6 +54,9 @@ class TokenServiceImplTest {
 
     @BeforeEach
     void setUp() {
+
+        createDefaultLevels();
+
         createItem("Default skin", ItemCategory.SKIN);
         createItem("Default hair", ItemCategory.HAIR);
         createItem("Default shirt", ItemCategory.SHIRT);
@@ -110,6 +118,22 @@ class TokenServiceImplTest {
         token.setExpiresAt(new Date(System.currentTimeMillis() + 604800000L));
         token.setRevoked(true);
         return refreshTokenRepository.save(token);
+    }
+
+    private void createDefaultLevels() {
+        if (levelRepository.count() == 0) {
+            Level level1 = new Level();
+            level1.setName("Beginner");
+            level1.setMinPoints(0);
+            level1.setIconUrl("icon1.png");
+            levelRepository.save(level1);
+
+            Level level2 = new Level();
+            level2.setName("Intermediate");
+            level2.setMinPoints(100);
+            level2.setIconUrl("icon2.png");
+            levelRepository.save(level2);
+        }
     }
 
     @Test

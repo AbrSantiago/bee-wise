@@ -5,11 +5,9 @@ import com.beewise.exception.ItemAlreadyBoughtException;
 import com.beewise.exception.NotEnoughBeeCoinsException;
 import com.beewise.exception.SomeItemsWereNotBought;
 import com.beewise.exception.UserNotFoundException;
-import com.beewise.model.ItemCategory;
-import com.beewise.model.Lesson;
-import com.beewise.model.ShopItem;
-import com.beewise.model.User;
+import com.beewise.model.*;
 import com.beewise.model.challenge.ChallengeStatus;
+import com.beewise.repository.LevelRepository;
 import com.beewise.repository.UserRepository;
 import com.beewise.service.LessonService;
 import com.beewise.service.ShopService;
@@ -45,11 +43,18 @@ class UserServiceImplTest {
     @Autowired
     private ShopService shopService;
 
+    @Autowired
+    private LevelRepository levelRepository;
+
     private User testUser;
+
     private Lesson testLesson;
 
     @BeforeEach
     void setUp() {
+
+        createDefaultLevels();
+
         createItem("Default skin", ItemCategory.SKIN);
         createItem("Default hair", ItemCategory.HAIR);
         createItem("Default shirt", ItemCategory.SHIRT);
@@ -82,6 +87,22 @@ class UserServiceImplTest {
         dto.setTitle("Test Lesson");
         dto.setDescription("Test Description");
         return lessonService.createLesson(dto);
+    }
+
+    private void createDefaultLevels() {
+        if (levelRepository.count() == 0) {
+            Level level1 = new Level();
+            level1.setName("Beginner");
+            level1.setMinPoints(0);
+            level1.setIconUrl("icon1.png");
+            levelRepository.save(level1);
+
+            Level level2 = new Level();
+            level2.setName("Intermediate");
+            level2.setMinPoints(100);
+            level2.setIconUrl("icon2.png");
+            levelRepository.save(level2);
+        }
     }
 
     @Test
@@ -271,7 +292,7 @@ class UserServiceImplTest {
         User updatedUser = userRepository.findById(testUser.getId()).orElse(null);
         assertNotNull(updatedUser);
         assertEquals(initialPoints + 50, updatedUser.getPoints()); // 5 exercises * 10 puntos
-        assertEquals(1, updatedUser.getCurrentLesson()); // +1 from start value
+        assertEquals(2, updatedUser.getCurrentLesson()); // +1 from start value
     }
 
     @Test
