@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import MainLayout from "../../components/layout/MainLayout";
 import "katex/dist/katex.min.css";
 // @ts-ignore
 import { BlockMath } from "react-katex";
@@ -13,7 +12,7 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import type { DragEndEvent } from "@dnd-kit/core";
-import lessonService, { type Exercise } from "../../services/lessonService";
+import lessonService, { type Exercise, type LevelUpInfo } from "../../services/lessonService";
 import { useUserPoints } from "../../context/UserPointsContext";
 import TrueFalseButtons from "./components/TrueFalseButtons";
 import DnDOptions from "./components/DnDOptions";
@@ -288,11 +287,6 @@ export function PracticePage() {
           {current.type === "OPEN" ? (
             <div>
               <div className="bee-and-buttons">
-                {/* <img
-                  src="/image/BeeReading.png"
-                  alt="Bee reading"
-                  className="bee-reading"
-                /> */}
                 <Beector imgSrc="/image/BeeReading.png" size={180} />
                 <p className="question-text">{current.question}</p>
               </div>

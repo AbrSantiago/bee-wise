@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import MainLayout from "../../components/layout/MainLayout";
 import challengeService, {
   type AnswerDTO,
@@ -37,7 +37,6 @@ export function ChallengePlayPage() {
   const [feedback, setFeedback] = useState<null | boolean>(null);
   const [canContinue, setCanContinue] = useState(false);
   const [pendingExercises, setPendingExercises] = useState<Exercise[]>([]);
-  const [showSummary, setShowSummary] = useState(false); // Mantendremos este por ahora para la lógica final
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [startTime, setStartTime] = useState<number | null>(null);
   const [endTime, setEndTime] = useState<number | null>(null);
@@ -51,7 +50,7 @@ export function ChallengePlayPage() {
   const [showCategoryPopup, setShowCategoryPopup] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [isWinner, setIsWinner] = useState(false);
-  const [summaryDataLoaded, setSummaryDataLoaded] = useState(false); // NUEVO
+  const [summaryDataLoaded, setSummaryDataLoaded] = useState(false);
 
   const { user } = useUser();
 
@@ -71,7 +70,6 @@ export function ChallengePlayPage() {
     questionsPerRound: string;
     rol: ChallengeRol;
   }>();
-  const navigate = useNavigate();
   const current = exercises[currentExercise];
   const sensors = useSensors(useSensor(PointerSensor));
 
@@ -84,11 +82,73 @@ export function ChallengePlayPage() {
   };
 
   const animateToSlot = (option: string, onFinish: () => void) => {
-    // ... tu código de animación ...
+    const optionEl = document.getElementById(option);
+    const answerSlot = document.querySelector(".answer-slot-container");
+
+    if (optionEl && answerSlot) {
+      const start = optionEl.getBoundingClientRect();
+      const end = answerSlot.getBoundingClientRect();
+
+      const clone = optionEl.cloneNode(true) as HTMLElement;
+      clone.style.position = "absolute";
+      clone.style.top = start.top + "px";
+      clone.style.left = start.left + "px";
+      clone.style.width = start.width + "px";
+      clone.style.height = start.height + "px";
+      clone.style.transition = "all 0.6s ease-in-out";
+      clone.style.zIndex = "9999";
+      document.body.appendChild(clone);
+
+      requestAnimationFrame(() => {
+        clone.style.top = end.top + "px";
+        clone.style.left = end.left + "px";
+        clone.style.width = end.width + "px";
+        clone.style.height = end.height + "px";
+        clone.style.opacity = "0.9";
+      });
+
+      clone.addEventListener("transitionend", () => {
+        onFinish();
+        clone.remove();
+      });
+    } else {
+      onFinish();
+    }
   };
 
   const animateBack = (option: string, onFinish: () => void) => {
-    // ... tu código de animación ...
+    const optionEl = document.getElementById(option);
+    const answerSlot = document.querySelector(".answer-slot-container");
+
+    if (optionEl && answerSlot) {
+      const end = optionEl.getBoundingClientRect();
+      const start = answerSlot.getBoundingClientRect();
+
+      const clone = optionEl.cloneNode(true) as HTMLElement;
+      clone.style.position = "absolute";
+      clone.style.top = start.top + "px";
+      clone.style.left = start.left + "px";
+      clone.style.width = start.width + "px";
+      clone.style.height = start.height + "px";
+      clone.style.transition = "all 0.6s ease-in-out";
+      clone.style.zIndex = "9999";
+      document.body.appendChild(clone);
+
+      requestAnimationFrame(() => {
+        clone.style.top = end.top + "px";
+        clone.style.left = end.left + "px";
+        clone.style.width = end.width + "px";
+        clone.style.height = end.height + "px";
+        clone.style.opacity = "1";
+      });
+
+      clone.addEventListener("transitionend", () => {
+        onFinish();
+        clone.remove();
+      });
+    } else {
+      onFinish();
+    }
   };
 
   const handleOptionClick = (option: string) => {
@@ -135,7 +195,7 @@ export function ChallengePlayPage() {
       setPendingExercises(newPending);
     } else {
       setEndTime(Date.now());
-      setGameState("ROUND_SUMMARY"); // <-- ÚNICO CAMBIO: Usamos gameState en lugar de showSummary
+      setGameState("ROUND_SUMMARY");
       handleSubmitTurn();
     }
   };
@@ -267,7 +327,6 @@ export function ChallengePlayPage() {
     }
   };
 
-  // --- TUS useEffect ORIGINALES PARA EL TIMER ---
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
 
@@ -318,26 +377,26 @@ export function ChallengePlayPage() {
 
   if (gameState === "ROUND_SUMMARY") {
     return (
-      <MainLayout title={`Resumen de la ronda`}>
+      <div className="challenge-round-summary-container">
         <SummaryScreen
           time={endTime && startTime ? endTime - startTime : 0}
           correctCount={correctCount}
           totalCount={totalCount}
         />
-      </MainLayout>
+      </div>
     );
   }
 
   if (gameState === "CHALLENGE_SUMMARY") {
     console.log("CHALLENGE SUMMARY!");
     return (
-      <MainLayout title={`Resumen del Desafío`}>
+      <div>
         {showConfetti && <Confetti duration={8000} intensity="high" />}
         <ChallengeSummary
           challengeId={challengeId}
           onDataLoaded={() => setSummaryDataLoaded(true)}
         />
-      </MainLayout>
+      </div>
     );
   }
 
@@ -347,98 +406,93 @@ export function ChallengePlayPage() {
 
   return (
     user && (
-      <MainLayout title={`Desafío - Ronda ${roundNumber}`}>
-        <div className="challenge-play-container">
-          <ChallengeUserCard user={user} isCurrentUser={true} />
-          <div className="exercise-container">
-            {/* Aquí va tu JSX original del juego, sin cambios */}
+      <div className="challenge-play-container">
+        <ChallengeUserCard user={user} isCurrentUser={true} />
+        <div className="challenge-exercise-container">
+          <div
+            className={`timer-container ${
+              timeLeft <= 10 ? "timer-warning" : ""
+            }`}
+          >
             <div
-              className={`timer-container ${
-                timeLeft <= 10 ? "timer-warning" : ""
-              }`}
+              className={`timer-display ${timeLeft <= 10 ? "timer-pulse" : ""}`}
             >
-              <div
-                className={`timer-display ${
-                  timeLeft <= 10 ? "timer-pulse" : ""
-                }`}
-              >
-                Tiempo restante : {timeLeft}s
-              </div>
+              Tiempo restante : {timeLeft}s
             </div>
-            {current ? (
-              <>
-                {/* TU LÓGICA DE PREGUNTAS OPEN Y DnD */}
-                {current.type === "OPEN" ? (
-                  <div className="mt-4">
-                    <div className="matrix-container">
-                      <p className="question-text">{current.question}</p>
-                    </div>
-                    <TrueFalseButtons
-                      userAnswer={userAnswer}
-                      feedback={feedback}
-                      canContinue={canContinue}
-                      onClick={(answer) => {
-                        setIsTimerRunning(false);
-                        setIsTimeOut(false);
-                        handleTrueFalseClick(answer);
-                        const correct = answer.trim() === current.answer.trim();
-                        setFeedback(correct);
-                        setCanContinue(true);
-                        if (correct) setCorrectCount((prev) => prev + 1);
-                      }}
-                    />
-                  </div>
-                ) : (
-                  <DndContext
-                    sensors={sensors}
-                    collisionDetection={closestCenter}
-                    onDragEnd={handleDragEnd}
-                  >
-                    <div className="question-and-answer-container">
-                      <div className="matrix-container">
-                        <BlockMath math={current.question.replace(/\?$/, "")} />
-                      </div>
-                      <div className="answer-slot-container mt-4">
-                        {userAnswer ? <BlockMath math={userAnswer} /> : <></>}
-                      </div>
-                    </div>
-                    <DnDOptions
-                      options={current.options || []}
-                      canContinue={canContinue}
-                      selectedOption={selectedOption}
-                      handleOptionClick={handleOptionClick}
-                      userAnswer={userAnswer}
-                      feedback={feedback}
-                      current={current}
-                    />
-                    <button
-                      onClick={handleCheck}
-                      className="check-btn"
-                      disabled={canContinue || !userAnswer}
-                    >
-                      Check
-                    </button>
-                  </DndContext>
-                )}
-                <FeedbackMessage feedback={feedback} isTimeOut={isTimeOut} />
-                {feedback !== null && (
-                  <button
-                    className={`btn-continue mt-4 ${
-                      feedback ? "success" : "error"
-                    }`}
-                    onClick={handleContinue}
-                  >
-                    Continuar
-                  </button>
-                )}
-              </>
-            ) : (
-              <p className="text-gray-500">No se encontraron ejercicios.</p>
-            )}
           </div>
-          <OpponentCard challengeId={challengeId} username={user.username} />
+          {current ? (
+            <>
+              {/* TU LÓGICA DE PREGUNTAS OPEN Y DnD */}
+              {current.type === "OPEN" ? (
+                <div className="mt-4">
+                  <div className="matrix-container">
+                    <p className="question-text">{current.question}</p>
+                  </div>
+                  <TrueFalseButtons
+                    userAnswer={userAnswer}
+                    feedback={feedback}
+                    canContinue={canContinue}
+                    onClick={(answer) => {
+                      setIsTimerRunning(false);
+                      setIsTimeOut(false);
+                      handleTrueFalseClick(answer);
+                      const correct = answer.trim() === current.answer.trim();
+                      setFeedback(correct);
+                      setCanContinue(true);
+                      if (correct) setCorrectCount((prev) => prev + 1);
+                    }}
+                  />
+                </div>
+              ) : (
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                >
+                  <div className="question-and-answer-container">
+                    <div className="matrix-container">
+                      <BlockMath math={current.question.replace(/\?$/, "")} />
+                    </div>
+                    <div className="answer-slot-container mt-4">
+                      {userAnswer ? <BlockMath math={userAnswer} /> : <></>}
+                    </div>
+                  </div>
+                  <DnDOptions
+                    options={current.options || []}
+                    canContinue={canContinue}
+                    selectedOption={selectedOption}
+                    handleOptionClick={handleOptionClick}
+                    userAnswer={userAnswer}
+                    feedback={feedback}
+                    current={current}
+                  />
+                  <button
+                    onClick={handleCheck}
+                    className="check-btn"
+                    disabled={canContinue || !userAnswer}
+                  >
+                    Check
+                  </button>
+                </DndContext>
+              )}
+              <FeedbackMessage feedback={feedback} isTimeOut={isTimeOut} />
+              {feedback !== null && (
+                <button
+                  className={`btn-continue mt-4 ${
+                    feedback ? "success" : "error"
+                  }`}
+                  onClick={handleContinue}
+                >
+                  Continuar
+                </button>
+              )}
+            </>
+          ) : (
+            <p className="text-gray-500">No se encontraron ejercicios.</p>
+          )}
         </div>
-      </MainLayout>
+        <OpponentCard challengeId={challengeId} username={user.username} />
+      </div>
     )
   );
 }

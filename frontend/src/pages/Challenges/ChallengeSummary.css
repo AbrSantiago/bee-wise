@@ -12,13 +12,11 @@
   gap: 14px;
   padding: 20px 24px;
   border-radius: 24px;
-  background: repeating-linear-gradient(
-    120deg,
-    #eee2b5 0px,
-    #f5e7b4 40px,
-    #f7eba8 40px,
-    #f1de9f 80px
-  );
+  background-image: linear-gradient(
+      rgba(255, 255, 255, 0.575),
+      rgba(255, 255, 255, 0.534)
+    ),
+    url("/image/BG.png");
   box-shadow: 0 4px 32px 0 rgba(80, 60, 10, 0.18);
   border: 4px solid #ffb800;
   position: relative;
@@ -53,11 +51,9 @@
 
 /* Player section */
 .challenge-summary-players {
-  /* position: absolute; */
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  /* gap: 24px; */
   width: 100%;
 }
 

@@ -7,7 +7,6 @@ import "./ChallengeSummary.css";
 import { Avatar } from "../../components/layout/Avatar";
 import { OwnedItemCard } from "../Profile/OwnedItemCard";
 import { useUser } from "../../context/UserContext";
-import "../Practice/components/SummaryScreen.css";
 import LvlUpNotification from "../../components/layout/LvlUpNotification";
 
 interface Props {
