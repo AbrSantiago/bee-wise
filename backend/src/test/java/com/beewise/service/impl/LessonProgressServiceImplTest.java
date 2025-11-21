@@ -3,11 +3,9 @@ package com.beewise.service.impl;
 import com.beewise.controller.dto.NewShopItemDTO;
 import com.beewise.controller.dto.RegisterUserDTO;
 import com.beewise.controller.dto.SimpleLessonDTO;
-import com.beewise.model.ItemCategory;
-import com.beewise.model.Lesson;
-import com.beewise.model.LessonProgress;
-import com.beewise.model.User;
+import com.beewise.model.*;
 import com.beewise.repository.LessonProgressRepository;
+import com.beewise.repository.LevelRepository;
 import com.beewise.service.LessonProgressService;
 import com.beewise.service.LessonService;
 import com.beewise.service.ShopService;
@@ -41,6 +39,9 @@ class LessonProgressServiceImplTest {
     private LessonService lessonService;
 
     @Autowired
+    private LevelRepository levelRepository;
+
+    @Autowired
     private ShopService shopService;
 
     private User testUser;
@@ -48,6 +49,9 @@ class LessonProgressServiceImplTest {
 
     @BeforeEach
     void setUp() {
+
+        createDefaultLevels();
+
         createItem("Default skin", ItemCategory.SKIN);
         createItem("Default hair", ItemCategory.HAIR);
         createItem("Default shirt", ItemCategory.SHIRT);
@@ -80,6 +84,22 @@ class LessonProgressServiceImplTest {
         dto.setTitle("Progress Lesson");
         dto.setDescription("Progress Description");
         return lessonService.createLesson(dto);
+    }
+
+    private void createDefaultLevels() {
+        if (levelRepository.count() == 0) {
+            Level level1 = new Level();
+            level1.setName("Beginner");
+            level1.setMinPoints(0);
+            level1.setIconUrl("icon1.png");
+            levelRepository.save(level1);
+
+            Level level2 = new Level();
+            level2.setName("Intermediate");
+            level2.setMinPoints(100);
+            level2.setIconUrl("icon2.png");
+            levelRepository.save(level2);
+        }
     }
 
     @Test

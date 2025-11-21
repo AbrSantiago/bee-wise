@@ -1,10 +1,7 @@
 package com.beewise.controller;
 
 import com.beewise.controller.dto.*;
-import com.beewise.model.Avatar;
-import com.beewise.model.ItemCategory;
-import com.beewise.model.ShopItem;
-import com.beewise.model.User;
+import com.beewise.model.*;
 import com.beewise.service.UserService;
 import com.beewise.service.impl.JwtService;
 import com.beewise.service.impl.TokenServiceImpl;
@@ -20,7 +17,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.mockito.Mockito.atLeastOnce;
 
 import java.util.Arrays;
 import java.util.List;
@@ -165,6 +164,7 @@ class UserControllerTest {
         user.setPoints(100);
         user.setCurrentLesson(5);
         user.setAvatar(createAvatar(user));
+        user.setLevel(createDefaultLevel());
 
         when(jwtService.extractUsername("valid-token")).thenReturn("JohnDoe");
         when(userService.getUserByUsername("JohnDoe")).thenReturn(user);
@@ -189,12 +189,14 @@ class UserControllerTest {
         user1.setName("John");
         user1.setUsername("JohnDoe");
         user1.setAvatar(createAvatar(user1));
+        user1.setLevel(createDefaultLevel()); // Usa el helper
 
         User user2 = new User();
         user2.setId(2L);
         user2.setName("Jane");
         user2.setUsername("JaneDoe");
         user2.setAvatar(createAvatar(user2));
+        user2.setLevel(createDefaultLevel()); // Usa el helper
 
         List<User> users = Arrays.asList(user1, user2);
 
@@ -295,19 +297,29 @@ class UserControllerTest {
     @Test
     @WithMockUser
     void getCurrentUser_extractsTokenCorrectly() throws Exception {
-        User user = new User();
-        user.setId(2L);
-        user.setUsername("TestUser");
-        user.setAvatar(createAvatar(user));
+        String token = "Bearer mock-jwt-token";
+        String username = "testuser";
 
-        when(jwtService.extractUsername("extracted-token")).thenReturn("TestUser");
-        when(userService.getUserByUsername("TestUser")).thenReturn(user);
+        User user = new User();
+        user.setId(1L);
+        user.setUsername(username);
+        user.setEmail("test@test.com");
+        user.setName("Test");
+        user.setSurname("User");
+        user.setAvatar(createAvatar(user));
+        user.setLevel(createDefaultLevel()); // <-- Agrega esta línea
+
+        when(jwtService.extractUsername(anyString())).thenReturn(username);
+        when(userService.getUserByUsername(username)).thenReturn(user);
 
         mockMvc.perform(get("/users/me")
-                        .header("Authorization", "Bearer extracted-token"))
+                        .header("Authorization", token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(2L))
-                .andExpect(jsonPath("$.username").value("TestUser"));
+                .andExpect(jsonPath("$.username").value(username))
+                .andExpect(jsonPath("$.email").value("test@test.com"));
+
+        verify(jwtService, atLeastOnce()).extractUsername("mock-jwt-token"); // <-- Acepta 1 o más llamadas
+        verify(userService).getUserByUsername(username);
     }
 
     @Test
@@ -337,7 +349,13 @@ class UserControllerTest {
         User user = new User();
         user.setId(userId);
         user.setUsername("JohnDoe");
-        user.setAvatar(createAvatar(user)); // Usa solo el helper, no sobrescribas
+        user.setAvatar(createAvatar(user));
+
+        Level level = new Level();
+        level.setId(1L);
+        level.setName("Beginner");
+        level.setIconUrl("icon.png");
+        user.setLevel(level); 
 
         when(userService.updateAvatar(eq(userId), any(AvatarDTO.class))).thenReturn(user);
 
@@ -414,6 +432,14 @@ class UserControllerTest {
         avatar.setHair(hair);
 
         return avatar;
+    }
+
+    private Level createDefaultLevel() {
+        Level level = new Level();
+        level.setId(1L);
+        level.setName("Beginner");
+        level.setIconUrl("icon.png");
+        return level;
     }
 
 }

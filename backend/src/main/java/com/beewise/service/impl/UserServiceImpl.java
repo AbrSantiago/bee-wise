@@ -58,12 +58,18 @@ public class UserServiceImpl implements UserService {
         newUser.setEmail(registerUserDTO.getEmail());
         newUser.setUsername(registerUserDTO.getUsername());
         newUser.setPasswordHash(passwordEncoder.encode(registerUserDTO.getPassword()));
-        newUser.setAvatar(avatarService.newDefaultAvatar(newUser));
+
         Level defaultLevel = levelRepository.findFirstByOrderByMinPointsAsc()
                 .orElseThrow(() -> new RuntimeException("Not found level 1 in database."));
         newUser.setLevel(defaultLevel);
 
-        return userRepository.save(newUser);
+        User savedUser = userRepository.save(newUser);
+
+        Avatar avatar = avatarService.newDefaultAvatar(savedUser);
+
+        savedUser.setAvatar(avatar);
+
+        return savedUser;
     }
 
     @Override
