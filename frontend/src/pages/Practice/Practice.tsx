@@ -12,7 +12,10 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import type { DragEndEvent } from "@dnd-kit/core";
-import lessonService, { type Exercise, type LevelUpInfo } from "../../services/lessonService";
+import lessonService, {
+  type Exercise,
+  type LevelUpInfo,
+} from "../../services/lessonService";
 import { useUserPoints } from "../../context/UserPointsContext";
 import TrueFalseButtons from "./components/TrueFalseButtons";
 import DnDOptions from "./components/DnDOptions";
@@ -46,6 +49,7 @@ export function PracticePage() {
   const [lessonCompleted, setLessonCompleted] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [levelUpInfo, setLevelUpInfo] = useState<LevelUpInfo | null>(null);
+  const [streakUp, setStreakUp] = useState<boolean | null>(null);
 
   const current = exercises[currentExercise];
 
@@ -85,6 +89,8 @@ export function PracticePage() {
           if (response.levelUp) {
             setLevelUpInfo(response.levelUp);
           }
+
+          setStreakUp(response.hasUpStreak);
 
           refreshUser();
           if (correctCount > 0) {
@@ -261,6 +267,7 @@ export function PracticePage() {
           correctCount={correctCount}
           totalCount={totalCount}
           levelUp={levelUpInfo}
+          streakUp={streakUp}
         />
       </div>
     );

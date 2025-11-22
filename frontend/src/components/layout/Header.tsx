@@ -1,4 +1,4 @@
-import "./layout.css";
+import "./Header.css";
 import { useUser } from "../../context/UserContext";
 import { Avatar } from "./Avatar";
 
@@ -43,6 +43,10 @@ const Header = ({ title, sectionInfo }: HeaderProps) => {
           )}
         </div>
 
+        <div className="stat-item">
+          <span className="stat-icon">🔥</span>
+          <span className="stat-value">{!user ? "..." : user.streak || 0}</span>
+        </div>
         <div className="stat-item">
           <span className="stat-icon">🐝</span>
           <span className="stat-value">{!user ? "..." : user.points || 0}</span>

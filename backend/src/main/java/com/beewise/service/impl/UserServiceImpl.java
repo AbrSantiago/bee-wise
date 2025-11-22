@@ -12,6 +12,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -112,6 +113,7 @@ public class UserServiceImpl implements UserService {
         Integer pointsEarned = requestDTO.getCorrectExercises() * 10;
         addPointsToUser(user, pointsEarned);
         user.setCurrentLesson(user.getCurrentLesson() + 1);
+        boolean hasStreakUp = updateStreak(user);
         userRepository.save(user);
         progressService.upsertProgress(user, lesson);
 
@@ -125,7 +127,7 @@ public class UserServiceImpl implements UserService {
             );
         }
 
-        return new LessonCompleteDTO(true, "Progress updated", user.getPoints(), levelUpInfo);
+        return new LessonCompleteDTO(true, "Progress updated", user.getPoints(), levelUpInfo, hasStreakUp);
     }
 
     @Override
@@ -189,8 +191,7 @@ public class UserServiceImpl implements UserService {
     public Boolean addPointsToUser(User user, Integer pointsToAdd) {
         if (pointsToAdd <= 0) return false;
 
-        Integer newPoints = user.getPoints() + pointsToAdd;
-        user.setPoints(newPoints);
+        user.addPoints(pointsToAdd);
 
         checkAndUpdateUserLevel(user);
         userRepository.save(user);
@@ -216,6 +217,14 @@ public class UserServiceImpl implements UserService {
         statsDTO.setPercentile(12);
         statsDTO.setAccuracy((int) userRepository.getAccuracy(userId));
         return statsDTO;
+    }
+
+    @Override
+    public boolean hasCompletedLessonToday(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        return user.getLastLessonDate() != null
+                && user.getLastLessonDate().equals(LocalDate.now());
     }
 
 
@@ -247,5 +256,28 @@ public class UserServiceImpl implements UserService {
             user.setLevel(appropriateLevel);
         }
     }
+
+    private boolean updateStreak(User user) {
+        LocalDate today = LocalDate.now();
+        LocalDate last = user.getLastLessonDate();
+        int prev = user.getStreak();
+        if (last == null) {
+            // Primera vez que completa una lección
+            user.setStreak(1);
+        } else if (last.equals(today)) {
+            // Ya completó una lección hoy: no aumenta el streak
+            return false;
+        } else if (last.equals(today.minusDays(1))) {
+            // Completó ayer → streak++
+            user.setStreak(user.getStreak() + 1);
+        } else {
+            // Perdió la racha
+            user.setStreak(1);
+        }
+
+        user.setLastLessonDate(today);
+        return user.getStreak() > prev;
+    }
+
 
 }

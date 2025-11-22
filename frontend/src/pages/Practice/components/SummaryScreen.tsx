@@ -3,12 +3,14 @@ import "./SummaryScreen.css";
 import Beector from "../../../components/layout/Beector";
 import type { LevelUpInfo } from "../../../services/lessonService";
 import LvlUpNotification from "../../../components/layout/LvlUpNotification";
+import StreakUpNotification from "../../../components/layout/StreakUpNotification";
 
 interface Props {
   time?: number;
   correctCount?: number;
   totalCount?: number;
   levelUp?: LevelUpInfo | null;
+  streakUp?: boolean | null;
 }
 
 function formatTime(ms: number) {
@@ -23,15 +25,19 @@ export default function SummaryScreen({
   correctCount = 0,
   totalCount = 0,
   levelUp = null,
+  streakUp = null,
 }: Props) {
+  console.log("streakUp: " + streakUp);
   const percent = totalCount
     ? Math.round((correctCount / totalCount) * 100)
     : 0;
+
   return (
     <div className="summary-container">
       <p className="summary-title">¡Has terminado todos los ejercicios!</p>
       <Beector imgSrc="/image/BeeHappy.png" />
       <LvlUpNotification levelUp={levelUp} />
+      <StreakUpNotification streakUp={streakUp} />
       <div className="summary-stats">
         <p>
           Tiempo total: <b>{formatTime(time)}</b>

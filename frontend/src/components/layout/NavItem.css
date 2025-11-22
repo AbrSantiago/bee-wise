@@ -1,0 +1,30 @@
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+  padding: 12px 22px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #dce6ec;
+  transition: background-color 0.2s;
+}
+
+.nav-item:hover {
+  background-color: #374151;
+  color: white;
+}
+
+.nav-icon-img {
+  width: 35px;
+  height: 35px;
+  object-fit: contain;
+}
+
+.nav-label {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}

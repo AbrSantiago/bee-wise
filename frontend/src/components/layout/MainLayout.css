@@ -1,0 +1,29 @@
+.main-layout {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.main-content {
+  margin-top: 110px;
+  height: 100vh;
+
+  display: flex;
+  justify-content: center;
+}
+
+.content-area {
+  width: 640px;
+  /* margin-top: 0px; */
+  display: flex;
+  gap: 40px;
+  align-items: center;
+  flex-direction: column;
+  justify-content: flex-start;
+
+  position: fixed;
+  margin: 0 auto;
+  left: 240px;
+  right: 0;
+}

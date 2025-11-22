@@ -8,12 +8,12 @@
 }
 
 .roulette-frame {
-  position: absolute; /* IMPORTANTE */
-  top: -25px;
+  position: absolute;
+  top: -24px;
   left: 0;
-  height: 118%;
-  z-index: 20; /* Más alto que el wheel */
-  pointer-events: none; /* Opcional, para que no bloquee clics */
+  height: 119%;
+  z-index: 20;
+  pointer-events: none;
 }
 
 #wheel {

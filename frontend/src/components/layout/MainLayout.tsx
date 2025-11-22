@@ -1,7 +1,7 @@
-import React from 'react';
-import Sidebar from './Sidebar';
-import Header from './Header';
-import './layout.css';
+import React from "react";
+import Sidebar from "./Sidebar";
+import Header from "./Header";
+import "./MainLayout.css";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -15,9 +15,7 @@ const MainLayout = ({ children, title, sectionInfo }: MainLayoutProps) => {
       <Sidebar />
       <div className="main-content">
         <Header title={title} sectionInfo={sectionInfo} />
-        <main className="content-area">
-          {children}
-        </main>
+        <main className="content-area">{children}</main>
       </div>
     </div>
   );

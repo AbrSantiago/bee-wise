@@ -18,6 +18,7 @@ export type User = {
   beeCoins: number;
   level: Level;
   ranking: number;
+  streak: number;
 };
 
 export type Avatar = {
