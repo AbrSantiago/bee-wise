@@ -189,8 +189,7 @@ public class UserServiceImpl implements UserService {
     public Boolean addPointsToUser(User user, Integer pointsToAdd) {
         if (pointsToAdd <= 0) return false;
 
-        Integer newPoints = user.getPoints() + pointsToAdd;
-        user.setPoints(newPoints);
+        user.addPoints(pointsToAdd);
 
         checkAndUpdateUserLevel(user);
         userRepository.save(user);

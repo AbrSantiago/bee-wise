@@ -1,18 +1,13 @@
 import { useAuth } from "../../context/AuthContext";
-import { useUser } from "../../context/UserContext";
-import "./layout.css";
+import NavItem from "./NavItem";
 import "./Sidebar.css";
-import { Link } from "react-router-dom";
 
 const Sidebar = () => {
   const { logout } = useAuth();
-  const { user } = useUser();
 
   const handleLogout = () => {
     logout();
   };
-
-  const isChallengesUnlocked = user?.level?.level && user.level.level >= 2;
 
   return (
     <div className="sidebar">
@@ -23,30 +18,14 @@ const Sidebar = () => {
 
       {/* Navigation Menu */}
       <nav className="sidebar-nav">
-        <Link to="/" className="nav-item">
-          <span className="nav-icon">🏠</span>
-          <span className="nav-label">HOME</span>
-        </Link>
-        <Link to="/challenges" className="nav-item">
-          <span className="nav-icon">🎯</span>
-          <span className="nav-label">DESAFÍOS</span>
-        </Link>
-        <Link to="/ranking" className="nav-item">
-          <span className="nav-icon">🏆</span>
-          <span className="nav-label">RANKING</span>
-        </Link>
-        <Link to="/shop" className="nav-item">
-          <span className="nav-icon">🏪</span>
-          <span className="nav-label">SHOP</span>
-        </Link>
-        <Link to="/profile" className="nav-item">
-          <span className="nav-icon">🧑‍💼</span>
-          <span className="nav-label">PROFILE</span>
-        </Link>
-        <button className="nav-item logout-btn" onClick={handleLogout}>
-          <span className="nav-icon">🚪</span>
-          <span className="nav-label">LOGOUT</span>
-        </button>
+        <nav className="sidebar-nav">
+          <NavItem label="Home" iconUrl="Home.png" to="/" />
+          <NavItem label="Desafíos" iconUrl="Challenges.png" to="/challenges" />
+          <NavItem label="Ranking" iconUrl="Ranking.png" to="/ranking" />
+          <NavItem label="Tienda" iconUrl="Shop.png" to="/shop" />
+          <NavItem label="Perfil" iconUrl="Profile.png" to="/profile" />
+          <NavItem label="Salir" iconUrl="Logout.png" onClick={handleLogout} />
+        </nav>
       </nav>
     </div>
   );

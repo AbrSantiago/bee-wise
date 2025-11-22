@@ -1,4 +1,4 @@
-import "./layout.css";
+import "./Header.css";
 import { useUser } from "../../context/UserContext";
 import { Avatar } from "./Avatar";
 
