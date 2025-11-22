@@ -22,6 +22,27 @@ const Header = ({ title, sectionInfo }: HeaderProps) => {
 
       {/* Stats del usuario */}
       <div className="user-stats">
+        <div className="stat-level">
+          {user?.level ? (
+            <>
+              <img
+                src={user.level.iconUrl}
+                alt={user.level.name}
+                className="header-level-icon"
+              />
+              {/* Mostramos el nombre del nivel (ej: "Abeja Exploradora") */}
+              <span className="stat-value">{user.level.name}</span>
+              <span className="stat-value">-</span>
+              <span className="stat-value">{user.level.level}</span>
+            </>
+          ) : (
+            <>
+              <span className="stat-icon">🏆</span>
+              <span className="stat-value">...</span>
+            </>
+          )}
+        </div>
+
         <div className="stat-item">
           <span className="stat-icon">🐝</span>
           <span className="stat-value">{!user ? "..." : user.points || 0}</span>
