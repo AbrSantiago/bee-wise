@@ -14,4 +14,5 @@ public class LessonCompleteDTO {
     private String message;
     private int totalPoints;
     private LevelUpInfoDTO levelUp;
+    private boolean hasUpStreak;
 }

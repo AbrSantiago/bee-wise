@@ -20,6 +20,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -511,5 +512,71 @@ class UserServiceImplTest {
     void contextLoads() {
         assertNotNull(userService);
         assertNotNull(userRepository);
+    }
+
+    @Test
+    void streak_firstLesson_setsStreakTo1() {
+        LessonCompleteRequestDTO req = new LessonCompleteRequestDTO();
+        req.setUserId(testUser.getId());
+        req.setCompletedLessonId(testLesson.getId());
+        req.setCorrectExercises(5);
+
+        userService.lessonComplete(req);
+
+        User updated = userRepository.findById(testUser.getId()).orElseThrow();
+        assertEquals(1, updated.getStreak());
+        assertEquals(LocalDate.now(), updated.getLastLessonDate());
+    }
+
+    @Test
+    void streak_sameDay_doesNotIncrease() {
+        LessonCompleteRequestDTO req = new LessonCompleteRequestDTO();
+        req.setUserId(testUser.getId());
+        req.setCompletedLessonId(testLesson.getId());
+        req.setCorrectExercises(5);
+
+        userService.lessonComplete(req); // 1st lesson -> streak = 1
+        userService.lessonComplete(req); // 2nd lesson
+
+        User updated = userRepository.findById(testUser.getId()).orElseThrow();
+        assertEquals(1, updated.getStreak());
+        assertEquals(LocalDate.now(), updated.getLastLessonDate());
+    }
+
+    @Test
+    void streak_nextDay_increasesStreak() {
+        testUser.setStreak(1); // streak = 1 from previous day
+        testUser.setLastLessonDate(LocalDate.now().minusDays(1));
+        userRepository.save(testUser);
+
+        LessonCompleteRequestDTO req = new LessonCompleteRequestDTO();
+        req.setUserId(testUser.getId());
+        req.setCompletedLessonId(testLesson.getId());
+        req.setCorrectExercises(5);
+
+        userService.lessonComplete(req);
+
+        User updated = userRepository.findById(testUser.getId()).orElseThrow();
+        assertEquals(2, updated.getStreak());
+        assertEquals(LocalDate.now(), updated.getLastLessonDate());
+    }
+
+    @Test
+    void streak_breaksAfterMissingDay_resetsTo1() {
+        // Simular streak de 3 pero última lección hace 3 días
+        testUser.setStreak(3);
+        testUser.setLastLessonDate(LocalDate.now().minusDays(3));
+        userRepository.save(testUser);
+
+        LessonCompleteRequestDTO req = new LessonCompleteRequestDTO();
+        req.setUserId(testUser.getId());
+        req.setCompletedLessonId(testLesson.getId());
+        req.setCorrectExercises(5);
+
+        userService.lessonComplete(req);
+
+        User updated = userRepository.findById(testUser.getId()).orElseThrow();
+        assertEquals(1, updated.getStreak());
+        assertEquals(LocalDate.now(), updated.getLastLessonDate());
     }
 }

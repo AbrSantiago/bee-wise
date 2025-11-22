@@ -23,8 +23,6 @@
 }
 
 .nav-label {
-  /* font-family: var(--main-font); */
-  /* font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; */
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   font-size: 21px;
   font-weight: 600;

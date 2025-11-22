@@ -9,6 +9,8 @@ import { useAuth } from "../../context/AuthContext";
 import { useUser } from "../../context/UserContext";
 import ChallengesSection from "../../components/layout/ChallengeSection";
 import "./Home.css";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 type Lesson = {
   id: number;
@@ -99,8 +101,40 @@ function Home() {
     }
   }, [accessToken, user]);
 
+  useEffect(() => {
+    const checkStreak = async () => {
+      if (!user) return;
+
+      try {
+        const response = await apiClient.get(
+          `/users/streak-today?userId=${user.id}`
+        );
+        const completedToday = response.data.completedToday;
+
+        if (!completedToday) {
+          // Mostrar solo una vez
+          toast.info(
+            "¡No olvides completar tu lección hoy para mantener tu racha! 🔥",
+            {
+              position: "bottom-right",
+              autoClose: 7000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+            }
+          );
+        }
+      } catch (error) {
+        console.error("Error checking today's streak:", error);
+      }
+    };
+
+    checkStreak();
+  }, [user]);
+
   return (
-    <MainLayout title="Matrices">
+    <MainLayout title="Home">
       <LessonPath lessons={lessons} />
       <ChallengesSection
         challenges={challenges}

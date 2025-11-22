@@ -33,6 +33,7 @@ export type LessonCompleteResponse = {
   message: string;
   totalPoints: number;
   levelUp: LevelUpInfo | null;
+  hasUpStreak: boolean | null;
 };
 
 const lessonService = {

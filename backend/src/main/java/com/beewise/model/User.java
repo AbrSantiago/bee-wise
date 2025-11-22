@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,6 +74,10 @@ public class User {
     private int beeCoins = 100;
 
     private int spentBeeCoins = 0;
+
+    private int streak = 0;
+
+    private LocalDate lastLessonDate;
 
     public void addPoints(int delta) {
         this.points += delta;

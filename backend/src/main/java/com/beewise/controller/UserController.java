@@ -118,4 +118,11 @@ public class UserController {
         UserStatsDTO statsDTO = userService.getStats(username);
         return ResponseEntity.ok(statsDTO);
     }
+
+    @GetMapping("/streak-today")
+    public ResponseEntity<Map<String, Boolean>> hasCompletedLessonToday(@RequestParam Long userId) {
+        boolean completedToday = userService.hasCompletedLessonToday(userId);
+        Map<String, Boolean> response = Map.of("completedToday", completedToday);
+        return ResponseEntity.ok(response);
+    }
 }
