@@ -22,35 +22,16 @@ const Header = ({ title, sectionInfo }: HeaderProps) => {
 
       {/* Stats del usuario */}
       <div className="user-stats">
-        <div className="stat-level">
-          {user?.level ? (
-            <>
-              <img
-                src={user.level.iconUrl}
-                alt={user.level.name}
-                className="header-level-icon"
-              />
-              {/* Mostramos el nombre del nivel (ej: "Abeja Exploradora") */}
-              <span className="stat-value">{user.level.name}</span>
-              <span className="stat-value">-</span>
-              <span className="stat-value">{user.level.level}</span>
-            </>
-          ) : (
-            <>
-              <span className="stat-icon">🏆</span>
-              <span className="stat-value">...</span>
-            </>
-          )}
-        </div>
-
         <div className="stat-item">
           <span className="stat-icon">🔥</span>
           <span className="stat-value">{!user ? "..." : user.streak || 0}</span>
         </div>
+
         <div className="stat-item">
           <span className="stat-icon">🐝</span>
           <span className="stat-value">{!user ? "..." : user.points || 0}</span>
         </div>
+
         <div className="stat-item">
           <img
             src="/image/BeeCoin.png"
@@ -60,6 +41,24 @@ const Header = ({ title, sectionInfo }: HeaderProps) => {
           <span className="stat-value">
             {!user ? "..." : user.beeCoins || 0}
           </span>
+        </div>
+
+        <div className="stat-item">
+          {user?.level ? (
+            <>
+              <img
+                src={user.level.iconUrl}
+                alt={user.level.name}
+                className="header-level-icon"
+              />
+              <span className="stat-value">{user.level.level}</span>
+            </>
+          ) : (
+            <>
+              <span className="stat-icon">🏆</span>
+              <span className="stat-value">...</span>
+            </>
+          )}
         </div>
         {user && <Avatar avatar={user.avatar} size={45} />}
       </div>
