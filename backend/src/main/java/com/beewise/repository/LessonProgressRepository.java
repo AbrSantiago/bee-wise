@@ -1,8 +1,6 @@
 package com.beewise.repository;
 
-import com.beewise.model.Lesson;
 import com.beewise.model.LessonProgress;
-import com.beewise.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
