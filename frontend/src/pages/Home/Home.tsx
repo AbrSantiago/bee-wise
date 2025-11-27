@@ -11,6 +11,7 @@ import ChallengesSection from "../../components/layout/ChallengeSection";
 import "./Home.css";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import DailyMissionsSection from "../../components/layout/DailyMissionsSection";
 
 type Lesson = {
   id: number;
@@ -27,8 +28,6 @@ function Home() {
   const getLessons = async () => {
     try {
       const response = await apiClient.get("/lesson");
-      // console.log("1 - traigo las lecciones :", response.data);
-
       setLessons(response.data);
     } catch (error) {
       console.error("There was an error fetching the practice data!", error);
@@ -42,23 +41,14 @@ function Home() {
     }
 
     try {
-      // console.log("🚀 Fetching challenges...");
       const allChallenges = await challengeService.getAll();
-      // console.log("📦 All challenges from API:", allChallenges);
-
       console.log("👤 Current user:", user);
 
-      // Filtrar desafíos donde el usuario actual es el challenger o challenged
       const userChallenges = allChallenges.filter((challenge) => {
         const isUserChallenger = challenge.challengerId === user?.id;
         const isUserChallenged = challenge.challengedId === user?.id;
-        // console.log(
-        //   `Challenge ${challenge.id}: challenger=${challenge.challengerId}, challenged=${challenge.challengedId}, user=${user?.id}, isChallenger=${isUserChallenger}, isChallenged=${isUserChallenged}`
-        // );
         return isUserChallenger || isUserChallenged;
       });
-
-      // console.log("🎯 User challenges after filtering:", userChallenges);
 
       setChallenges(userChallenges);
     } catch (error) {
@@ -135,12 +125,17 @@ function Home() {
 
   return (
     <MainLayout title="Home">
-      <LessonPath lessons={lessons} />
-      <ChallengesSection
-        challenges={challenges}
-        currentUserId={user?.id || 0}
-        onAcceptChallenge={handleAcceptChallenge}
-      />
+      <div className="home-container">
+        <LessonPath lessons={lessons} />
+        <div className="sidebar-r">
+          <ChallengesSection
+            challenges={challenges}
+            currentUserId={user?.id || 0}
+            onAcceptChallenge={handleAcceptChallenge}
+          />
+          <DailyMissionsSection />
+        </div>
+      </div>
     </MainLayout>
   );
 }
