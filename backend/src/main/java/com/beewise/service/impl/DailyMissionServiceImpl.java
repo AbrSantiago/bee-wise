@@ -62,6 +62,13 @@ public class DailyMissionServiceImpl implements DailyMissionService {
             progress.updateProgress(progressUpdate.getProgressAmount());
             mission.addProgress(progressUpdate.getProgressAmount());
             mission.setWasUpdated(true);
+
+            if (progress.isCompleted()) {
+                user.addBeeCoins(progress.getReward());
+                progress.setClaimed(true);
+                mission.setClaimed(true);
+            }
+
             progressRepository.save(progress);
         }
         return mission;

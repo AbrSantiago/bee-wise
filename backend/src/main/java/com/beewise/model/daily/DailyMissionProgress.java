@@ -30,10 +30,14 @@ public class DailyMissionProgress {
     private boolean isClaimed = false;
 
     public void updateProgress(int delta){
-        this.currentProgress += delta;
+        this.currentProgress = Math.min(this.currentProgress + delta, this.mission.getGoalAmount());
     }
 
     public boolean isCompleted(){
         return this.currentProgress == this.mission.getGoalAmount();
+    }
+
+    public int getReward() {
+        return this.mission.getRewardAmount();
     }
 }
