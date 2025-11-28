@@ -3,19 +3,12 @@ package com.beewise.controller;
 import com.beewise.controller.dto.DailyMissionDTO;
 import com.beewise.controller.dto.DailyMissionUpdateDTO;
 import com.beewise.controller.dto.DailyMissionUpdateOutDTO;
-import com.beewise.exception.AnswerWrongRolException;
-import com.beewise.exception.MissionAlreadyClaimedException;
-import com.beewise.exception.MissionNotCompletedException;
-import com.beewise.model.daily.DailyMission;
 import com.beewise.model.daily.DailyMissionProgress;
-import com.beewise.model.daily.MissionType;
 import com.beewise.service.DailyMissionService;
 import com.beewise.service.impl.JwtService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -50,22 +43,4 @@ public class DailyMissionController {
 
         return ResponseEntity.ok(mission);
     }
-
-
-//    @PostMapping("/{id}/claim")
-//    public ResponseEntity<DailyMissionDTO> claimReward(@PathVariable Long id, Principal principal) {
-//        if (principal == null) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//        }
-//
-//        try {
-//            DailyMission updatedMission = dailyMissionService.claimReward(id, principal.getName());
-//            return ResponseEntity.ok(new DailyMissionDTO(updatedMission)); // Asumiendo que tienes un DTO
-//
-//        } catch (MissionNotCompletedException | MissionAlreadyClaimedException e) {
-//            return ResponseEntity.badRequest().body(null); // O un DTO de error
-//        } catch (AnswerWrongRolException e) {
-//            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-//        }
-//    }
 }

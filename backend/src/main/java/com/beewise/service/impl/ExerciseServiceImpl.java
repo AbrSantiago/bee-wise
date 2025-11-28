@@ -47,7 +47,7 @@ public class ExerciseServiceImpl implements ExerciseService {
                 e.getQuestion(),
                 e.getAnswer(),
                 e.getCategory())).toList();
-        return repository.saveAll(new ArrayList<Exercise>(exercises));
+        return repository.saveAll(new ArrayList<>(exercises));
     }
 
     @Override

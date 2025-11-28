@@ -1,6 +1,5 @@
 package com.beewise.config;
 
-import com.beewise.service.UserService;
 import com.beewise.service.impl.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

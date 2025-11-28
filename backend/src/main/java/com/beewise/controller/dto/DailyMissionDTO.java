@@ -1,6 +1,5 @@
 package com.beewise.controller.dto;
 
-import com.beewise.model.User;
 import com.beewise.model.daily.DailyMissionProgress;
 import com.beewise.model.daily.MissionType;
 import lombok.Getter;

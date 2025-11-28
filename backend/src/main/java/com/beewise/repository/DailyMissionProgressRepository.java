@@ -14,7 +14,6 @@ import java.util.Optional;
 @Repository
 public interface DailyMissionProgressRepository extends JpaRepository<DailyMissionProgress, Long> {
     List<DailyMissionProgress> findAllByUserAndMissionIn(User user, List<DailyMission> missions);
-    Optional<DailyMissionProgress> findByUserAndMissionType(User user, MissionType type);
     Optional<DailyMissionProgress> findByUserAndMission_TypeAndMission_Date(
             User user,
             MissionType type,
