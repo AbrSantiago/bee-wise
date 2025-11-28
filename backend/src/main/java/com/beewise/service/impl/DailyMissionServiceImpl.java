@@ -2,23 +2,14 @@ package com.beewise.service.impl;
 
 import com.beewise.controller.dto.DailyMissionUpdateDTO;
 import com.beewise.controller.dto.DailyMissionUpdateOutDTO;
-import com.beewise.exception.AnswerWrongRolException;
-import com.beewise.exception.MissionAlreadyClaimedException;
-import com.beewise.exception.MissionDoesNotExistException;
-import com.beewise.exception.MissionNotCompletedException;
 import com.beewise.model.User;
-import com.beewise.model.challenge.CompletedState;
-import com.beewise.model.challenge.WaitingChallengedState;
-import com.beewise.model.challenge.WaitingChallengerState;
 import com.beewise.model.daily.DailyMission;
 import com.beewise.model.daily.DailyMissionProgress;
-import com.beewise.model.daily.MissionType;
 import com.beewise.repository.DailyMissionProgressRepository;
 import com.beewise.repository.DailyMissionRepository;
 import com.beewise.repository.UserRepository;
 import com.beewise.service.DailyMissionService;
 import com.beewise.service.UserService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
