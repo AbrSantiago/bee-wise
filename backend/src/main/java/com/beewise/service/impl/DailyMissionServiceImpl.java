@@ -1,10 +1,15 @@
 package com.beewise.service.impl;
 
+import com.beewise.controller.dto.DailyMissionUpdateDTO;
+import com.beewise.controller.dto.DailyMissionUpdateOutDTO;
 import com.beewise.exception.AnswerWrongRolException;
 import com.beewise.exception.MissionAlreadyClaimedException;
 import com.beewise.exception.MissionDoesNotExistException;
 import com.beewise.exception.MissionNotCompletedException;
 import com.beewise.model.User;
+import com.beewise.model.challenge.CompletedState;
+import com.beewise.model.challenge.WaitingChallengedState;
+import com.beewise.model.challenge.WaitingChallengerState;
 import com.beewise.model.daily.DailyMission;
 import com.beewise.model.daily.DailyMissionProgress;
 import com.beewise.model.daily.MissionType;
@@ -20,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -54,24 +60,37 @@ public class DailyMissionServiceImpl implements DailyMissionService {
         return progresses;
     }
 
-//    @Override
-//    public void updateProgress(String username, DailyMissionProgress progress, int amountToAdd) {
-//        LocalDate today = LocalDate.now();
-//        User user = userService.getUserByUsername(username);
-//        DailyMissionProgress missionProgress = progressRepository.findById(progress.getId())
-//                .orElseThrow(() -> new MissionDoesNotExistException("Mission does not exists"));
+    @Override
+    public DailyMissionUpdateOutDTO updateProgress(String username, DailyMissionUpdateDTO progressUpdate) {
+        User user = userService.getUserByUsername(username);
+
+        DailyMissionUpdateOutDTO mission = new DailyMissionUpdateOutDTO();
+        Optional<DailyMissionProgress> progressOp = progressRepository.findByUserAndMission_TypeAndMission_Date(user, progressUpdate.getType(), LocalDate.now());
+
+        if (progressOp.isEmpty() || progressOp.get().isCompleted()){
+            mission.setWasUpdated(false);
+        } else {
+            DailyMissionProgress progress = progressOp.get();
+            mission = new DailyMissionUpdateOutDTO(progress);
+            progress.updateProgress(progressUpdate.getProgressAmount());
+            mission.addProgress(progressUpdate.getProgressAmount());
+            mission.setWasUpdated(true);
+            progressRepository.save(progress);
+        }
+        return mission;
+
+//        if (!missionProgress.isClaimed()){
+//            int newProgress = missionProgress.getCurrentProgress() + amountToAdd;
+//            int goalAmount = missionProgress.getMission().getGoalAmount();
 //
-//        for (DailyMission mission : missions) {
-//            if (!mission.isCompleted()) {
-//                mission.setCurrentProgress(mission.getCurrentProgress() + amountToAdd);
-//                // Opcional: Limitar al máximo
-//                if (mission.getCurrentProgress() > mission.getGoalAmount()) {
-//                    mission.setCurrentProgress(mission.getGoalAmount());
-//                }
-//                dailyMissionRepository.save(mission);
+//            if (newProgress > goalAmount){
+//                newProgress = goalAmount;
 //            }
+//
+//            missionProgress.setCurrentProgress(newProgress);
+//            progressRepository.save(missionProgress);
 //        }
-//    }
+    }
 //
 //    @Override
 //    public void claimReward(Long missionId) {

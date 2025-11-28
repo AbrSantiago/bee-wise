@@ -28,4 +28,12 @@ public class DailyMissionProgress {
     private int currentProgress = 0;
 
     private boolean isClaimed = false;
+
+    public void updateProgress(int delta){
+        this.currentProgress += delta;
+    }
+
+    public boolean isCompleted(){
+        return this.currentProgress == this.mission.getGoalAmount();
+    }
 }

@@ -127,6 +127,8 @@ public class UserServiceImpl implements UserService {
             );
         }
 
+
+
         return new LessonCompleteDTO(true, "Progress updated", user.getPoints(), levelUpInfo, hasStreakUp);
     }
 

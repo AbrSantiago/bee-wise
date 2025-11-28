@@ -1,11 +1,14 @@
 package com.beewise.controller;
 
 import com.beewise.controller.dto.DailyMissionDTO;
+import com.beewise.controller.dto.DailyMissionUpdateDTO;
+import com.beewise.controller.dto.DailyMissionUpdateOutDTO;
 import com.beewise.exception.AnswerWrongRolException;
 import com.beewise.exception.MissionAlreadyClaimedException;
 import com.beewise.exception.MissionNotCompletedException;
 import com.beewise.model.daily.DailyMission;
 import com.beewise.model.daily.DailyMissionProgress;
+import com.beewise.model.daily.MissionType;
 import com.beewise.service.DailyMissionService;
 import com.beewise.service.impl.JwtService;
 import org.springframework.http.HttpStatus;
@@ -34,6 +37,18 @@ public class DailyMissionController {
         String username = jwtService.extractUsername(authHeader.substring(7));
         List<DailyMissionProgress> missions = dailyMissionService.getDailyMissions(username);
         return ResponseEntity.ok(missions.stream().map(DailyMissionDTO::new).toList());
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<DailyMissionUpdateOutDTO> updateProgress(
+            @RequestBody DailyMissionUpdateDTO dailyMissionUpdateDTO,
+            @RequestHeader("Authorization") String authHeader
+    ) {
+        String username = jwtService.extractUsername(authHeader.substring(7));
+
+        DailyMissionUpdateOutDTO mission = dailyMissionService.updateProgress(username, dailyMissionUpdateDTO);
+
+        return ResponseEntity.ok(mission);
     }
 
 

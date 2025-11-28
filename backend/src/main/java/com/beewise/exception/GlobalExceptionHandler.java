@@ -49,7 +49,8 @@ public class GlobalExceptionHandler {
             UserNotPlayingChallengeException.class,
             UserAlreadyGotRewardException.class,
             ChallengeNotCompleteYetException.class,
-            MissionDoesNotExistException.class
+            MissionDoesNotExistException.class,
+            MissionProgressDoesNotExistException.class
     })
     public ResponseEntity<Map<String, String>> handleBadRequestExceptions(RuntimeException ex) {
         Map<String, String> error = Map.of("error", ex.getMessage());
