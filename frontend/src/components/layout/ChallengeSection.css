@@ -15,7 +15,7 @@
   border: 4px solid #ffb800;
   padding: 1.5rem;
   width: 350px;
-  max-height: 500px;
+  max-height: 295px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   z-index: 100;
 }
@@ -57,8 +57,28 @@
   background: linear-gradient(90deg, #e29640 0%, #be6906 100%);
 }
 
+.completed-challenges-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #f5f5f5;
+  border-radius: 12px;
+}
+
+.completed-challenges-table th,
+.completed-challenges-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+  color: #5d4037;
+}
+
+.challenge-row:hover {
+  background-color: #f5f5f5;
+  cursor: pointer;
+}
+
 .challenges-content {
-  max-height: 300px;
+  max-height: 130px;
   overflow-y: auto;
 }
 
@@ -71,7 +91,7 @@
 .challenge-item {
   background: white;
   border-radius: 12px;
-  padding: 1rem;
+  padding: 0.5rem;
   border: 2px solid transparent;
   display: flex;
   justify-content: space-between;

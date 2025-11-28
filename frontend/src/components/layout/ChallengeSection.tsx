@@ -263,22 +263,33 @@ export default function ChallengesSection({
                 </p>
               </div>
             ) : (
-              completedChallenges.map((challenge) => (
-                <div
-                  key={challenge.id}
-                  className="challenge-item completed"
-                  onClick={() => {
-                    setViewedResults((prev) => new Set(prev).add(challenge.id));
-                  }}
-                >
-                  <div className="challenge-info">
-                    <h4>Challenge terminado</h4>
-                    <p>Rondas: {challenge.maxRounds}</p>
-                    <p>Preguntas: {challenge.questionsPerRound}</p>
-                    <p>Resultado: {challenge.result}</p>
-                  </div>
-                </div>
-              ))
+              <table className="completed-challenges-table">
+                <thead>
+                  <tr>
+                    <th>Rondas</th>
+                    <th>Preguntas</th>
+                    <th>Resultado</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {completedChallenges.map((challenge) => (
+                    <tr
+                      key={challenge.id}
+                      className="challenge-row"
+                      onClick={() => {
+                        setViewedResults((prev) =>
+                          new Set(prev).add(challenge.id)
+                        );
+                      }}
+                    >
+                      <td>{challenge.maxRounds}</td>
+                      <td>{challenge.questionsPerRound}</td>
+                      <td>{challenge.result}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             )}
           </div>
         )}
