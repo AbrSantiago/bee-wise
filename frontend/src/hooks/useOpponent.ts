@@ -1,23 +1,32 @@
 import { useEffect, useState } from "react";
-import challengeService, { type OpponentDTO } from "../services/challengeService";
+import challengeService from "../services/challengeService";
+import type { User } from "../services/userService";
 
-export function useOpponent(challengeId: number | null, username: string | null) {
-  const [opponent, setOpponent] = useState<OpponentDTO | null>(null);
-  const [loadingOpponent, setLoadingOpponent] = useState<boolean>(false);
-  const [errorOpponent, setErrorOpponent] = useState<string | null>(null);
+export function useOpponent(challengeId?: string, username?: string) {
+  const [opponent, setOpponent] = useState<User | null>(null);
+  const [loadingOpponent, setLoadingOpponent] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!challengeId || !username) return;
+    const fetchOpponent = async () => {
+      try {
+        if (!challengeId || !username) return;
 
-    setLoadingOpponent(true);
-    setErrorOpponent(null);
+        const user = await challengeService.getChallengeOpponent(
+          Number(challengeId),
+          username
+        );
+        setOpponent(user);
+      } catch (err) {
+        console.error("❌ Error fetching opponent:", err);
+        setError("Failed to load opponent data");
+      } finally {
+        setLoadingOpponent(false);
+      }
+    };
 
-    challengeService
-      .getOpponent(challengeId, username)
-      .then((data) => setOpponent(data))
-      .catch((err) => setErrorOpponent(err.message))
-      .finally(() => setLoadingOpponent(false));
+    fetchOpponent();
   }, [challengeId, username]);
 
-  return { opponent, loadingOpponent, errorOpponent };
+  return { opponent, loadingOpponent, error };
 }

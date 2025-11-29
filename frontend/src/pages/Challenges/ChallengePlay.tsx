@@ -26,7 +26,6 @@ import FeedbackMessage from "../Practice/components/FeedbackMessage";
 import DnDOptions from "../Practice/components/DnDOptions";
 import ChallengeUserCard from "./ChallengeUserCard";
 import { useUser } from "../../context/UserContext";
-import OpponentCard from "./OpponentCard";
 import ChallengeSummary from "./ChallengeSummary";
 import Confetti from "../../components/layout/Confetti";
 import RouletteScreen from "./RouletteScreen";
@@ -34,6 +33,7 @@ import dailyMissionService, {
   type DailyMissionUpdateOutDTO,
 } from "../../services/dailyMissionService";
 import MissionsUpdateSummary from "../../components/layout/MissionsUpdateSummary";
+import { useOpponent } from "../../hooks/useOpponent";
 
 export function ChallengePlayPage() {
   const [currentExercise, setCurrentExercise] = useState(0);
@@ -58,7 +58,6 @@ export function ChallengePlayPage() {
   const [missionsUpdate, setMissionsUpdate] = useState<
     DailyMissionUpdateOutDTO[] | null
   >(null);
-  const [showMissionsUpdate, setShowMissionsUpdate] = useState(false);
   const [pendingMissionsUpdate, setPendingMissionsUpdate] = useState<
     DailyMissionUpdateOutDTO[] | null
   >(null);
@@ -88,6 +87,11 @@ export function ChallengePlayPage() {
   }>();
   const current = exercises[currentExercise];
   const sensors = useSensors(useSensor(PointerSensor));
+
+  const { opponent, loadingOpponent } = useOpponent(
+    challengeId,
+    user?.username
+  );
 
   // --- TUS FUNCIONES DE JUEGO ORIGINALES (INTACTAS) ---
   const handleDragEnd = (event: DragEndEvent) => {
@@ -423,7 +427,6 @@ export function ChallengePlayPage() {
               setGameState("MISSION_SUMMARY");
               setMissionsUpdate(pendingMissionsUpdate);
               setPendingMissionsUpdate(null);
-              setShowMissionsUpdate(true);
             } else {
               navigate("/");
             }
@@ -458,11 +461,11 @@ export function ChallengePlayPage() {
   }
 
   // gameState es "PLAYING"
-  if (loading)
+  if (loading || loadingOpponent)
     return <MainLayout title="Cargando...">Cargando ejercicios...</MainLayout>;
 
   return (
-    user && (
+    user && opponent && (
       <div className="challenge-play-container">
         <ChallengeUserCard user={user} isCurrentUser={true} />
         <div className="challenge-exercise-container">
@@ -548,7 +551,7 @@ export function ChallengePlayPage() {
             <p className="text-gray-500">No se encontraron ejercicios.</p>
           )}
         </div>
-        <OpponentCard challengeId={challengeId} username={user.username} />
+        <ChallengeUserCard user={opponent} isCurrentUser={false} />
       </div>
     )
   );
