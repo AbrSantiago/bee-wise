@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import MainLayout from "../../components/layout/MainLayout";
 import { useUser } from "../../context/UserContext";
 import { ShopItemCard } from "./ShopItemCard";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export function ShopPage() {
   const [shopItems, setShopItems] = useState<ShopItem[]>([]);
@@ -78,7 +80,14 @@ export function ShopPage() {
 
       const response = await shopService.buyItem(itemToConfirm.id, token);
 
-      alert("¡Compra realizada con éxito!");
+      toast.success("Compra realizada con éxito", {
+        position: "bottom-right",
+        autoClose: 7000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
 
       setUser(response);
 
@@ -88,7 +97,14 @@ export function ShopPage() {
       console.error("Error al comprar el item:", error);
 
       if (error.response?.status === 400) {
-        alert("No tienes suficientes monedas para comprar este item");
+        toast.warning("No tienes suficientes BeeCoins", {
+          position: "bottom-right",
+          autoClose: 7000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
       } else if (error.response?.status === 404) {
         alert("Item no encontrado");
       } else {

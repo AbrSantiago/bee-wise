@@ -10,6 +10,8 @@ import { OwnedItemCard } from "../Profile/OwnedItemCard";
 import "./AvatarEditPage.css";
 import { Avatar } from "../../components/layout/Avatar";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export function AvatarEditPage() {
   const navigate = useNavigate();
@@ -78,11 +80,25 @@ export function AvatarEditPage() {
         selectedAvatar
       );
       setUser(updatedUser);
-      alert("Avatar actualizado con éxito!");
+      toast.success("Avatar actualizado con éxito", {
+        position: "bottom-right",
+        autoClose: 7000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
       navigate("/profile");
     } catch (err) {
       console.error(err);
-      alert("Error al actualizar avatar.");
+      toast.error("Error al actualizar el avatar", {
+        position: "bottom-right",
+        autoClose: 7000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
   };
 

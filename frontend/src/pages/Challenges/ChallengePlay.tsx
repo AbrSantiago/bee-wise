@@ -264,7 +264,7 @@ export function ChallengePlayPage() {
             { type: "PLAY_CHALLENGE", progressAmount: 1 },
           ]);
           setMissionsUpdate(missionsResult);
-          if (missionsResult[0].wasUpdated || missionsResult[1].wasUpdated)
+          if (missionsResult[0].wasUpdated)
             setPendingMissionsUpdate(missionsResult);
         }
 
@@ -459,7 +459,8 @@ export function ChallengePlayPage() {
     return <MainLayout title="Cargando...">Cargando ejercicios...</MainLayout>;
 
   return (
-    user && opponent && (
+    user &&
+    opponent && (
       <div className="challenge-play-container">
         <ChallengeUserCard user={user} isCurrentUser={true} />
         <div className="challenge-exercise-container">
