@@ -30,6 +30,7 @@ import dailyMissionService, {
   type DailyMissionUpdateOutDTO,
 } from "../../services/dailyMissionService";
 import MissionsUpdateSummary from "../../components/layout/MissionsUpdateSummary";
+import LoadingSpinner from "../../components/layout/LoadingSpinner";
 
 export function PracticePage() {
   const { id } = useParams<{ id: string }>();
@@ -393,7 +394,7 @@ export function PracticePage() {
           )}
         </div>
       ) : (
-        <p className="text-gray-500">Cargando ejercicio...</p>
+        <LoadingSpinner message="Cargando ejercicios" />
       )}
     </div>
   );
