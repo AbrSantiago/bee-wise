@@ -18,14 +18,7 @@ export function ProfilePage() {
     );
   }
 
-  const {
-    name,
-    surname,
-    username,
-    email,
-    avatar,
-    level,
-  } = user;
+  const { name, surname, username, email, avatar, level } = user;
 
   return (
     <MainLayout title="Perfil">
