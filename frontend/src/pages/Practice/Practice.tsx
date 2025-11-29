@@ -29,7 +29,7 @@ import Beector from "../../components/layout/Beector";
 import dailyMissionService, {
   type DailyMissionUpdateOutDTO,
 } from "../../services/dailyMissionService";
-import MissionUpdateSummary from "../../components/layout/MissionUpdateSummary";
+import MissionsUpdateSummary from "../../components/layout/MissionsUpdateSummary";
 
 export function PracticePage() {
   const { id } = useParams<{ id: string }>();
@@ -54,11 +54,13 @@ export function PracticePage() {
   const [showConfetti, setShowConfetti] = useState(false);
   const [levelUpInfo, setLevelUpInfo] = useState<LevelUpInfo | null>(null);
   const [streakUp, setStreakUp] = useState<boolean | null>(null);
-  const [missionUpdate, setMissionUpdate] =
-    useState<DailyMissionUpdateOutDTO | null>(null);
-  const [showMissionUpdate, setShowMissionUpdate] = useState(false);
-  const [pendingMissionUpdate, setPendingMissionUpdate] =
-    useState<DailyMissionUpdateOutDTO | null>(null);
+  const [missionsUpdate, setMissionsUpdate] = useState<
+    DailyMissionUpdateOutDTO[] | null
+  >(null);
+  const [showMissionsUpdate, setShowMissionsUpdate] = useState(false);
+  const [pendingMissionsUpdate, setPendingMissionsUpdate] = useState<
+    DailyMissionUpdateOutDTO[] | null
+  >(null);
 
   const current = exercises[currentExercise];
   const navigate = useNavigate();
@@ -97,13 +99,14 @@ export function PracticePage() {
           if (response.levelUp) setLevelUpInfo(response.levelUp);
           setStreakUp(response.hasUpStreak);
 
-          const missionResult = await dailyMissionService.updateProgress({
-            type: "COMPLETE_LESSON",
-            progressAmount: 1,
-          });
-          console.log("mission", missionResult);
-          setMissionUpdate(missionResult);
-          if (missionResult.wasUpdated) setPendingMissionUpdate(missionResult);
+          const missionsResult = await dailyMissionService.updateProgress([
+            { type: "COMPLETE_LESSON", progressAmount: 1 },
+            { type: "EARN_POINTS", progressAmount: 10 * correctCount },
+          ]);
+          console.log("mission", missionsResult);
+          setMissionsUpdate(missionsResult);
+          if (missionsResult[0].wasUpdated || missionsResult[1].wasUpdated)
+            setPendingMissionsUpdate(missionsResult);
 
           refreshUser();
           if (correctCount > 0) {
@@ -271,10 +274,10 @@ export function PracticePage() {
     }
   };
 
-  if (showMissionUpdate && missionUpdate) {
+  if (showMissionsUpdate && missionsUpdate) {
     return (
-      <MissionUpdateSummary
-        mission={missionUpdate}
+      <MissionsUpdateSummary
+        missions={missionsUpdate}
         onFinish={() => {
           navigate("/");
         }}
@@ -292,13 +295,13 @@ export function PracticePage() {
           totalCount={totalCount}
           levelUp={levelUpInfo}
           streakUp={streakUp}
-          overrideButton={pendingMissionUpdate ? "Siguiente" : undefined}
+          overrideButton={pendingMissionsUpdate ? "Siguiente" : undefined}
           onContinue={() => {
-            if (pendingMissionUpdate) {
+            if (pendingMissionsUpdate) {
               setShowSummary(false);
-              setMissionUpdate(pendingMissionUpdate);
-              setPendingMissionUpdate(null);
-              setShowMissionUpdate(true);
+              setMissionsUpdate(pendingMissionsUpdate);
+              setPendingMissionsUpdate(null);
+              setShowMissionsUpdate(true);
             } else {
               navigate("/");
             }

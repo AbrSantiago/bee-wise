@@ -48,6 +48,12 @@
   border: 1px solid #b4e8b4;
 }
 
+.mission-cald-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 /* ----- BOTÓN ----- */
 
 .mission-btn {

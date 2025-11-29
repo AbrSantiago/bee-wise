@@ -1,4 +1,7 @@
-import type { DailyMissionDTO, DailyMissionUpdateOutDTO } from "../../services/dailyMissionService";
+import type {
+  DailyMissionDTO,
+  DailyMissionUpdateOutDTO,
+} from "../../services/dailyMissionService";
 import "./DailyMissionsSection.css";
 
 const icons: Record<string, string> = {
@@ -12,22 +15,22 @@ const icons: Record<string, string> = {
 };
 
 const startText: Record<string, string> = {
-  PLAY_CHALLENGE: "Play",
-  WIN_CHALLENGE: "Win",
-  SPEND_BEECOINS: "Spend",
-  EARN_POINTS: "Earn",
-  COMPLETE_LESSON: "Complete",
-  CORRECT_EXCERSICES: "Solve",
-  BYE_ITEMS: "Buy",
+  PLAY_CHALLENGE: "Jugar",
+  WIN_CHALLENGE: "Ganar",
+  SPEND_BEECOINS: "Gastar",
+  EARN_POINTS: "Obtener",
+  COMPLETE_LESSON: "Completar",
+  CORRECT_EXCERSICES: "Resolver correctamente",
+  BYE_ITEMS: "Comprar",
 };
 
 const endText: Record<string, string> = {
-  PLAY_CHALLENGE: "challenges",
-  WIN_CHALLENGE: "challenge",
+  PLAY_CHALLENGE: "desafíos",
+  WIN_CHALLENGE: "desafío",
   SPEND_BEECOINS: "BeeCoins",
   EARN_POINTS: "BeePoints",
-  COMPLETE_LESSON: "lessons",
-  CORRECT_EXCERSICES: "correct excersices",
+  COMPLETE_LESSON: "lecciones",
+  CORRECT_EXCERSICES: "ejercicios",
   BYE_ITEMS: "items",
 };
 

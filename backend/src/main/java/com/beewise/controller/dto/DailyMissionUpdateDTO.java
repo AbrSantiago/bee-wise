@@ -9,9 +9,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class DailyMissionUpdateDTO {
-
     private MissionType type;
     private int progressAmount;
-
-
 }

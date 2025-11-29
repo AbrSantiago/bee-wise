@@ -33,14 +33,13 @@ public class DailyMissionController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<DailyMissionUpdateOutDTO> updateProgress(
-            @RequestBody DailyMissionUpdateDTO dailyMissionUpdateDTO,
+    public ResponseEntity<List<DailyMissionUpdateOutDTO>> updateProgress(
+            @RequestBody List<DailyMissionUpdateDTO> dailyMissionUpdateDTOS,
             @RequestHeader("Authorization") String authHeader
     ) {
         String username = jwtService.extractUsername(authHeader.substring(7));
 
-        DailyMissionUpdateOutDTO mission = dailyMissionService.updateProgress(username, dailyMissionUpdateDTO);
-
-        return ResponseEntity.ok(mission);
+        List<DailyMissionUpdateOutDTO> missions = dailyMissionService.updateProgress(username, dailyMissionUpdateDTOS);
+        return ResponseEntity.ok(missions);
     }
 }

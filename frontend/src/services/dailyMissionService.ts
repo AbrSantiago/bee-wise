@@ -46,16 +46,16 @@ const dailyMissionService = {
   },
 
   async updateProgress(
-    updateDTO: DailyMissionUpdateDTO
-  ): Promise<DailyMissionUpdateOutDTO> {
+    updates: DailyMissionUpdateDTO[]
+  ): Promise<DailyMissionUpdateOutDTO[]> {
     try {
-      const response = await apiClient.put<DailyMissionUpdateOutDTO>(
+      const response = await apiClient.put<DailyMissionUpdateOutDTO[]>(
         "/dailyMissions/update",
-        updateDTO
+        updates
       );
       return response.data;
     } catch (error) {
-      console.error("❌ Error in dailyMissionService.updateProgress():", error);
+      console.error("❌ Error in dailyMissionService.updateProgressMany():", error);
       throw error;
     }
   },

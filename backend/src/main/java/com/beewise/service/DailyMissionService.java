@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface DailyMissionService {
     List<DailyMissionProgress> getDailyMissions(String username);
-    DailyMissionUpdateOutDTO updateProgress(String username, DailyMissionUpdateDTO missionUpdate);
+    List<DailyMissionUpdateOutDTO> updateProgress(String username, List<DailyMissionUpdateDTO> missionUpdateDTOS);
 }

@@ -1,5 +1,6 @@
 package com.beewise.service.impl;
 
+import com.beewise.controller.dto.DailyMissionDTO;
 import com.beewise.controller.dto.DailyMissionUpdateDTO;
 import com.beewise.controller.dto.DailyMissionUpdateOutDTO;
 import com.beewise.model.User;
@@ -48,30 +49,39 @@ public class DailyMissionServiceImpl implements DailyMissionService {
     }
 
     @Override
-    public DailyMissionUpdateOutDTO updateProgress(String username, DailyMissionUpdateDTO progressUpdate) {
+    public List<DailyMissionUpdateOutDTO> updateProgress(String username, List<DailyMissionUpdateDTO> progressUpdateDTOS) {
         User user = userService.getUserByUsername(username);
+        List<DailyMissionUpdateOutDTO> missions = new ArrayList<>();
 
-        DailyMissionUpdateOutDTO mission = new DailyMissionUpdateOutDTO();
-        Optional<DailyMissionProgress> progressOp = progressRepository.findByUserAndMission_TypeAndMission_Date(user, progressUpdate.getType(), LocalDate.now());
+        for (DailyMissionUpdateDTO progressUpdate : progressUpdateDTOS) {
+            DailyMissionUpdateOutDTO mission = new DailyMissionUpdateOutDTO();
+            Optional<DailyMissionProgress> progressOp = progressRepository.findByUserAndMission_TypeAndMission_Date(user, progressUpdate.getType(), LocalDate.now());
 
-        if (progressOp.isEmpty() || progressOp.get().isCompleted()){
-            mission.setWasUpdated(false);
-        } else {
-            DailyMissionProgress progress = progressOp.get();
-            mission = new DailyMissionUpdateOutDTO(progress);
-            progress.updateProgress(progressUpdate.getProgressAmount());
-            mission.addProgress(progressUpdate.getProgressAmount());
-            mission.setWasUpdated(true);
+            if (progressOp.isEmpty()){
+                mission.setWasUpdated(false);
+            } else if (progressOp.get().isCompleted()) {
+                DailyMissionProgress progress = progressOp.get();
+                mission = new DailyMissionUpdateOutDTO(progress);
+                mission.setCurrentProgress(mission.getPreviousProgress());
+                mission.setWasUpdated(false);
+            } else {
+                DailyMissionProgress progress = progressOp.get();
+                mission = new DailyMissionUpdateOutDTO(progress);
+                progress.updateProgress(progressUpdate.getProgressAmount());
+                mission.addProgress(progressUpdate.getProgressAmount());
+                mission.setWasUpdated(true);
 
-            if (progress.isCompleted()) {
-                user.addBeeCoins(progress.getReward());
-                progress.setClaimed(true);
-                mission.setClaimed(true);
+                if (progress.isCompleted()) {
+                    user.addBeeCoins(progress.getReward());
+                    progress.setClaimed(true);
+                    mission.setClaimed(true);
+                }
+
+                progressRepository.save(progress);
             }
-
-            progressRepository.save(progress);
+            missions.add(mission);
         }
-        return mission;
+        return missions;
     }
 
     // ================ HELPERS ================
