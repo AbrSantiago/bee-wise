@@ -23,16 +23,16 @@ export default function DailyMissionsSection() {
     load();
   }, []);
 
-  if (loading) return <p>Cargando misiones diarias...</p>;
-
   return (
     <div className="daily-missions-container">
       <h2 className="missions-title">Misiones Diarias</h2>
 
       <div className="missions-list">
-        {missions.map((m, index) => (
-          <MissionCard key={index} mission={m} />
-        ))}
+        {loading ? (
+          <p>Cargando misiones diarias...</p>
+        ) : (
+          missions.map((m, index) => <MissionCard key={index} mission={m} />)
+        )}
       </div>
     </div>
   );
