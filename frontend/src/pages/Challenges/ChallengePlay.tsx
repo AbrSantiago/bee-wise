@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import MainLayout from "../../components/layout/MainLayout";
 import challengeService, {
   type AnswerDTO,
@@ -30,6 +30,10 @@ import OpponentCard from "./OpponentCard";
 import ChallengeSummary from "./ChallengeSummary";
 import Confetti from "../../components/layout/Confetti";
 import RouletteScreen from "./RouletteScreen";
+import dailyMissionService, {
+  type DailyMissionUpdateOutDTO,
+} from "../../services/dailyMissionService";
+import MissionsUpdateSummary from "../../components/layout/MissionsUpdateSummary";
 
 export function ChallengePlayPage() {
   const [currentExercise, setCurrentExercise] = useState(0);
@@ -51,11 +55,23 @@ export function ChallengePlayPage() {
   const [showConfetti, setShowConfetti] = useState(false);
   const [isWinner, setIsWinner] = useState(false);
   const [summaryDataLoaded, setSummaryDataLoaded] = useState(false);
+  const [missionsUpdate, setMissionsUpdate] = useState<
+    DailyMissionUpdateOutDTO[] | null
+  >(null);
+  const [showMissionsUpdate, setShowMissionsUpdate] = useState(false);
+  const [pendingMissionsUpdate, setPendingMissionsUpdate] = useState<
+    DailyMissionUpdateOutDTO[] | null
+  >(null);
 
   const { user } = useUser();
+  const navigate = useNavigate();
 
   const [gameState, setGameState] = useState<
-    "ROULETTE" | "PLAYING" | "CHALLENGE_SUMMARY" | "ROUND_SUMMARY"
+    | "ROULETTE"
+    | "PLAYING"
+    | "CHALLENGE_SUMMARY"
+    | "ROUND_SUMMARY"
+    | "MISSION_SUMMARY"
   >("ROULETTE");
   const [isSpinning, setIsSpinning] = useState(false);
   const [winningCategory, setWinningCategory] =
@@ -232,6 +248,25 @@ export function ChallengePlayPage() {
         setIsWinner(currentUserIsWinner);
         setSummaryDataLoaded(false); // Resetear cuando cambiamos de estado
 
+        if (currentUserIsWinner) {
+          const missionsResult = await dailyMissionService.updateProgress([
+            { type: "PLAY_CHALLENGE", progressAmount: 1 },
+            { type: "WIN_CHALLENGE", progressAmount: 1 },
+          ]);
+          // console.log("mission", missionsResult);
+          setMissionsUpdate(missionsResult);
+          if (missionsResult[0].wasUpdated || missionsResult[1].wasUpdated)
+            setPendingMissionsUpdate(missionsResult);
+        } else {
+          const missionsResult = await dailyMissionService.updateProgress([
+            { type: "PLAY_CHALLENGE", progressAmount: 1 },
+          ]);
+          // console.log("mission", missionsResult);
+          setMissionsUpdate(missionsResult);
+          if (missionsResult[0].wasUpdated || missionsResult[1].wasUpdated)
+            setPendingMissionsUpdate(missionsResult);
+        }
+
         setTimeout(() => {
           setGameState("CHALLENGE_SUMMARY");
         }, 500);
@@ -382,8 +417,30 @@ export function ChallengePlayPage() {
           time={endTime && startTime ? endTime - startTime : 0}
           correctCount={correctCount}
           totalCount={totalCount}
+          overrideButton={pendingMissionsUpdate ? "Siguiente" : undefined}
+          onContinue={() => {
+            if (pendingMissionsUpdate) {
+              setGameState("MISSION_SUMMARY");
+              setMissionsUpdate(pendingMissionsUpdate);
+              setPendingMissionsUpdate(null);
+              setShowMissionsUpdate(true);
+            } else {
+              navigate("/");
+            }
+          }}
         />
       </div>
+    );
+  }
+
+  if (gameState == "MISSION_SUMMARY" && missionsUpdate) {
+    return (
+      <MissionsUpdateSummary
+        missions={missionsUpdate}
+        onFinish={() => {
+          navigate("/");
+        }}
+      />
     );
   }
 
