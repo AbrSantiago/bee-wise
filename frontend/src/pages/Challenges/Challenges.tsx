@@ -9,6 +9,7 @@ import { useUser } from "../../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import UserToChallengeCard from "../../components/layout/UserToChallengeCard";
 import Beector from "../../components/layout/Beector";
+import LoadingSpinner from "../../components/layout/LoadingSpinner";
 
 export function ChallengesPage() {
   const navigate = useNavigate();
@@ -17,8 +18,12 @@ export function ChallengesPage() {
   const [users, setUsers] = useState<UserToChallengeDTO[]>([]);
   const [selectedUsername, setSelectedUsername] = useState<string | null>(null);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [loadingOpponents, setLoadingOpponents] = useState<boolean | null>(
+    null
+  );
 
   const fetchUsers = async () => {
+    setLoadingOpponents(true);
     if (!accessToken) {
       console.info("⚠️ No token available");
       return;
@@ -27,6 +32,7 @@ export function ChallengesPage() {
     try {
       const data = await challengeService.getUsersToChallenge(user!.id);
       setUsers(data);
+      setLoadingOpponents(false);
     } catch (error) {
       console.error("❌ Error fetching user points:", error);
     }
@@ -57,16 +63,20 @@ export function ChallengesPage() {
           <Beector imgSrc="/image/BeeWarrior2.png" size={80} />
         </div>
         <div className="user-cards-container">
-          {users.map((user) => (
-            <UserToChallengeCard
-              key={user.id}
-              user={user}
-              onChallenge={() => {
-                setSelectedUserId(user.id);
-                setSelectedUsername(user.username);
-              }}
-            />
-          ))}
+          {loadingOpponents ? (
+            <LoadingSpinner message="Buscando oponentes" />
+          ) : (
+            users.map((user) => (
+              <UserToChallengeCard
+                key={user.id}
+                user={user}
+                onChallenge={() => {
+                  setSelectedUserId(user.id);
+                  setSelectedUsername(user.username);
+                }}
+              />
+            ))
+          )}
         </div>
         {selectedUsername && selectedUserId && (
           <ChallengeModal
