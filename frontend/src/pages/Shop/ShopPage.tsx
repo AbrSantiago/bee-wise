@@ -36,7 +36,6 @@ export function ShopPage() {
     try {
       const items = await shopService.getAllItems();
       setShopItems(items);
-      // console.log("Items de la tienda:", items);
     } catch (error) {
       console.error("Error al traer los items de la tienda:", error);
     }
@@ -46,7 +45,6 @@ export function ShopPage() {
     try {
       const items = await shopService.getItemsByCategory();
       setItemsByCategory(items);
-      // console.log("Items por categoría:", items);
     } catch (error) {
       console.error("Error al traer items por categoría:", error);
     }
@@ -78,11 +76,7 @@ export function ShopPage() {
         return;
       }
 
-      // console.log(`Comprando item ${itemToConfirm.id} con token:`, token);
-
       const response = await shopService.buyItem(itemToConfirm.id, token);
-
-      // console.log("Respuesta del servidor:", response);
 
       alert("¡Compra realizada con éxito!");
 

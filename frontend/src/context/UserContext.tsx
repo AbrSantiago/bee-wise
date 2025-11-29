@@ -34,7 +34,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
         accessToken || undefined
       );
       setUser(userData);
-      // console.log("✅ User loaded:", userData);
     } catch (error) {
       console.error("❌ Error loading user:", error);
       setUser(null);

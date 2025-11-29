@@ -77,11 +77,8 @@ export type ChallengeRol = "CHALLENGER" | "CHALLENGED";
 
 const challengeService = {
   async getAll(): Promise<ChallengeDTO[]> {
-    // console.log("🔄 Calling GET /challenge");
     try {
       const response = await apiClient.get<ChallengeDTO[]>("/challenge");
-      // console.log("📨 Response from /challenge:", response);
-      // console.log("📦 Response data:", response.data);
       return response.data;
     } catch (error) {
       console.error("❌ Error in challengeService.getAll():", error);

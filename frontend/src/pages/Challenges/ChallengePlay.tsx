@@ -224,7 +224,6 @@ export function ChallengePlayPage() {
     setFeedback(false);
     setCanContinue(true);
     setIsTimeOut(true);
-    // console.log("⏰ Tiempo agotado para la pregunta");
   };
 
   const handleSubmitTurn = async () => {
@@ -257,7 +256,6 @@ export function ChallengePlayPage() {
             { type: "PLAY_CHALLENGE", progressAmount: 1 },
             { type: "WIN_CHALLENGE", progressAmount: 1 },
           ]);
-          // console.log("mission", missionsResult);
           setMissionsUpdate(missionsResult);
           if (missionsResult[0].wasUpdated || missionsResult[1].wasUpdated)
             setPendingMissionsUpdate(missionsResult);
@@ -265,7 +263,6 @@ export function ChallengePlayPage() {
           const missionsResult = await dailyMissionService.updateProgress([
             { type: "PLAY_CHALLENGE", progressAmount: 1 },
           ]);
-          // console.log("mission", missionsResult);
           setMissionsUpdate(missionsResult);
           if (missionsResult[0].wasUpdated || missionsResult[1].wasUpdated)
             setPendingMissionsUpdate(missionsResult);
@@ -338,7 +335,6 @@ export function ChallengePlayPage() {
   };
 
   const handleSpinEnd = () => {
-    console.log("🎉 Ruleta detenida en categoría:", winningCategory);
     setIsSpinning(false);
     setShowCategoryPopup(true); // Mostrar el popup cuando termine de girar
   };
@@ -391,7 +387,6 @@ export function ChallengePlayPage() {
     if (gameState === "PLAYING" && current && !loading) {
       setTimeLeft(25);
       setIsTimerRunning(true);
-      console.log("🚀 Timer iniciado para nueva pregunta");
     }
   }, [currentExercise, current, loading, gameState]);
 
@@ -448,7 +443,6 @@ export function ChallengePlayPage() {
   }
 
   if (gameState === "CHALLENGE_SUMMARY") {
-    console.log("CHALLENGE SUMMARY!");
     return (
       <div>
         {showConfetti && <Confetti duration={8000} intensity="high" />}

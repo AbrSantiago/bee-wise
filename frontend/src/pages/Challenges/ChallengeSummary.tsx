@@ -29,10 +29,6 @@ export default function ChallengeSummary({ challengeId, onDataLoaded }: Props) {
           Number(challengeId),
           token
         );
-
-        console.log("📊 Summary data received:", data);
-        console.log("🎉 Level Up info:", data.levelUp);
-
         setSummary(data);
         refreshUser();
       } catch (error) {
@@ -56,9 +52,6 @@ export default function ChallengeSummary({ challengeId, onDataLoaded }: Props) {
       <div className="challenge-summary-error">No summary data available.</div>
     );
   }
-
-  console.log("🔍 Summary state:", summary);
-  console.log("🔍 Has levelUp?:", !!summary.levelUp);
 
   let title = "";
   let winnerClass = "";

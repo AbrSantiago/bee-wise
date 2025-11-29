@@ -18,7 +18,6 @@ const Roulette: React.FC<RouletteProps> = ({
   triggerSpin,
   onSpinningEnd,
 }) => {
-  console.log("categories: " + categories);
   const wheelRef = useRef<HTMLDivElement>(null);
   const [isSpinning, setIsSpinning] = useState(false);
 

@@ -36,7 +36,7 @@ function Home() {
 
   const getChallenges = async () => {
     if (!accessToken) {
-      console.log("❌ No accessToken available");
+      console.info("❌ No accessToken available");
       return;
     }
 
@@ -76,12 +76,6 @@ function Home() {
   }, []);
 
   useEffect(() => {
-    console.log(
-      "🎯 useEffect triggered - accessToken:",
-      !!accessToken,
-      "user:",
-      !!user
-    );
     if (accessToken && user) {
       getChallenges();
     }

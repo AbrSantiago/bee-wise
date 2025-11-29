@@ -25,7 +25,7 @@ export function UserPointsProvider({ children }: { children: ReactNode }) {
 
   const fetchPoints = async () => {
     if (!accessToken) {
-      console.log("⚠️ No token available");
+      console.error("⚠️ No token available");
       return;
     }
 

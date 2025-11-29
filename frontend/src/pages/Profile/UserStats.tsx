@@ -51,10 +51,9 @@ export function UserStats() {
     ];
   }
 
-
   return (
     <div className="user-stats__container">
-      <h2 className="user-stats__title">Tus estadísticas</h2>
+      <h2 className="user-stats__title">Estadísticas</h2>
 
       <div className="user-stats__grid">
         <div className="user-stats__card">

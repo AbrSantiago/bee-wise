@@ -47,7 +47,7 @@ export default function ChallengeModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!accessToken || !formData) {
-      console.log("⚠️ Token o formData no disponible");
+      console.error("⚠️ Token o formData no disponible");
       return;
     }
 
@@ -55,7 +55,6 @@ export default function ChallengeModal({
 
     try {
       const challenge = await challengeService.sendChallenge(formData);
-      console.log("✅ Challenge enviado:", formData);
       onConfirm(challenge.id, formData.maxRounds, formData.questionsPerRound);
       onClose(); // cerrar modal al enviar
     } catch (err: any) {

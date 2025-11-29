@@ -103,7 +103,6 @@ export function PracticePage() {
             { type: "COMPLETE_LESSON", progressAmount: 1 },
             { type: "EARN_POINTS", progressAmount: 10 * correctCount },
           ]);
-          console.log("mission", missionsResult);
           setMissionsUpdate(missionsResult);
           if (missionsResult[0].wasUpdated || missionsResult[1].wasUpdated)
             setPendingMissionsUpdate(missionsResult);

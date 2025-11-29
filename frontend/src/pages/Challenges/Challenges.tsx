@@ -20,7 +20,7 @@ export function ChallengesPage() {
 
   const fetchUsers = async () => {
     if (!accessToken) {
-      console.log("⚠️ No token available");
+      console.info("⚠️ No token available");
       return;
     }
 
