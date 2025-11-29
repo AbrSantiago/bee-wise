@@ -11,6 +11,8 @@ interface Props {
   totalCount?: number;
   levelUp?: LevelUpInfo | null;
   streakUp?: boolean | null;
+  overrideButton?: string;
+  onContinue?: () => void;
 }
 
 function formatTime(ms: number) {
@@ -26,8 +28,9 @@ export default function SummaryScreen({
   totalCount = 0,
   levelUp = null,
   streakUp = null,
+  overrideButton,
+  onContinue,
 }: Props) {
-  console.log("streakUp: " + streakUp);
   const percent = totalCount
     ? Math.round((correctCount / totalCount) * 100)
     : 0;
@@ -50,11 +53,18 @@ export default function SummaryScreen({
           ({percent}%)
         </p>
       </div>
-      <Link to={`/`}>
-        <button className="summary-btn-back-home">
-          <span>Volver al inicio</span>
+
+      {overrideButton && onContinue ? (
+        <button className="summary-btn-back-home" onClick={onContinue}>
+          <span>{overrideButton}</span>
         </button>
-      </Link>
+      ) : (
+        <Link to={`/`}>
+          <button className="summary-btn-back-home">
+            <span>Volver al inicio</span>
+          </button>
+        </Link>
+      )}
     </div>
   );
 }

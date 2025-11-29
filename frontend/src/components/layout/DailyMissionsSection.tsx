@@ -99,10 +99,3 @@ export default function DailyMissionsSection() {
     </div>
   );
 }
-
-function formatMissionType(type: string): string {
-  return type
-    .replace(/_/g, " ")
-    .toLowerCase()
-    .replace(/^\w/, (c) => c.toUpperCase());
-}

@@ -42,7 +42,6 @@ function Home() {
 
     try {
       const allChallenges = await challengeService.getAll();
-      console.log("👤 Current user:", user);
 
       const userChallenges = allChallenges.filter((challenge) => {
         const isUserChallenger = challenge.challengerId === user?.id;
@@ -84,10 +83,7 @@ function Home() {
       !!user
     );
     if (accessToken && user) {
-      console.log("✅ Calling getChallenges...");
       getChallenges();
-    } else {
-      console.log("❌ Not calling getChallenges - missing accessToken or user");
     }
   }, [accessToken, user]);
 

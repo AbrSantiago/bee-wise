@@ -1,0 +1,76 @@
+.mission-update-summary {
+  max-width: 420px;
+  margin: 60px auto;
+  padding: 28px 32px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  text-align: center;
+  animation: fadeInScale 0.35s ease;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.mission-update-summary h2 {
+  font-size: 1.9rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.mission-update-summary p {
+  font-size: 1.15rem;
+  color: #444;
+  margin: 10px 0;
+}
+
+.mission-update-summary .completed-reward {
+  background: #e8ffe8;
+  padding: 12px;
+  border-radius: 10px;
+  color: #2e7d32;
+  font-weight: bold;
+  margin-top: 18px;
+  border: 1px solid #b4e8b4;
+}
+
+/* ----- BOTÓN ----- */
+
+.mission-btn {
+  margin-top: 28px;
+  padding: 12px 22px;
+  background: #ffd84d;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.15rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: bold;
+  color: #5a4500;
+}
+
+.mission-btn:hover {
+  background: #ffcc29;
+  transform: translateY(-2px);
+}
+
+.mission-btn:active {
+  transform: translateY(1px);
+}
+
+/* ---- Opcional: pequeño detalle para simular "tarjeta de misión" -------- */
+
+.mission-update-summary::before {
+  content: "📘";
+  font-size: 2.2rem;
+  display: block;
+  margin-bottom: 12px;
+}

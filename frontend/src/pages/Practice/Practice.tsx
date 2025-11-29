@@ -3,7 +3,7 @@ import "katex/dist/katex.min.css";
 // @ts-ignore
 import { BlockMath } from "react-katex";
 import "./Practice.css";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   DndContext,
   closestCenter,
@@ -26,6 +26,10 @@ import ProgressBar from "../../components/layout/ProgressBar";
 import Confetti from "../../components/layout/Confetti";
 import { useUser } from "../../context/UserContext";
 import Beector from "../../components/layout/Beector";
+import dailyMissionService, {
+  type DailyMissionUpdateOutDTO,
+} from "../../services/dailyMissionService";
+import MissionUpdateSummary from "../../components/layout/MissionUpdateSummary";
 
 export function PracticePage() {
   const { id } = useParams<{ id: string }>();
@@ -50,16 +54,20 @@ export function PracticePage() {
   const [showConfetti, setShowConfetti] = useState(false);
   const [levelUpInfo, setLevelUpInfo] = useState<LevelUpInfo | null>(null);
   const [streakUp, setStreakUp] = useState<boolean | null>(null);
+  const [missionUpdate, setMissionUpdate] =
+    useState<DailyMissionUpdateOutDTO | null>(null);
+  const [showMissionUpdate, setShowMissionUpdate] = useState(false);
+  const [pendingMissionUpdate, setPendingMissionUpdate] =
+    useState<DailyMissionUpdateOutDTO | null>(null);
 
   const current = exercises[currentExercise];
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchLesson = async () => {
       try {
         if (id) {
           const lesson = await lessonService.getLesson(id);
-          console.log("2 - Agarro una lesson:", lesson);
-
           setExercises(lesson.exercises);
           setTotalCount(lesson.exercises.length);
           setCorrectCount(0);
@@ -86,11 +94,16 @@ export function PracticePage() {
             correctExercises: correctCount,
           });
 
-          if (response.levelUp) {
-            setLevelUpInfo(response.levelUp);
-          }
-
+          if (response.levelUp) setLevelUpInfo(response.levelUp);
           setStreakUp(response.hasUpStreak);
+
+          const missionResult = await dailyMissionService.updateProgress({
+            type: "COMPLETE_LESSON",
+            progressAmount: 1,
+          });
+          console.log("mission", missionResult);
+          setMissionUpdate(missionResult);
+          if (missionResult.wasUpdated) setPendingMissionUpdate(missionResult);
 
           refreshUser();
           if (correctCount > 0) {
@@ -258,6 +271,17 @@ export function PracticePage() {
     }
   };
 
+  if (showMissionUpdate && missionUpdate) {
+    return (
+      <MissionUpdateSummary
+        mission={missionUpdate}
+        onFinish={() => {
+          navigate("/");
+        }}
+      />
+    );
+  }
+
   if (showSummary) {
     return (
       <div className="practice-summary-container">
@@ -268,6 +292,17 @@ export function PracticePage() {
           totalCount={totalCount}
           levelUp={levelUpInfo}
           streakUp={streakUp}
+          overrideButton={pendingMissionUpdate ? "Siguiente" : undefined}
+          onContinue={() => {
+            if (pendingMissionUpdate) {
+              setShowSummary(false);
+              setMissionUpdate(pendingMissionUpdate);
+              setPendingMissionUpdate(null);
+              setShowMissionUpdate(true);
+            } else {
+              navigate("/");
+            }
+          }}
         />
       </div>
     );
