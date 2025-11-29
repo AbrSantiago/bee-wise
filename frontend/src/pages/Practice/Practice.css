@@ -272,15 +272,16 @@ input[readonly] {
 }
 
 .timer-pulse {
-  animation: pulse 0.8s infinite;
+  animation: heartbeat 1.5s ease-in-out infinite;
 }
 
-@keyframes pulse {
+@keyframes heartbeat {
   0% {
     transform: scale(1);
   }
   50% {
-    transform: scale(1.1);
+    /* Aumentamos la escala a 1.15 para que sea evidente */
+    transform: scale(1.16);
   }
   100% {
     transform: scale(1);
