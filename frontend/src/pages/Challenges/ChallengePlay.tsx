@@ -359,8 +359,8 @@ export function ChallengePlayPage() {
   // --- RENDERIZADO FINAL ---
 
   if (gameState === "ROULETTE") {
-    if (loading)
-      return <MainLayout title="Cargando...">Cargando desafío...</MainLayout>;
+    // if (loading)
+    //   return <MainLayout title="Cargando...">Cargando desafío...</MainLayout>;
     return (
       <RouletteScreen
         loading={loading}
