@@ -36,35 +36,37 @@ export default function SummaryScreen({
     : 0;
 
   return (
-    <div className="summary-container">
-      <p className="summary-title">¡Has terminado todos los ejercicios!</p>
-      <Beector imgSrc="/image/BeeHappy.png" />
-      <LvlUpNotification levelUp={levelUp} />
-      <StreakUpNotification streakUp={streakUp} />
-      <div className="summary-stats">
-        <p>
-          Tiempo total: <b>{formatTime(time)}</b>
-        </p>
-        <p>
-          Aciertos:{" "}
-          <b>
-            {correctCount}/{totalCount}
-          </b>{" "}
-          ({percent}%)
-        </p>
-      </div>
+    <div className="summary-scroll">
+      <div className="summary-container">
+        <p className="summary-title">¡Has terminado todos los ejercicios!</p>
+        <Beector imgSrc="/image/BeeHappy.png" />
+        <LvlUpNotification levelUp={levelUp} />
+        <StreakUpNotification streakUp={streakUp} />
+        <div className="summary-stats">
+          <p>
+            Tiempo total: <b>{formatTime(time)}</b>
+          </p>
+          <p>
+            Aciertos:{" "}
+            <b>
+              {correctCount}/{totalCount}
+            </b>{" "}
+            ({percent}%)
+          </p>
+        </div>
 
-      {overrideButton && onContinue ? (
-        <button className="summary-btn-back-home" onClick={onContinue}>
-          <span>{overrideButton}</span>
-        </button>
-      ) : (
-        <Link to={`/`}>
-          <button className="summary-btn-back-home">
-            <span>Volver al inicio</span>
+        {overrideButton && onContinue ? (
+          <button className="summary-screen-btn-back-home" onClick={onContinue}>
+            <span>{overrideButton}</span>
           </button>
-        </Link>
-      )}
+        ) : (
+          <Link to={`/`}>
+            <button className="summary-screen-btn-back-home">
+              <span>Volver al inicio</span>
+            </button>
+          </Link>
+        )}
+      </div>
     </div>
   );
 }
