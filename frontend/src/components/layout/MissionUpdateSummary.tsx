@@ -1,4 +1,5 @@
 import type { DailyMissionUpdateOutDTO } from "../../services/dailyMissionService";
+import MissionCard from "./MissionCard";
 import "./MissionUpdateSummary.css";
 
 interface Props {
@@ -11,19 +12,10 @@ export default function MissionUpdateSummary({ mission, onFinish }: Props) {
     <div className="mission-update-summary">
       <h2>¡Misión actualizada!</h2>
 
-      <p>
-        <strong>Misión:</strong> {mission.type}
-      </p>
-
-      <p>
-        <strong>Progreso:</strong> {mission.previousProgress} →{" "}
-        {mission.currentProgress} / {mission.goalAmount}
-      </p>
+      <MissionCard mission={mission} />
 
       {mission.currentProgress >= mission.goalAmount && (
-        <p className="completed-reward">
-          🎉 ¡Objetivo completado! Recompensa: {mission.rewardAmount} Beecoins
-        </p>
+        <p className="completed-reward">Objetivo completado!</p>
       )}
 
       <button className="mission-btn" onClick={onFinish}>
