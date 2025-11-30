@@ -1,29 +1,84 @@
-// src/App.tsx
-import { Route, Routes } from 'react-router-dom'
-import Home from './pages/Home/Home'
-import { PracticePage } from './pages/Practice/Practice.tsx'
-import { ProfilePage } from './pages/Profile/Profile.tsx'
-import { NotFoundPage } from './pages/NotFound/NotFoundPage.tsx'
-import Test from './pages/Test'
-import PracticeDND from './pages/Practice/PracticeDND.tsx'
-import { RankingPage } from './pages/Ranking/Ranking.tsx'
-import { ChallengesPage } from './pages/Challenges/Challenges.tsx'
+import { Route, Routes } from "react-router-dom";
+import Home from "./pages/Home/Home";
+import { PracticePage } from "./pages/Practice/Practice";
+import { ProfilePage } from "./pages/Profile/Profile";
+import { NotFoundPage } from "./pages/NotFound/NotFoundPage";
+import Test from "./pages/Test";
+import { RankingPage } from "./pages/Ranking/Ranking";
+import { ChallengesPage } from "./pages/Challenges/Challenges";
+import { AuthProvider } from "./context/AuthContext";
+import { UserPointsProvider } from "./context/UserPointsContext";
+import { ProtectedLayout } from "./components/layout/ProtectedLayout";
+import LandingPage from "./pages/LandingPage/LandingPage";
+import LoginPage from "./pages/Login/LoginPage";
+import RegisterPage from "./pages/Register/RegisterPage";
+import RootRedirect from "./components/layout/RootRedirect";
+import { UserProvider } from "./context/UserContext";
+import { ChallengePlayPage } from "./pages/Challenges/ChallengePlay";
+import { AvatarEditPage } from "./pages/AvatarPage/AvatarEditPage";
+import { ShopPage } from "./pages/Shop/ShopPage";
+import { FeatureLockedPage } from "./pages/FeatureLocked/FeatureLockedPage";
+import { FeatureProtectedRoute } from "./components/layout/FeatureProtectedRoute";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
-    <div>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/practice/:id" element={<PracticePage />} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/challenges" element={<ChallengesPage />} />
-        <Route path="/ranking" element={<RankingPage />} />
-        <Route path="/test" element={<Test />} />
-        <Route path="/drag-and-drop" element={<PracticeDND />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes> 
-    </div>
-  )
+    <AuthProvider>
+      <UserPointsProvider>
+        <UserProvider>
+          <ToastContainer
+            position="top-center"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
+          <Routes>
+            <Route path="/" element={<RootRedirect />} />
+
+            {/* Landing con login + register */}
+            <Route path="/landing" element={<LandingPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+
+            {/* Auth required */}
+            <Route element={<ProtectedLayout />}>
+              <Route path="/home" element={<Home />} />
+              <Route path="/practice/:id" element={<PracticePage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/avatar" element={<AvatarEditPage />} />
+
+              {/* Challenges - Requiere Nivel 2 */}
+              <Route
+                path="/challenges"
+                element={
+                  <FeatureProtectedRoute requiredLevel={2}>
+                    <ChallengesPage />
+                  </FeatureProtectedRoute>
+                }
+              />
+
+              <Route path="/feature-locked" element={<FeatureLockedPage />} />
+              <Route path="/ranking" element={<RankingPage />} />
+              <Route path="/shop" element={<ShopPage />} />
+              <Route path="/test" element={<Test />} />
+              <Route
+                path="/challenge/:challengeId/round/:roundNumber/:questionsPerRound/:rol"
+                element={<ChallengePlayPage />}
+              />
+            </Route>
+
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </UserProvider>
+      </UserPointsProvider>
+    </AuthProvider>
+  );
 }
 
-export default App
+export default App;

@@ -9,6 +9,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/exercise")
 public class ExerciseController {
@@ -25,6 +27,13 @@ public class ExerciseController {
         return ResponseEntity.ok(exerciseDTO);
     }
 
+    @GetMapping()
+    public ResponseEntity<List<ExerciseDTO>> getAllExercises() {
+        List<Exercise> exercises = exerciseService.getAllExercises();
+        List<ExerciseDTO> exerciseDTOS = exercises.stream().map(ExerciseDTO::fromExercise).toList();
+        return ResponseEntity.ok(exerciseDTOS);
+    }
+
     @PostMapping("/open")
     public ResponseEntity<ExerciseDTO> createOpenExercise(@Valid @RequestBody SimpleOpenExerciseDTO dto) {
         Exercise exercise = exerciseService.createOpenExercise(dto);
@@ -37,6 +46,20 @@ public class ExerciseController {
         Exercise exercise = exerciseService.createMultipleChoiceExercise(dto);
         ExerciseDTO exerciseDTO = ExerciseDTO.fromExercise(exercise);
         return ResponseEntity.ok(exerciseDTO);
+    }
+
+    @PostMapping("/open/createAll")
+    public ResponseEntity<List<ExerciseDTO>> createAll(@Valid @RequestBody List<SimpleOpenExerciseDTO> dto) {
+        List<Exercise> exercises = exerciseService.createOpenExercises(dto);
+        List<ExerciseDTO> exerciseDTOS = exercises.stream().map(ExerciseDTO::fromExercise).toList();
+        return ResponseEntity.ok(exerciseDTOS);
+    }
+
+    @PostMapping("/multipleChoice/createAll")
+    public ResponseEntity<List<ExerciseDTO>> createAllMultipleChoice(@Valid @RequestBody List<SimpleMultipleChoiceExerciseDTO> dto) {
+        List<Exercise> exercises = exerciseService.createMultipleChoiceExercises(dto);
+        List<ExerciseDTO> exerciseDTOS = exercises.stream().map(ExerciseDTO::fromExercise).toList();
+        return ResponseEntity.ok(exerciseDTOS);
     }
 
     @PutMapping("/open/{id}")

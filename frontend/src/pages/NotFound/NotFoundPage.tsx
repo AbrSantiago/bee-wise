@@ -1,4 +1,4 @@
-import React from "react";
+import { Navigate } from "react-router-dom";
 
 export function NotFoundPage() {
   return (
@@ -8,9 +8,7 @@ export function NotFoundPage() {
       <p style={{ color: '#6b7280', marginBottom: '2rem' }}>
         Sorry, the page you are looking for does not exist.
       </p>
-      <a href="/" style={{ padding: '0.75rem 1.5rem', background: '#2563eb', color: 'white', borderRadius: '0.5rem', textDecoration: 'none' }}>
-        Go Home
-      </a>
+      {/* <Navigate to="/" replace /> */}
     </div>
   );
 }

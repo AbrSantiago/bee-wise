@@ -18,9 +18,6 @@ a {
   color: #646cff;
   text-decoration: inherit;
 }
-a:hover {
-  color: #535bf2;
-}
 
 body {
   margin: 0;
@@ -28,29 +25,138 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  overflow: hidden;
+  /* background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364); */
+  /* background: linear-gradient(to bottom, #ff9a8b, #fad0c4, #fad0c4, #fbc2eb); */
+  background: linear-gradient(to bottom, #a2d2ff, #bde0fe, #ffffff);
+
+  position: relative;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* Nube 1: más cercana (rápida, más opaca) */
+body::before {
+  content: "";
+  position: fixed;
+  top: -100px;
+  left: 0;
+  width: 250%;
+  height: 100%;
+  background: url("/clouds/nube_12fps.webp") repeat-x;
+  background-size: contain;
+  background-position: 0% 25%;
+  animation: moveClouds1 190s linear infinite;
+  opacity: 0.45;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Nube 2 */
+body::after {
+  content: "";
+  position: fixed;
+  top: -320px;
+  left: 0;
+  width: 350%;
+  height: 100%;
+  background: url("/clouds/nube_18fps.webp") repeat-x;
+  background-size: contain;
+  background-position: 0% 45%;
+  animation: moveClouds2 430s linear infinite;
+  opacity: 0.75;
+  z-index: -2;
+  pointer-events: none;
+}
+
+/* Nube 3 */
+.cloud-layer-3,
+.cloud-layer-4 {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250%;
+  height: 100%;
+  background-size: contain;
+  background-repeat: repeat-x;
+  pointer-events: none;
+}
+
+/* Nube 3 (más lejana, lenta) */
+.cloud-layer-3 {
+  background-image: url("/clouds/nube2_12fps.webp");
+  background-position: 0% 65%;
+  animation: moveClouds3 480s linear infinite;
+  top: 50px;
+  opacity: 0.25;
+  z-index: -3;
+}
+
+/* Nube 4 (muy lejana) */
+.cloud-layer-4 {
+  background-image: url("/clouds/nube2_18fps.webp");
+  background-position: 0% 100%;
+  animation: moveClouds4 320s linear infinite;
+  top: 250px;
+  opacity: 0.78;
+  z-index: -4;
+}
+
+.plane {
+  position: fixed;
+  bottom: -15%;
+  left: 0;
+  width: 100vw;
+  height: 100%;
+  background: url("/clouds/avioneta2.webp") no-repeat center;
+  background-size: contain;
+  z-index: -5;
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+/* Animaciones */
+@keyframes moveClouds1 {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-40%);
+  }
+}
+
+@keyframes moveClouds2 {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-30%);
+  }
+}
+
+@keyframes moveClouds3 {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-20%);
+  }
+}
+
+@keyframes moveClouds4 {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-10%);
+  }
 }
 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
 }
-
-/* button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-} */
-
-/* button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-} */
 
 @media (prefers-color-scheme: light) {
   :root {

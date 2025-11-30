@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class MultipleChoiceExerciseTest {
     @Test
     void multipleChoiceExercise_constructor_setsFields() {
-        MultipleChoiceExercise ex = new MultipleChoiceExercise("Pick one", Arrays.asList("A", "B", "C"), "B");
+        MultipleChoiceExercise ex = new MultipleChoiceExercise("Pick one", Arrays.asList("A", "B", "C"), "B", ExerciseCategory.MATRICES);
 
         assertEquals("Pick one", ex.getQuestion());
         assertEquals("B", ex.getAnswer());
@@ -26,7 +26,7 @@ public class MultipleChoiceExerciseTest {
     @Test
     void multipleChoiceExercise_lessonAssociation() {
         Lesson lesson = new Lesson("History", "Ancient");
-        MultipleChoiceExercise ex = new MultipleChoiceExercise("Q?", Arrays.asList("X","Y"), "X");
+        MultipleChoiceExercise ex = new MultipleChoiceExercise("Q?", Arrays.asList("X","Y"), "X", ExerciseCategory.MATRICES);
 
         ex.setLesson(lesson);
 

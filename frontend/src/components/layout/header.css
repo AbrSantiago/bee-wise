@@ -1,0 +1,115 @@
+/* Header Styles */
+.main-header {
+  background: linear-gradient(90deg, #ffe066 0%, #ffd700 100%);
+  color: #7c5c0a;
+  height: 80px;
+  padding: 0 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 30px;
+  left: 240px;
+  right: 0;
+  z-index: 100;
+  max-width: 640px;
+  margin: 0 auto;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(255, 215, 0, 0.18);
+  border: 1.5px solid #ffe066;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.header-title-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.section-info {
+  font-size: 13px;
+  color: #b59f3b;
+  background: #fffbe6;
+  font-weight: 600;
+  padding: 3px 12px;
+  border-radius: 7px;
+  margin-bottom: 4px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+}
+
+.header-title {
+  font-size: 1.7rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: 0.5px;
+  color: #7c5c0a;
+}
+
+.user-stats {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+
+.stat-item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 9px;
+  padding: 7px 16px;
+  box-shadow: 0 1px 6px rgba(255, 215, 0, 0.1);
+  font-size: 1rem;
+  font-weight: 600;
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+
+.stat-item:hover {
+  transform: scale(1.07);
+  box-shadow: 0 3px 12px rgba(255, 215, 0, 0.18);
+}
+
+.stat-icon {
+  font-size: 1.2rem;
+}
+
+.stat-value {
+  color: #b59f3b;
+  font-weight: bold;
+  font-size: 17px;
+}
+
+.bee-coin-img {
+  padding: 1px;
+  max-height: 27px;
+}
+
+.stat-level {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Espacio entre el icono y el texto */
+  margin-right: 15px; /* Separación con el siguiente stat */
+  background: rgba(255, 255, 255, 0.85);
+  padding: 4px 10px; /* Opcional: padding si usas fondo */
+  border-radius: 20px; /* Opcional: bordes redondeados */
+  transition: transform 0.18s, box-shadow 0.18s;
+  cursor: default;
+}
+
+.stat-level:hover {
+  transform: scale(1.07);
+  box-shadow: 0 3px 12px rgba(255, 215, 0, 0.18);
+}
+
+/* Nuevo estilo para la imagen del nivel en el header */
+.header-level-icon {
+  width: 24px; /* Ajusta este tamaño según prefieras */
+  height: 24px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  border-radius: 100%;
+}

@@ -1,0 +1,155 @@
+.owned-shop {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+}
+
+/* Items del usuario */
+.items-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.items-container h3 {
+  font-size: x-large;
+  margin-bottom: 15px;
+}
+
+/* Filtros de categoría */
+.category-filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.filter-button {
+  background-color: #fff;
+  color: #333;
+  padding: 10px 20px;
+  border: 2px solid #fbc02d;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.filter-button:hover {
+  background-color: #fff8e1;
+  border-color: #f9a825;
+  transform: translateY(-2px);
+}
+
+.filter-button.active {
+  background-color: #fbc02d;
+  color: #fff;
+  box-shadow: 0 3px 6px rgba(251, 192, 45, 0.3);
+}
+
+/* Modal de confirmación */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-content {
+  background: linear-gradient(145deg, #fff8e1, #ffe082);
+  border: 3px solid #fbc02d;
+  border-radius: 15px;
+  padding: 30px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.3s ease;
+}
+
+.modal-content h2 {
+  color: #333;
+  margin-bottom: 15px;
+  font-size: 24px;
+  text-align: center;
+}
+
+.modal-content p {
+  color: #555;
+  margin-bottom: 10px;
+  text-align: center;
+  font-size: 16px;
+}
+
+.modal-price {
+  font-size: 20px;
+  font-weight: bold;
+  color: #f39c12;
+  margin: 15px 0;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.modal-button {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-button.cancel {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.modal-button.cancel:hover {
+  background-color: #c0392b;
+  transform: translateY(-2px);
+}
+
+.modal-button.confirm {
+  background-color: #4caf50;
+  color: white;
+}
+
+.modal-button.confirm:hover {
+  background-color: #45a049;
+  transform: translateY(-2px);
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

@@ -1,0 +1,62 @@
+.loading-container {
+  width: 100%;
+  padding: 20px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.loading-progress-background {
+  height: 15px;
+  width: 100%;
+  max-width: 600px;
+  border-radius: 5px;
+  background-color: #ffd699; /* Color de fondo (barra vacía) */
+  position: relative;
+  overflow: hidden;
+}
+
+.loading-progress {
+  height: 100%;
+  border-radius: 5px;
+  background: repeating-linear-gradient(
+    60deg,
+    #ff8800,
+    #ff8800 10px,
+    #eba850 10px,
+    #eba850 20px
+  );
+  background-size: 200%;
+  animation: movegradient 13s linear infinite;
+  transition: width 0.5s ease-in-out;
+}
+
+@keyframes movegradient {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: -200% 0%;
+  }
+}
+
+.close-button {
+  position: absolute;
+  left: -60px;
+  top: 4px;
+  background: transparent;
+  border: none;
+  font-size: 30px;
+  cursor: pointer;
+  color: #69461f;
+  font-weight: bold;
+  transition: transform 0.2s;
+  z-index: 10;
+}
+
+.close-button:hover {
+  transform: scale(1.2);
+  color: #ff6600;
+}

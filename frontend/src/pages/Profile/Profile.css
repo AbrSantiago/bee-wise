@@ -1,0 +1,120 @@
+.container-for-scroll {
+  max-height: calc(100vh - 110px);
+  overflow-y: auto;
+  scrollbar-width: none;
+  width: 600px;
+}
+
+.profile-page-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  margin: 30px 0;
+  width: 600px;
+}
+
+.profile-container {
+  background: linear-gradient(40deg, #fffbbe, #fff175);
+
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: center;
+  font-family: "Poppins", sans-serif;
+
+  border-radius: 24px;
+  background-image: linear-gradient(
+      rgba(255, 255, 255, 0.575),
+      rgba(255, 255, 255, 0.534)
+    ),
+    url("/image/BG2.png");
+  border: 4px solid #ffb800;
+  padding: 40px 24px;
+}
+
+.profile-info {
+  width: 100%;
+  height: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: center;
+  justify-content: center;
+}
+
+.profile-info h2 {
+  font-size: 2rem;
+  color: #333;
+  margin: 0px 0px 10px 0px;
+}
+
+.profile-info p {
+  margin: 4px 0;
+  color: #666;
+  font-weight: bold;
+}
+
+.profile-stats {
+  display: flex;
+  flex-direction: column;
+  color: #666;
+  gap: 10px;
+  justify-content: flex-start;
+  margin-top: 15px;
+  font-size: 1.1rem;
+}
+
+.profile-stats > div {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.profile-avatar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: center;
+}
+
+.profile-avatar h3 {
+  margin-bottom: 10px;
+}
+
+.edit-avatar-btn {
+  background-color: #f9c74f;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.edit-avatar-btn:hover {
+  background-color: #f9844a;
+  color: white;
+}
+
+.level-info-display {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.level-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 0.3rem;
+}
+
+.level-icon {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}

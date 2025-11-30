@@ -1,7 +1,14 @@
-import './layout.css';
-import { Link } from 'react-router-dom';
+import { useAuth } from "../../context/AuthContext";
+import NavItem from "./NavItem";
+import "./Sidebar.css";
 
 const Sidebar = () => {
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+  };
+
   return (
     <div className="sidebar">
       {/* Logo/Título */}
@@ -11,22 +18,14 @@ const Sidebar = () => {
 
       {/* Navigation Menu */}
       <nav className="sidebar-nav">
-        <Link to="/" className="nav-item">
-            <span className="nav-icon">🏠</span>
-            <span className="nav-label">HOME</span>
-        </Link>
-        <Link to="/challenges" className="nav-item">
-            <span className="nav-icon">🎯</span>
-            <span className="nav-label">DESAFÍOS</span>
-        </Link>
-        <Link to="/ranking" className="nav-item">
-            <span className="nav-icon">🏆</span>
-            <span className="nav-label">RANKING</span>
-        </Link>
-        <Link to="/profile" className="nav-item">
-            <span className="nav-icon">👤</span>
-            <span className="nav-label">PERFIL</span>
-        </Link>
+        <nav className="sidebar-nav">
+          <NavItem label="Home" iconUrl="Home.png" to="/" />
+          <NavItem label="Desafíos" iconUrl="Challenges.png" to="/challenges" />
+          <NavItem label="Ranking" iconUrl="Ranking.png" to="/ranking" />
+          <NavItem label="Tienda" iconUrl="Shop.png" to="/shop" />
+          <NavItem label="Perfil" iconUrl="Profile.png" to="/profile" />
+          <NavItem label="Salir" iconUrl="Logout.png" onClick={handleLogout} />
+        </nav>
       </nav>
     </div>
   );

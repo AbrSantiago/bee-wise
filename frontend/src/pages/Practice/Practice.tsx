@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
-import MainLayout from "../../components/layout/MainLayout";
 import "katex/dist/katex.min.css";
 // @ts-ignore
 import { BlockMath } from "react-katex";
 import "./Practice.css";
-import apiClient from "../../services/api";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   DndContext,
   closestCenter,
@@ -13,19 +11,31 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { Link } from "react-router-dom";
 import type { DragEndEvent } from "@dnd-kit/core";
-
-type Exercise = {
-  id: number;
-  question: string;
-  answer: string;
-  options: null | string[];
-  type: string; // "OPEN" | "MULTIPLE_CHOICE"
-};
+import lessonService, {
+  type Exercise,
+  type LevelUpInfo,
+} from "../../services/lessonService";
+import { useUserPoints } from "../../context/UserPointsContext";
+import TrueFalseButtons from "./components/TrueFalseButtons";
+import DnDOptions from "./components/DnDOptions";
+import FeedbackMessage from "./components/FeedbackMessage";
+import SummaryScreen from "./components/SummaryScreen";
+import CorrectionIntroScreen from "./components/CorrectionIntroScreen";
+import ProgressBar from "../../components/layout/ProgressBar";
+import Confetti from "../../components/layout/Confetti";
+import { useUser } from "../../context/UserContext";
+import Beector from "../../components/layout/Beector";
+import dailyMissionService, {
+  type DailyMissionUpdateOutDTO,
+} from "../../services/dailyMissionService";
+import MissionsUpdateSummary from "../../components/layout/MissionsUpdateSummary";
+import LoadingSpinner from "../../components/layout/LoadingSpinner";
 
 export function PracticePage() {
   const { id } = useParams<{ id: string }>();
+  const { userPoints, refreshPoints } = useUserPoints();
+  const { refreshUser } = useUser();
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [currentExercise, setCurrentExercise] = useState(0);
   const [userAnswer, setUserAnswer] = useState("");
@@ -36,22 +46,91 @@ export function PracticePage() {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [showCorrectionIntro, setShowCorrectionIntro] = useState(false);
   const [hasShownCorrectionIntro, setHasShownCorrectionIntro] = useState(false);
-
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [endTime, setEndTime] = useState<number | null>(null);
+  const [correctCount, setCorrectCount] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+  const [inCorrectionRound, setInCorrectionRound] = useState(false);
+  const [lessonCompleted, setLessonCompleted] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [levelUpInfo, setLevelUpInfo] = useState<LevelUpInfo | null>(null);
+  const [streakUp, setStreakUp] = useState<boolean | null>(null);
+  const [missionsUpdate, setMissionsUpdate] = useState<
+    DailyMissionUpdateOutDTO[] | null
+  >(null);
+  const [showMissionsUpdate, setShowMissionsUpdate] = useState(false);
+  const [pendingMissionsUpdate, setPendingMissionsUpdate] = useState<
+    DailyMissionUpdateOutDTO[] | null
+  >(null);
 
   const current = exercises[currentExercise];
-
-  const getLesson = async () => {
-    try {
-      const response = await apiClient.get(`/lesson/${id}`);
-      setExercises(response.data.exercises);
-    } catch (error) {
-      console.error("Error fetching practice data!", error);
-    }
-  };
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (id) getLesson();
+    const fetchLesson = async () => {
+      try {
+        if (id) {
+          const lesson = await lessonService.getLesson(id);
+          setExercises(lesson.exercises);
+          setTotalCount(lesson.exercises.length);
+          setCorrectCount(0);
+          setStartTime(Date.now());
+        }
+      } catch (error) {
+        console.error("Error fetching practice data!", error);
+      }
+    };
+    fetchLesson();
   }, [id]);
+
+  useEffect(() => {
+    const userId = userPoints?.userId;
+
+    const completeLessonCall = async () => {
+      if (showSummary && !lessonCompleted && id && userId) {
+        try {
+          setLessonCompleted(true);
+
+          const response = await lessonService.lessonComplete({
+            completedLessonId: parseInt(id),
+            userId: userId,
+            correctExercises: correctCount,
+          });
+
+          if (response.levelUp) setLevelUpInfo(response.levelUp);
+          setStreakUp(response.hasUpStreak);
+
+          const missionsResult = await dailyMissionService.updateProgress([
+            { type: "COMPLETE_LESSON", progressAmount: 1 },
+            { type: "EARN_POINTS", progressAmount: 10 * correctCount },
+          ]);
+          setMissionsUpdate(missionsResult);
+          if (missionsResult[0].wasUpdated || missionsResult[1].wasUpdated)
+            setPendingMissionsUpdate(missionsResult);
+
+          refreshUser();
+          if (correctCount > 0) {
+            setShowConfetti(true);
+            setTimeout(() => {
+              setShowConfetti(false);
+            }, 5000);
+          }
+        } catch (error) {
+          console.error("❌ Error completing lesson:", error);
+          setLessonCompleted(false);
+        }
+      }
+    };
+
+    completeLessonCall();
+  }, [
+    showSummary,
+    lessonCompleted,
+    id,
+    userPoints?.userId,
+    correctCount,
+    refreshPoints,
+  ]);
 
   // --- DnD setup ---
   const sensors = useSensors(useSensor(PointerSensor));
@@ -160,6 +239,7 @@ export function PracticePage() {
     const correct = userAnswer.trim() === current.answer.trim();
     setFeedback(correct);
     setCanContinue(true);
+    if (correct && !inCorrectionRound) setCorrectCount((prev) => prev + 1);
   };
 
   const handleContinue = () => {
@@ -182,96 +262,92 @@ export function PracticePage() {
         setShowCorrectionIntro(true);
         setHasShownCorrectionIntro(true);
         setPendingExercises(newPending);
+        setInCorrectionRound(true);
       } else {
         setExercises(newPending);
         setCurrentExercise(0);
         setPendingExercises([]);
       }
     } else {
+      setEndTime(Date.now());
       setShowSummary(true);
     }
   };
 
+  if (showMissionsUpdate && missionsUpdate) {
+    return (
+      <MissionsUpdateSummary
+        missions={missionsUpdate}
+        onFinish={() => {
+          navigate("/");
+        }}
+      />
+    );
+  }
+
   if (showSummary) {
     return (
-      <MainLayout title={`Lección ${id}`}>
-        <div className="summary-container">
-          <p className="summary-text">
-            ¡Has terminado todos los ejercicios!
-          </p>
-          <Link to={`/`}>
-            <button className="btn-back-home">
-              <span>Volver al inicio</span>
-            </button>
-          </Link>
-        </div>
-      </MainLayout>
+      <div className="practice-summary-container">
+        {showConfetti && <Confetti duration={8000} intensity="high" />}
+        <SummaryScreen
+          time={endTime && startTime ? endTime - startTime : 0}
+          correctCount={correctCount}
+          totalCount={totalCount}
+          levelUp={levelUpInfo}
+          streakUp={streakUp}
+          overrideButton={pendingMissionsUpdate ? "Siguiente" : undefined}
+          onContinue={() => {
+            if (pendingMissionsUpdate) {
+              setShowSummary(false);
+              setMissionsUpdate(pendingMissionsUpdate);
+              setPendingMissionsUpdate(null);
+              setShowMissionsUpdate(true);
+            } else {
+              navigate("/");
+            }
+          }}
+        />
+      </div>
     );
   }
 
   if (showCorrectionIntro) {
     return (
-      <MainLayout title={`Lección ${id}`}>
-        <div className="summary-container">
-          <p className="summary-text">Ahora vamos a corregir los errores</p>
-          <button
-            className="btn-continue error"
-            onClick={() => {
-              setExercises(pendingExercises);
-              setCurrentExercise(0);
-              setPendingExercises([]);
-              setShowCorrectionIntro(false);
-            }}
-          >
-            Continuar
-          </button>
-        </div>
-      </MainLayout>
+      <CorrectionIntroScreen
+        onContinue={() => {
+          setExercises(pendingExercises);
+          setCurrentExercise(0);
+          setPendingExercises([]);
+          setShowCorrectionIntro(false);
+        }}
+      />
     );
   }
 
   return (
-    <MainLayout title={`Lección ${id}`}>
+    <div className="exercise-container">
+      <ProgressBar current={currentExercise} total={exercises.length} />
       {current ? (
-        <>
+        <div className="current-excercise">
           {current.type === "OPEN" ? (
-            <div className="mt-4">
-              <div className="matrix-container">
+            <div>
+              <div className="bee-and-buttons">
+                <Beector imgSrc="/image/BeeReading.png" size={180} />
                 <p className="question-text">{current.question}</p>
               </div>
-              <div className="button-true-false">
-                <button
-                  className={`true-false-btn verdadero-btn ${feedback === false && userAnswer === "Verdadero"
-                    ? "incorrect"
-                    : ""
-                    }`}
-                  onClick={() => {
-                    handleTrueFalseClick("Verdadero");
-                    const correct =
-                      "Verdadero".trim() === current.answer.trim();
-                    setFeedback(correct);
-                    setCanContinue(true);
-                  }}
-                  disabled={canContinue}
-                >
-                  Verdadero
-                </button>
-                <button
-                  className={`true-false-btn falso-btn ${feedback === false && userAnswer === "Falso"
-                    ? "incorrect"
-                    : ""
-                    }`}
-                  onClick={() => {
-                    handleTrueFalseClick("Falso");
-                    const correct = "Falso".trim() === current.answer.trim();
-                    setFeedback(correct);
-                    setCanContinue(true);
-                  }}
-                  disabled={canContinue}
-                >
-                  Falso
-                </button>
-              </div>
+              <TrueFalseButtons
+                userAnswer={userAnswer}
+                feedback={feedback}
+                canContinue={canContinue}
+                onClick={(answer) => {
+                  handleTrueFalseClick(answer);
+                  const correct = answer.trim() === current.answer.trim();
+                  setFeedback(correct);
+                  setCanContinue(true);
+                  if (correct && !inCorrectionRound)
+                    setCorrectCount((prev) => prev + 1);
+                }}
+              />
             </div>
           ) : (
             <DndContext
@@ -279,33 +355,26 @@ export function PracticePage() {
               collisionDetection={closestCenter}
               onDragEnd={handleDragEnd}
             >
-              <div className="question-and-answer-container">
-                <div className="matrix-container">
-                  <BlockMath math={current.question.replace(/\?$/, "")} />
-                </div>
-                <div className="answer-slot-container mt-4">
-                  {userAnswer ? <BlockMath math={userAnswer} /> : <></>}
-                </div>
-              </div>
-              <div className="options-container mt-4 flex gap-2 flex-wrap">
-                {current.options?.map((opt) => (
-                  <div
-                    key={opt}
-                    id={opt}
-                    draggable
-                    className={`option-box cursor-pointer ${canContinue ? "disabled" : ""}`}
-                    onClick={() => !canContinue && handleOptionClick(opt)}
-                    style={{
-                      pointerEvents:
-                        canContinue || selectedOption === opt ? "none" : "auto",
-                      opacity:
-                        canContinue || selectedOption === opt ? 0.6 : 1,
-                    }}
-                  >
-                    <BlockMath math={opt} />
+              <div className="question-and-answer-and-beector-container">
+                <Beector imgSrc="/image/BeeReading.png" size={180} />
+                <div className="question-and-answer-container">
+                  <div className="matrix-container">
+                    <BlockMath math={current.question.replace(/\?$/, "")} />
                   </div>
-                ))}
+                  <div className="answer-slot-container mt-4">
+                    {userAnswer ? <BlockMath math={userAnswer} /> : <></>}
+                  </div>
+                </div>
               </div>
+              <DnDOptions
+                options={current.options || []}
+                canContinue={canContinue}
+                selectedOption={selectedOption}
+                handleOptionClick={handleOptionClick}
+                userAnswer={userAnswer}
+                feedback={feedback}
+                current={current}
+              />
               <button
                 onClick={handleCheck}
                 className="check-btn"
@@ -316,30 +385,20 @@ export function PracticePage() {
             </DndContext>
           )}
 
+          <FeedbackMessage feedback={feedback} />
+
           {feedback !== null && (
-            <>
-              {feedback ? (
-                <div className="feedback-message success">
-                  <span>¡Excelente! Seguí así</span>
-                </div>
-              ) : (
-                <div className="feedback-message error">
-                  <span>Mmm, nop. Esa no era, pero no te rindas!</span>
-                </div>
-              )}
-              <button
-                className={`btn-continue mt-4 ${feedback ? "success" : "error"
-                  }`}
-                onClick={handleContinue}
-              >
-                Continuar
-              </button>
-            </>
+            <button
+              className={`btn-continue mt-4 ${feedback ? "success" : "error"}`}
+              onClick={handleContinue}
+            >
+              Continuar
+            </button>
           )}
-        </>
+        </div>
       ) : (
-        <p className="text-gray-500">Cargando ejercicio...</p>
+        <LoadingSpinner message="Cargando ejercicios" />
       )}
-    </MainLayout>
+    </div>
   );
 }

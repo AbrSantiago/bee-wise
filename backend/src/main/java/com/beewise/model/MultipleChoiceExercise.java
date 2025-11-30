@@ -18,9 +18,10 @@ public class MultipleChoiceExercise extends Exercise {
     @NotEmpty(message = "Options must not be empty")
     private List<String> options;
 
-    public MultipleChoiceExercise(String question, List<String> options, String answer) {
+    public MultipleChoiceExercise(String question, List<String> options, String answer, ExerciseCategory category) {
         this.setQuestion(question);
         this.setOptions(options);
         this.setAnswer(answer);
+        this.setCategory(category);
     }
 }

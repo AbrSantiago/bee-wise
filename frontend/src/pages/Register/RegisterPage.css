@@ -1,0 +1,96 @@
+/* Contenedor principal con fondo tipo naturaleza */
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: transparent;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.register-box {
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #fff3b0, #fcd34d);
+  padding: 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+  width: 360px;
+  text-align: center;
+  border: 2px solid #fbbf24;
+  overflow: hidden;
+}
+
+.register-box h1 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: #b45309;
+}
+
+.register-box input {
+  width: 328px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
+  border: 1px solid #ffffffaa;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  color: #1f2937;
+  background-color: rgba(255, 255, 255, 0.25);
+}
+
+.register-box input:focus {
+  outline: none;
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(252, 211, 77, 0.3);
+}
+
+/* Inputs autofill */
+.register-box input:-webkit-autofill,
+.register-box input:-webkit-autofill:hover,
+.register-box input:-webkit-autofill:focus,
+.register-box input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0px 1000px rgba(255,255,255,0.25) inset;
+  box-shadow: 0 0 0px 1000px rgba(255,255,255,0.25) inset;
+  -webkit-text-fill-color: #1f2937;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.register-box input.input-error {
+  border-color: #dc2626 !important; /* rojo */
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2); /* glow rojo */
+}
+
+.register-box button {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: .5rem;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.register-box button:hover {
+  background: linear-gradient(135deg, #d97706, #b45309);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+}
+
+.register-box .error {
+  color: #dc2626;
+  margin-bottom: 0.5rem;
+  margin-top: 0;
+  font-size: 0.9rem;
+}
+
+.register-box .success {
+  color: #16a34a;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}

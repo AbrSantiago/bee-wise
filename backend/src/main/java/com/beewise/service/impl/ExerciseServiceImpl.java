@@ -4,12 +4,18 @@ import com.beewise.controller.dto.*;
 import com.beewise.exception.ExerciseNotFoundException;
 import com.beewise.exception.InvalidIdException;
 import com.beewise.model.Exercise;
+import com.beewise.model.ExerciseCategory;
 import com.beewise.model.MultipleChoiceExercise;
 import com.beewise.model.OpenExercise;
 import com.beewise.repository.ExerciseRepository;
 import com.beewise.service.ExerciseService;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional
@@ -31,13 +37,22 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     @Override
     public Exercise createOpenExercise(SimpleOpenExerciseDTO dto) {
-        Exercise exercise = new OpenExercise(dto.getQuestion(), dto.getAnswer());
+        Exercise exercise = new OpenExercise(dto.getQuestion(), dto.getAnswer(),dto.getCategory());
         return repository.save(exercise);
     }
 
     @Override
+    public List<Exercise> createOpenExercises(List<SimpleOpenExerciseDTO> dto) {
+        List<OpenExercise> exercises = dto.stream().map(e -> new OpenExercise(
+                e.getQuestion(),
+                e.getAnswer(),
+                e.getCategory())).toList();
+        return repository.saveAll(new ArrayList<>(exercises));
+    }
+
+    @Override
     public Exercise createMultipleChoiceExercise(SimpleMultipleChoiceExerciseDTO dto) {
-        Exercise exercise = new MultipleChoiceExercise(dto.getQuestion(), dto.getOptions(), dto.getAnswer());
+        Exercise exercise = new MultipleChoiceExercise(dto.getQuestion(), dto.getOptions(), dto.getAnswer(), dto.getCategory());
         return repository.save(exercise);
     }
 
@@ -69,7 +84,28 @@ public class ExerciseServiceImpl implements ExerciseService {
     }
 
     @Override
+    public List<Exercise> createMultipleChoiceExercises(List<SimpleMultipleChoiceExerciseDTO> dtos) {
+        List<MultipleChoiceExercise> exercises = dtos.stream().map(e -> new MultipleChoiceExercise(
+                e.getQuestion(),
+                e.getOptions(),
+                e.getAnswer(),
+                e.getCategory())).toList();
+        return repository.saveAll(new ArrayList<>(exercises));
+    }
+
+    @Override
     public void deleteExercise(Long id) {
         repository.deleteById(id);
+    }
+
+    @Override
+    public List<Exercise> getRandomExercises(int limit, ExerciseCategory category) {
+        Pageable pageable = PageRequest.of(0, limit);
+        return repository.findRandomExercisesByCategory(category, pageable);
+    }
+
+    @Override
+    public List<Exercise> getAllExercises() {
+        return repository.findAll();
     }
 }

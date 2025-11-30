@@ -1,0 +1,113 @@
+package com.beewise.controller;
+
+import com.beewise.controller.dto.*;
+import com.beewise.model.Exercise;
+import com.beewise.model.ExerciseCategory;
+import com.beewise.model.User;
+import com.beewise.model.challenge.Challenge;
+import com.beewise.service.ChallengeService;
+import com.beewise.service.impl.JwtService;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.List;
+
+@RestController
+@RequestMapping("/challenge")
+public class ChallengeController {
+    private final ChallengeService challengeService;
+    private final JwtService jwtService;
+
+    public ChallengeController(ChallengeService challengeService, JwtService jwtService) {
+        this.challengeService = challengeService;
+        this.jwtService = jwtService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ChallengeDTO>> getAll() {
+        List<Challenge> challenges = challengeService.getAll();
+        List<ChallengeDTO> challengeDTOS = challenges.stream().map(ChallengeDTO::new).toList();
+        return ResponseEntity.ok(challengeDTOS);
+    }
+
+    @GetMapping("/usersToChallenge/{challengerId}")
+    public ResponseEntity<List<UserToChallengeDTO>> getUsersToChallenge(@PathVariable Long challengerId) {
+        List<User> users = challengeService.getUsersToChallenge(challengerId);
+        List<UserToChallengeDTO> userDTOs = users.stream().map(UserToChallengeDTO::new).toList();
+        return ResponseEntity.ok(userDTOs);
+    }
+
+    @PostMapping("/send")
+    public ResponseEntity<ChallengeDTO> sendChallenge(@Valid @RequestBody SendChallengeDTO challengeDTO) {
+        Challenge challenge = challengeService.sendChallenge(challengeDTO);
+        ChallengeDTO dto = ChallengeDTO.fromChallenge(challenge);
+        return ResponseEntity.ok(dto);
+    }
+
+    @PostMapping("/accept/{challengeId}")
+    public ResponseEntity<ChallengeDTO> acceptChallenge(@PathVariable Long challengeId) {
+        Challenge challenge = challengeService.acceptChallenge(challengeId);
+        ChallengeDTO dto = ChallengeDTO.fromChallenge(challenge);
+        return ResponseEntity.ok(dto);
+    }
+
+    @PostMapping("/answer")
+    public ResponseEntity<ChallengeDTO> answerRound(@Valid @RequestBody AnswerDTO answer) {
+        Challenge challenge = challengeService.answerRound(answer);
+        ChallengeDTO dto = ChallengeDTO.fromChallenge(challenge);
+        return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping("/randomExercises")
+    public ResponseEntity<List<ExerciseDTO>> getRandomExercises(
+            @RequestParam int limit,
+            @RequestParam ExerciseCategory category) {
+        List<Exercise> exercises = challengeService.getRandomExercises(limit, category);
+        List<ExerciseDTO> exerciseDTOS = exercises.stream()
+                .map(ExerciseDTO::fromExercise)
+                .toList();
+        return ResponseEntity.ok(exerciseDTOS);
+    }
+
+    @GetMapping("/getRandomCategory")
+    public ResponseEntity<ExerciseCategory> getRandomCategory() {
+        ExerciseCategory randomCategory = challengeService.getRandomCategory();
+        return ResponseEntity.ok(randomCategory);
+    }
+
+    @GetMapping("/{challengeId}/opponent/{username}")
+    public ResponseEntity<UserDTO> getOpponent(
+            @PathVariable Long challengeId,
+            @PathVariable String username
+    ) {
+        User user = challengeService.getOpponent(challengeId, username);
+        return ResponseEntity.ok(new UserDTO(user));
+    }
+
+    @GetMapping("/categories")
+    public ResponseEntity<List<ExerciseCategory>> getAllCategories() {
+        List<ExerciseCategory> categories = Arrays.asList(ExerciseCategory.values());
+        return ResponseEntity.ok(categories);
+    }
+
+    @GetMapping("/{challengeId}/stats/{username}")
+    public ResponseEntity<ChallengeStatsDTO> getChallengeStats(
+            @PathVariable Long challengeId,
+            @PathVariable String username
+    ) {
+        ChallengeStatsDTO statsDTO = challengeService.getChallengeStats(challengeId, username);
+        return ResponseEntity.ok(statsDTO);
+    }
+
+    @GetMapping("/{challengeId}/summary")
+    public ResponseEntity<ChallengeSummaryDTO> getChallengeSummary(
+            @PathVariable Long challengeId,
+            @RequestHeader("Authorization") String authHeader
+    ) {
+        String username = jwtService.extractUsername(authHeader.substring(7));
+        ChallengeSummaryDTO summaryDTO = challengeService.getSummaryAndReward(challengeId, username);
+        return ResponseEntity.ok(summaryDTO);
+    }
+}

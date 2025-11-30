@@ -1,22 +1,63 @@
+import { Link } from "react-router-dom";
+import { Avatar } from "../../components/layout/Avatar";
 import MainLayout from "../../components/layout/MainLayout";
-import { motion } from "framer-motion";
+import { useUser } from "../../context/UserContext";
+import "./Profile.css";
+import UserStats from "./UserStats";
 
 export function ProfilePage() {
+  const { user } = useUser();
+
+  if (!user) {
+    return (
+      <MainLayout title="Perfil">
+        <div className="profile-container">
+          <p>Cargando perfil...</p>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  const { name, surname, username, email, avatar, level } = user;
+
   return (
     <MainLayout title="Perfil">
-      <div className="flex flex-col items-center justify-center h-[70vh] text-center">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-          className="flex flex-col items-center gap-4"
-        >
-          <h1 className="text-4xl font-bold text-gray-800">¡Muy Pronto!</h1>
-          <p className="text-lg text-gray-500 max-w-md">
-            Estamos preparando algo genial.
-            Volvé más tarde para descubrir los nuevos desafíos.
-          </p>
-        </motion.div>
+      <div className="container-for-scroll">
+        <div className="profile-page-container">
+          <div className="profile-container">
+            {/* Avatar */}
+            <section className="profile-avatar">
+              <Avatar avatar={avatar} size={250} />
+              <Link to={"/avatar"}>
+                <button className="edit-avatar-btn">Editar avatar</button>
+              </Link>
+            </section>
+
+            {/* Datos del usuario */}
+            <section className="profile-info">
+              <h2>{username}</h2>
+              <p>
+                {name} {surname}
+              </p>
+              <p>{email}</p>
+              <div className="profile-stats">
+                <div>
+                  <strong>Nivel:</strong>
+                  <span>
+                    {level.level} - {level.name}
+                  </span>
+                  <img
+                    src={level.iconUrl}
+                    alt={level.name}
+                    className="level-icon"
+                  />
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <UserStats />
+        </div>
       </div>
     </MainLayout>
   );

@@ -1,5 +1,8 @@
 package com.beewise.controller.dto;
 
+import com.beewise.model.ExerciseCategory;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,4 +21,7 @@ public class SimpleMultipleChoiceExerciseDTO {
     private String answer;
 
     private List<@NotBlank String> options;
+
+    @Enumerated(EnumType.STRING)
+    private ExerciseCategory category;
 }
