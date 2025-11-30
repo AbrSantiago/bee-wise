@@ -31,7 +31,7 @@ public class ExerciseDTOTest {
 
     @Test
     void fromExercise_withMultipleChoiceExercise_returnsMultipleChoiceExerciseDTO() {
-        MultipleChoiceExercise mc = new MultipleChoiceExercise("Q?", Arrays.asList("A","B"), "A");
+        MultipleChoiceExercise mc = new MultipleChoiceExercise("Q?", Arrays.asList("A","B"), "A",ExerciseCategory.MATRICES);
         mc.setId(2L);
 
         ExerciseDTO dto = ExerciseDTO.fromExercise(mc);

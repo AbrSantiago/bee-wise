@@ -78,7 +78,7 @@ class ExerciseControllerTest {
         dto.setAnswer("A");
         dto.setOptions(options);
 
-        MultipleChoiceExercise ex = new MultipleChoiceExercise("Q?", options, "A");
+        MultipleChoiceExercise ex = new MultipleChoiceExercise("Q?", options, "A",ExerciseCategory.MATRICES);
         ex.setId(3L);
 
         when(service.createMultipleChoiceExercise(dto)).thenReturn(ex);
@@ -122,7 +122,7 @@ class ExerciseControllerTest {
         dto.setAnswer("Y");
         dto.setOptions(options);
 
-        MultipleChoiceExercise ex = new MultipleChoiceExercise("Q2", options, "Y");
+        MultipleChoiceExercise ex = new MultipleChoiceExercise("Q2", options, "Y", ExerciseCategory.MATRICES);
         ex.setId(5L);
 
         when(service.updateMultipleChoiceExercise(5L, dto)).thenReturn(ex);

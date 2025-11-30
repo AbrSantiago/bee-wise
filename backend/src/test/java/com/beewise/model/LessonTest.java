@@ -21,7 +21,7 @@ public class LessonTest {
     @Test
     void lesson_constructorWithExercises_setsAllFields() {
         OpenExercise ex1 = new OpenExercise("Q1?", "A1", ExerciseCategory.MATRICES);
-        MultipleChoiceExercise ex2 = new MultipleChoiceExercise("Q2?", Arrays.asList("X","Y"), "X");
+        MultipleChoiceExercise ex2 = new MultipleChoiceExercise("Q2?", Arrays.asList("X","Y"), "X", ExerciseCategory.MATRICES);
 
         Lesson lesson = new Lesson("Science", "Physics", new ArrayList<>(Arrays.asList(ex1, ex2)));
 
