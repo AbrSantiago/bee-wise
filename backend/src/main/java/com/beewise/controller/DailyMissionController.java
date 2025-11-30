@@ -24,7 +24,7 @@ public class DailyMissionController {
     }
 
     @GetMapping
-    public ResponseEntity<List<DailyMissionDTO>> getChallengeSummary(
+    public ResponseEntity<List<DailyMissionDTO>> getDailyMissions(
             @RequestHeader("Authorization") String authHeader
     ) {
         String username = jwtService.extractUsername(authHeader.substring(7));

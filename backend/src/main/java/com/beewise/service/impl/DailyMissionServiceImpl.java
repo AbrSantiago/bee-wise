@@ -1,6 +1,5 @@
 package com.beewise.service.impl;
 
-import com.beewise.controller.dto.DailyMissionDTO;
 import com.beewise.controller.dto.DailyMissionUpdateDTO;
 import com.beewise.controller.dto.DailyMissionUpdateOutDTO;
 import com.beewise.model.User;
