@@ -13,12 +13,16 @@ export default function MissionsUpdateSummary({ missions, onFinish }: Props) {
       <h2>¡Misión actualizada!</h2>
       <div className="mission-cald-list">
         {missions.map((m, key) => (
-          <MissionCard key={key} mission={m} />
+          <div>
+            <MissionCard key={key} mission={m} />
+            {m.isClaimed && (
+              <p className="completed-reward">
+                Objetivo completado! Obtuviste {m.rewardAmount} Beecoins
+              </p>
+            )}
+          </div>
         ))}
       </div>
-      {/* {m.currentProgress >= m.goalAmount && (
-        <p className="completed-reward">Objetivo completado!</p>
-      )} */}
 
       <button className="mission-btn" onClick={onFinish}>
         Volver al inicio

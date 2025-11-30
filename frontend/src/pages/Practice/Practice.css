@@ -33,9 +33,11 @@
 
 .option-box {
   padding: 0.5rem 1rem;
-  border: 2px solid #354a6b;
+  border: 3px solid #fbbf24;
   border-radius: 0.375rem;
-  background-color: #0c2333;
+  background-color: #fff4d7;
+  color: #4d3805;
+  font-size: larger;
   cursor: pointer;
   user-select: none;
   transition: transform 0.1s, background-color 0.2s, box-shadow 0.2s;
@@ -65,7 +67,10 @@ input[readonly] {
 
 .answer-slot-container {
   padding: 0rem 0.5rem;
-  background-color: #0c2144;
+  /* background-color: #0c2144; */
+  background-color: #fff4d4;
+  color: #4d3805;
+  font-size: larger;
 
   min-width: 80px;
   min-height: 80px;
@@ -73,8 +78,15 @@ input[readonly] {
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 2px solid #aaa;
+  border: 3px solid #fbbf24;
   border-radius: 8px;
+}
+
+.question-and-answer-and-beector-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
 }
 
 .question-and-answer-container {
@@ -82,6 +94,11 @@ input[readonly] {
   justify-content: center;
   align-items: center;
   gap: 10px;
+}
+
+.matrix-container {
+  color: #7c5c0a;
+  font-size: x-large;
 }
 
 @keyframes shake {
@@ -233,7 +250,7 @@ input[readonly] {
 }
 
 .option-box.highlight-correct {
-  color: #fff;
+  /* color: #fff; */
   border-color: #ff4d4f;
   box-shadow: 0 0 0 2px #ff4d4f;
 }

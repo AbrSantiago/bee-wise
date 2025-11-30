@@ -62,7 +62,7 @@ export default function MissionCard({ mission }: Props) {
       </div>
 
       <div className="mission-reward">
-        🎁 Recompensa: <strong>{mission.rewardAmount} puntos</strong>
+        🎁 Recompensa: <strong>{mission.rewardAmount} BeeCoins</strong>
       </div>
 
       {mission.isClaimed && <p className="claimed">✔ Reclamada</p>}

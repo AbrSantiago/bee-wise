@@ -355,12 +355,15 @@ export function PracticePage() {
               collisionDetection={closestCenter}
               onDragEnd={handleDragEnd}
             >
-              <div className="question-and-answer-container">
-                <div className="matrix-container">
-                  <BlockMath math={current.question.replace(/\?$/, "")} />
-                </div>
-                <div className="answer-slot-container mt-4">
-                  {userAnswer ? <BlockMath math={userAnswer} /> : <></>}
+              <div className="question-and-answer-and-beector-container">
+                <Beector imgSrc="/image/BeeReading.png" size={180} />
+                <div className="question-and-answer-container">
+                  <div className="matrix-container">
+                    <BlockMath math={current.question.replace(/\?$/, "")} />
+                  </div>
+                  <div className="answer-slot-container mt-4">
+                    {userAnswer ? <BlockMath math={userAnswer} /> : <></>}
+                  </div>
                 </div>
               </div>
               <DnDOptions

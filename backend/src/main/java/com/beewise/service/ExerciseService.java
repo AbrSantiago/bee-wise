@@ -14,6 +14,8 @@ public interface ExerciseService {
     List<Exercise> createOpenExercises(List<SimpleOpenExerciseDTO> dto);
     Exercise createMultipleChoiceExercise(SimpleMultipleChoiceExerciseDTO dto);
     Exercise updateMultipleChoiceExercise(Long id, SimpleMultipleChoiceExerciseDTO dto);
+    List<Exercise> createMultipleChoiceExercises(List<SimpleMultipleChoiceExerciseDTO> dtos);
     void deleteExercise(Long id);
     List<Exercise> getRandomExercises(int limit, ExerciseCategory category);
+    List<Exercise> getAllExercises();
 }

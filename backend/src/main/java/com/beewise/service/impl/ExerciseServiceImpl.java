@@ -52,7 +52,7 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     @Override
     public Exercise createMultipleChoiceExercise(SimpleMultipleChoiceExerciseDTO dto) {
-        Exercise exercise = new MultipleChoiceExercise(dto.getQuestion(), dto.getOptions(), dto.getAnswer());
+        Exercise exercise = new MultipleChoiceExercise(dto.getQuestion(), dto.getOptions(), dto.getAnswer(), dto.getCategory());
         return repository.save(exercise);
     }
 
@@ -84,6 +84,16 @@ public class ExerciseServiceImpl implements ExerciseService {
     }
 
     @Override
+    public List<Exercise> createMultipleChoiceExercises(List<SimpleMultipleChoiceExerciseDTO> dtos) {
+        List<MultipleChoiceExercise> exercises = dtos.stream().map(e -> new MultipleChoiceExercise(
+                e.getQuestion(),
+                e.getOptions(),
+                e.getAnswer(),
+                e.getCategory())).toList();
+        return repository.saveAll(new ArrayList<>(exercises));
+    }
+
+    @Override
     public void deleteExercise(Long id) {
         repository.deleteById(id);
     }
@@ -92,5 +102,10 @@ public class ExerciseServiceImpl implements ExerciseService {
     public List<Exercise> getRandomExercises(int limit, ExerciseCategory category) {
         Pageable pageable = PageRequest.of(0, limit);
         return repository.findRandomExercisesByCategory(category, pageable);
+    }
+
+    @Override
+    public List<Exercise> getAllExercises() {
+        return repository.findAll();
     }
 }

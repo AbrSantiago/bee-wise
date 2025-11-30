@@ -31,6 +31,6 @@ public class DailyMissionUpdateOutDTO {
     }
 
     public void addProgress(int delta){
-        this.currentProgress = previousProgress + delta;
+        this.currentProgress = Math.min(previousProgress + delta, goalAmount);
     }
 }
