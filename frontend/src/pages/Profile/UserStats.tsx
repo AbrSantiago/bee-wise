@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import userService, { type UserStatsDTO } from "../../services/userService";
 import "./UserStats.css";
+import LoadingSpinner from "../../components/layout/LoadingSpinner";
 
 export function UserStats() {
   const [stats, setStats] = useState<UserStatsDTO | null>(null);
@@ -24,7 +25,11 @@ export function UserStats() {
   }, []);
 
   if (loading)
-    return <div className="user-stats__loading">Loading stats...</div>;
+    return (
+      <div className="stats-loading-container">
+        <LoadingSpinner message="Cargando estadístias" />;
+      </div>
+    );
   if (!stats)
     return <div className="user-stats__error">Could not load stats.</div>;
 

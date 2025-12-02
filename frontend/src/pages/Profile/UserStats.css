@@ -75,3 +75,9 @@
   color: #777;
   padding: 20px;
 }
+
+.stats-loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
